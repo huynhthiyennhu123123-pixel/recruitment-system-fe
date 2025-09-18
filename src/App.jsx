@@ -1,7 +1,7 @@
-import { BrowserRouter, Routes, Route } from "react-router-dom"
-import PublicLayout from "./components/layout/PublicLayout"
-import HomePage from "./pages/public/HomePage"
-
+import { BrowserRouter, Routes, Route } from "react-router-dom";
+import PublicLayout from "./components/layout/PublicLayout";
+import HomePage from "./pages/public/HomePage";
+import JobSearchSection from "./components/JobSearchSection";
 function App() {
   return (
     <BrowserRouter>
@@ -13,7 +13,7 @@ function App() {
         </Route>
       </Routes>
     </BrowserRouter>
-  )
+  );
 }
 
-export default App
+export default App;
