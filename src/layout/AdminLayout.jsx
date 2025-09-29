@@ -4,7 +4,7 @@ import { Outlet, NavLink } from "react-router-dom";
 import logo from "../assets/images/logo.png";
 
 import { styled, alpha } from "@mui/material/styles";
-import SearchIcon from "@mui/icons-material/Search";
+
 import LogoutIcon from "@mui/icons-material/Logout";
 
 import {
@@ -37,40 +37,6 @@ import BusinessIcon from "@mui/icons-material/Business";
 import WorkIcon from "@mui/icons-material/Work";
 import SettingsIcon from "@mui/icons-material/Settings";
 
-const Search = styled("div")(({ theme }) => ({
-  position: "relative",
-  borderRadius: theme.shape.borderRadius,
-  backgroundColor: alpha(theme.palette.common.white, 0.15),
-  "&:hover": {
-    backgroundColor: alpha(theme.palette.common.white, 0.25),
-  },
-  marginLeft: theme.spacing(2),
-  width: "auto",
-}));
-
-const SearchIconWrapper = styled("div")(({ theme }) => ({
-  padding: theme.spacing(0, 2),
-  height: "100%",
-  position: "absolute",
-  pointerEvents: "none",
-  display: "flex",
-  alignItems: "center",
-  justifyContent: "center",
-}));
-
-const StyledInputBase = styled(InputBase)(({ theme }) => ({
-  color: "inherit",
-  "& .MuiInputBase-input": {
-    padding: theme.spacing(1, 1, 1, 0),
-    paddingLeft: `calc(1em + ${theme.spacing(4)})`,
-    transition: theme.transitions.create("width"),
-    width: "100%",
-    [theme.breakpoints.up("md")]: {
-      width: "20ch",
-    },
-  },
-}));
-
 const drawerWidth = 240;
 export default function AdminLayout() {
   const [anchorElUser, setAnchorElUser] = React.useState(null);
@@ -86,7 +52,6 @@ export default function AdminLayout() {
   return (
     <Box sx={{ display: "flex" }}>
       <CssBaseline />
-
       <AppBar
         position="fixed"
         sx={{
@@ -99,30 +64,7 @@ export default function AdminLayout() {
         }}
       >
         <Toolbar>
-          {/* Search */}
-          <Box sx={{ flexGrow: 1, mx: 3 }}>
-            <Box
-              sx={{
-                display: "flex",
-                alignItems: "center",
-                bgcolor: "#fff",
-                px: 2,
-                py: 0.5,
-                borderRadius: 5,
-                maxWidth: 400,
-                ml: 0,
-
-                border: "2px solid #ccc",
-              }}
-            >
-              <SearchIcon sx={{ mr: 1, color: "#888" }} />
-              <InputBase
-                placeholder="Tìm kiếm…"
-                sx={{ color: "inherit", flex: 1 }}
-              />
-            </Box>
-          </Box>
-
+          <Box sx={{ flexGrow: 1 }} />
           {/* Icons */}
           <IconButton size="large" color="inherit" sx={{ mr: 1 }}>
             <Badge badgeContent={4} color="error">
@@ -327,7 +269,7 @@ export default function AdminLayout() {
         sx={{ flexGrow: 1, bgColor: "background.defauth", p: 3 }}
       >
         <Toolbar />
-        {/* Để nội dung không bị AppBar đè lên */}
+
         <Outlet />
       </Box>
     </Box>
