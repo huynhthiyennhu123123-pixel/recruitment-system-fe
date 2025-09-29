@@ -1,6 +1,6 @@
 import React from "react";
 import { Link } from "react-router-dom";
-import JobSearchSection from "../../components/JobSearchSection";
+import JobSearchSection from "../../layout/JobSearchSection";
 // Dữ liệu giả lập (mock)
 const jobs = [
   {
