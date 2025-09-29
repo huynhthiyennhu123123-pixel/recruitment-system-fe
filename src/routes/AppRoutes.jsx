@@ -1,15 +1,22 @@
-import { BrowserRouter, Routes, Route } from "react-router-dom"
-import PublicLayout from "../components/layout/PublicLayout"
-import ApplicantLayout from "../components/layout/ApplicantLayout"
-import EmployerLayout from "../components/layout/EmployerLayout"
-import AdminLayout from "../components/layout/AdminLayout"
+import { BrowserRouter, Routes, Route } from "react-router-dom";
+import PublicLayout from "../layout/PublicLayout";
+import ApplicantLayout from "../layout/ApplicantLayout";
+import EmployerLayout from "../layout/EmployerLayout";
+import AdminLayout from "../layout/AdminLayout";
+import PrivateRoute from "./PrivateRoute";
 
-// pages mẫu
-import HomePage from "../pages/public/HomePage"
-import LoginPage from "../pages/auth/LoginPage"
-import DashboardPage from "../pages/applicant/DashboardPage"
-import EmployerDashboard from "../pages/employer/DashboardPage"
-import AdminDashboard from "../pages/admin/DashboardPage"
+// pages
+import HomePage from "../pages/public/HomePage";
+import LoginPage from "../pages/auth/LoginPage";
+import ApplicantDashboard from "../pages/applicant/DashboardPage";
+import EmployerDashboard from "../pages/employer/DashboardPage";
+
+//pages admin
+import AdminDashboard from "../pages/admin/DashboardPage";
+import UsersPage from "../pages/admin/UsersPage";
+import CompaniesPage from "../pages/admin/CompaniesPage";
+import JobsPage from "../pages/admin/JobsPage";
+import RolesPage from "../pages/admin/RolesPage";
 
 function AppRoutes() {
   return (
@@ -23,7 +30,7 @@ function AppRoutes() {
 
         {/* Applicant */}
         <Route element={<ApplicantLayout />}>
-          <Route path="/applicant" element={<DashboardPage />} />
+          <Route path="/applicant" element={<ApplicantDashboard />} />
         </Route>
 
         {/* Employer */}
@@ -31,13 +38,27 @@ function AppRoutes() {
           <Route path="/employer" element={<EmployerDashboard />} />
         </Route>
 
-        {/* Admin */}
-        <Route element={<AdminLayout />}>
-          <Route path="/admin" element={<AdminDashboard />} />
+        {/* Admin - bảo vệ bằng PrivateRoute */}
+        <Route
+          element={
+            <PrivateRoute
+              isAuthenticated={true}
+              role="admin"
+              requiredRole="admin"
+            />
+          }
+        >
+          <Route path="/admin" element={<AdminLayout />}>
+            <Route path="dashboard" element={<AdminDashboard />} />
+            <Route path="users" element={<UsersPage />} />
+            <Route path="companies" element={<CompaniesPage />} />
+            <Route path="jobs" element={<JobsPage />} />
+            <Route path="roles" element={<RolesPage />} />
+          </Route>
         </Route>
       </Routes>
     </BrowserRouter>
-  )
+  );
 }
 
-export default AppRoutes
+export default AppRoutes;
