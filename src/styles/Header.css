@@ -1,0 +1,60 @@
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 40px;
+  background: #fff;
+  border-bottom: 1px solid #eee;
+  font-family: sans-serif;
+}
+
+/* Logo */
+.header-left .logo {
+  font-size: 22px;
+  font-weight: bold;
+  color: #2a9d8f;
+  text-decoration: none;
+}
+
+/* Menu giữa */
+.header-center {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+}
+
+.header-center a {
+  text-decoration: none;
+  color: #222;
+  font-size: 15px;
+}
+
+.header-center .pro {
+  color: #e67e22;
+  font-weight: bold;
+}
+
+/* Nút bên phải */
+.header-right {
+  display: flex;
+  gap: 10px;
+}
+
+.btn-outline {
+  border: 1px solid #2a9d8f;
+  padding: 6px 14px;
+  border-radius: 20px;
+  color: #2a9d8f;
+  text-decoration: none;
+  font-weight: 500;
+}
+
+.btn-fill {
+  background: #2a9d8f;
+  color: white;
+  padding: 6px 14px;
+  border-radius: 20px;
+  text-decoration: none;
+  font-weight: 500;
+}
