@@ -6,7 +6,7 @@ export default function Header() {
     <header className="header">
       {/* Logo */}
       <div className="header-left">
-        <Link to="/" className="logo">
+        <Link to="" className="logo">
           JobRecruit
         </Link>
       </div>
