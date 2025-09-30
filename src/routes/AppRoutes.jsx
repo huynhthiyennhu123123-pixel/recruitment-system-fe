@@ -5,13 +5,18 @@ import EmployerLayout from "../layout/EmployerLayout";
 import AdminLayout from "../layout/AdminLayout";
 import PrivateRoute from "./PrivateRoute";
 
-// pages
+// pages public
 import HomePage from "../pages/public/HomePage";
 import LoginPage from "../pages/auth/LoginPage";
+import EmployerRegisterPage from "../pages/auth/EmployerRegisterPage";
+
+// pages applicant
 import ApplicantDashboard from "../pages/applicant/DashboardPage";
+
+// pages employer
 import EmployerDashboard from "../pages/employer/DashboardPage";
 
-//pages admin
+// pages admin
 import AdminDashboard from "../pages/admin/DashboardPage";
 import UsersPage from "../pages/admin/UsersPage";
 import CompaniesPage from "../pages/admin/CompaniesPage";
@@ -26,6 +31,7 @@ function AppRoutes() {
         <Route element={<PublicLayout />}>
           <Route path="/" element={<HomePage />} />
           <Route path="/auth/login" element={<LoginPage />} />
+          <Route path="/auth/employer-register" element={<EmployerRegisterPage />} />
         </Route>
 
         {/* Applicant */}
@@ -38,11 +44,11 @@ function AppRoutes() {
           <Route path="/employer" element={<EmployerDashboard />} />
         </Route>
 
-        {/* Admin - bảo vệ bằng PrivateRoute */}
+        {/* Admin */}
         <Route
           element={
             <PrivateRoute
-              isAuthenticated={true}
+              isAuthenticated={true} // TODO: thay bằng check token
               role="admin"
               requiredRole="admin"
             />
