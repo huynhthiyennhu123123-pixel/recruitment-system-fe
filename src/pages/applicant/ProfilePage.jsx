@@ -140,57 +140,98 @@ export default function ProfilePage() {
         <h1 className="text-xl font-bold mb-4">Thông tin hồ sơ</h1>
 
         <form onSubmit={handleSubmit} className="space-y-4">
-          <input
-            name="city"
-            placeholder="Thành phố"
-            value={profile.city || ""}
-            onChange={handleChange}
-            className="border p-2 w-full"
-          />
-          <input
-            name="desiredLocation"
-            placeholder="Nơi mong muốn làm việc"
-            value={profile.desiredLocation || ""}
-            onChange={handleChange}
-            className="border p-2 w-full"
-          />
-          <textarea
-            name="summary"
-            placeholder="Giới thiệu bản thân"
-            value={profile.summary || ""}
-            onChange={handleChange}
-            className="border p-2 w-full"
-          />
-          <textarea
-            name="skills"
-            placeholder="Kỹ năng"
-            value={profile.skills || ""}
-            onChange={handleChange}
-            className="border p-2 w-full"
-          />
-          <textarea
-            name="experience"
-            placeholder="Kinh nghiệm làm việc"
-            value={profile.experience || ""}
-            onChange={handleChange}
-            className="border p-2 w-full"
-          />
-          <textarea
-            name="education"
-            placeholder="Học vấn"
-            value={profile.education || ""}
-            onChange={handleChange}
-            className="border p-2 w-full"
-          />
+          {/* Thành phố */}
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Thành phố
+            </label>
+            <input
+              name="city"
+              value={profile.city || ""}
+              onChange={handleChange}
+              className="border p-2 w-full rounded"
+            />
+          </div>
 
+          {/* Nơi mong muốn làm việc */}
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Nơi mong muốn làm việc
+            </label>
+            <input
+              name="desiredLocation"
+              value={profile.desiredLocation || ""}
+              onChange={handleChange}
+              className="border p-2 w-full rounded"
+            />
+          </div>
+
+          {/* Giới thiệu bản thân */}
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Giới thiệu bản thân
+            </label>
+            <textarea
+              name="summary"
+              value={profile.summary || ""}
+              onChange={handleChange}
+              rows={3}
+              className="border p-2 w-full rounded"
+            />
+          </div>
+
+          {/* Kỹ năng */}
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Kỹ năng
+            </label>
+            <textarea
+              name="skills"
+              value={profile.skills || ""}
+              onChange={handleChange}
+              rows={3}
+              className="border p-2 w-full rounded"
+            />
+          </div>
+
+          {/* Kinh nghiệm làm việc */}
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Kinh nghiệm làm việc
+            </label>
+            <textarea
+              name="experience"
+              value={profile.experience || ""}
+              onChange={handleChange}
+              rows={4}
+              className="border p-2 w-full rounded"
+            />
+          </div>
+
+          {/* Học vấn */}
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Học vấn
+            </label>
+            <textarea
+              name="education"
+              value={profile.education || ""}
+              onChange={handleChange}
+              rows={3}
+              className="border p-2 w-full rounded"
+            />
+          </div>
+
+          {/* Submit */}
           <button
             type="submit"
             disabled={loading}
-            className="bg-blue-500 text-white px-4 py-2 rounded"
+            className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded"
           >
             {loading ? "Đang lưu..." : "Lưu thay đổi"}
           </button>
         </form>
+
       </div>
 
       {/* Resume Upload */}

@@ -12,8 +12,10 @@ export default function ApplicationsPage() {
   const fetchApplications = async () => {
     setLoading(true);
     try {
+      // gọi API với page=0, size=10
       const res = await getMyApplications(0, 10);
       if (res.success) {
+        // backend trả về dạng Page -> res.data.content
         setApplications(res.data.content || []);
       } else {
         console.error("Fetch applications failed:", res.message);
@@ -37,28 +39,31 @@ export default function ApplicationsPage() {
           {applications.map((app) => (
             <li
               key={app.id}
-              className="bg-white p-4 rounded shadow flex justify-between"
+              className="bg-white p-4 rounded shadow flex justify-between items-start"
             >
               <div>
                 <h2 className="font-semibold text-green-700">
-                  {app.jobPosting?.title}
+                  {app.jobPosting?.title || "Công việc không xác định"}
                 </h2>
                 <p className="text-gray-600">{app.coverLetter}</p>
                 <p className="text-sm text-gray-500">
-                  Ngày nộp: {new Date(app.createdAt).toLocaleDateString("vi-VN")}
+                  Ngày nộp:{" "}
+                  {new Date(app.createdAt).toLocaleDateString("vi-VN")}
                 </p>
                 <p className="text-sm text-blue-600">
                   Trạng thái: {app.status}
                 </p>
               </div>
-              <a
-                href={app.resumeUrl}
-                target="_blank"
-                rel="noreferrer"
-                className="text-blue-500 underline"
-              >
-                Xem CV
-              </a>
+              {app.resumeUrl && (
+                <a
+                  href={app.resumeUrl}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="text-blue-500 underline"
+                >
+                  Xem CV
+                </a>
+              )}
             </li>
           ))}
         </ul>
