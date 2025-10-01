@@ -1,6 +1,6 @@
 import * as React from "react";
 
-import { Outlet, NavLink } from "react-router-dom";
+import { Outlet, NavLink, Link } from "react-router-dom";
 import logo from "../assets/images/logo.png";
 
 import { styled, alpha } from "@mui/material/styles";
@@ -114,7 +114,11 @@ export default function AdminLayout() {
               </Box>
 
               {/* Menu items */}
-              <MenuItem onClick={handleCloseUserMenu}>
+              <MenuItem
+                component={Link}
+                to="/admin/profile"
+                onClick={handleCloseUserMenu}
+              >
                 <SettingsIcon fontSize="small" sx={{ mr: 1 }} />
                 Thông tin tài khoản
               </MenuItem>
@@ -174,7 +178,7 @@ export default function AdminLayout() {
               <ListItemIcon>
                 <DashboardIcon sx={{ color: "#dcf1e7fa" }} />
               </ListItemIcon>
-              <ListItemText sx={{ color: "#dcf1e7fa" }} primary="Trang chủ" />
+              <ListItemText sx={{ color: "#dcf1e7fa" }} primary="Thống kê" />
             </ListItemButton>
           </ListItem>
 

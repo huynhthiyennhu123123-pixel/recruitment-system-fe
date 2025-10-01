@@ -27,6 +27,7 @@ import UsersPage from "../pages/admin/UsersPage";
 import CompaniesPage from "../pages/admin/CompaniesPage";
 import JobsPage from "../pages/admin/JobsPage";
 import RolesPage from "../pages/admin/RolesPage";
+import ProfilePage from "../pages/admin/ProfilePage";
 
 function AppRoutes() {
   return (
@@ -36,7 +37,10 @@ function AppRoutes() {
         <Route element={<PublicLayout />}>
           <Route path="/" element={<HomePage />} />
           <Route path="/auth/login" element={<LoginPage />} />
-          <Route path="/auth/employer-register" element={<EmployerRegisterPage />} />
+          <Route
+            path="/auth/employer-register"
+            element={<EmployerRegisterPage />}
+          />
         </Route>
 
         {/* Applicant */}
@@ -72,6 +76,7 @@ function AppRoutes() {
             <Route path="companies" element={<CompaniesPage />} />
             <Route path="jobs" element={<JobsPage />} />
             <Route path="roles" element={<RolesPage />} />
+            <Route path="profile" element={<ProfilePage />} />
           </Route>
         </Route>
       </Routes>
