@@ -63,15 +63,34 @@ export default function EmployerRegisterPage() {
   }
 
   return (
-    <Container maxWidth="sm" sx={{ mt: 5, mb: 5 }}>
-      <Typography variant="h5" gutterBottom>
-        Đăng ký Nhà tuyển dụng
-      </Typography>
+    <Container 
+  maxWidth="sm" 
+  sx={{ 
+    mt: 5, 
+    mb: 5, 
+    p: 4, 
+    borderRadius: 2, 
+    backgroundColor: "#e8f5e9" // xanh lá nhạt
+  }}
+>
+  {/* Tiêu đề */}
+  <Typography 
+    variant="h5" 
+    gutterBottom 
+    align="center" 
+    sx={{ 
+      fontWeight: "bold", 
+      color: "#2e7d32" // xanh lá đậm
+    }}
+  >
+    ĐĂNG KÝ NHÀ TUYỂN DỤNG
+  </Typography>
+
 
       <form onSubmit={handleSubmit}>
         {/* Tài khoản */}
-        <Typography variant="subtitle1" sx={{ mt: 2, mb: 1 }}>
-          Tài khoản
+        <Typography variant="subtitle1" sx={{ mt: 2, mb: 1, fontWeight: "bold", color: "#2e7d32" }}>
+          Thông Tin Tài Khoản:
         </Typography>
         <TextField
           fullWidth
@@ -81,6 +100,7 @@ export default function EmployerRegisterPage() {
           onChange={handleChange}
           margin="normal"
           required
+           sx={{ backgroundColor: "white", borderRadius: 1 }}
         />
 
         {/* Mật khẩu */}
@@ -93,6 +113,7 @@ export default function EmployerRegisterPage() {
           onChange={handleChange}
           margin="normal"
           required
+           sx={{ backgroundColor: "white", borderRadius: 1 }}
           InputProps={{
             endAdornment: (
               <InputAdornment position="end">
@@ -114,6 +135,7 @@ export default function EmployerRegisterPage() {
           onChange={handleChange}
           margin="normal"
           required
+           sx={{ backgroundColor: "white", borderRadius: 1 }}
           InputProps={{
             endAdornment: (
               <InputAdornment position="end">
@@ -126,8 +148,8 @@ export default function EmployerRegisterPage() {
         />
 
         {/* Thông tin nhà tuyển dụng */}
-        <Typography variant="subtitle1" sx={{ mt: 3, mb: 1 }}>
-          Thông tin nhà tuyển dụng
+        <Typography variant="subtitle1" sx={{ mt: 3, mb: 1,fontWeight: "bold", color: "#2e7d32"}}>
+          Thông Tin Nhà Tuyển Dụng:
         </Typography>
         <Grid container spacing={2}>
           <Grid item xs={6}>
@@ -138,6 +160,7 @@ export default function EmployerRegisterPage() {
               value={formData.firstName}
               onChange={handleChange}
               required
+               sx={{ backgroundColor: "white", borderRadius: 1 }}
             />
           </Grid>
           <Grid item xs={6}>
@@ -148,6 +171,7 @@ export default function EmployerRegisterPage() {
               value={formData.lastName}
               onChange={handleChange}
               required
+               sx={{ backgroundColor: "white", borderRadius: 1 }}
             />
           </Grid>
         </Grid>
@@ -161,10 +185,11 @@ export default function EmployerRegisterPage() {
               value={formData.phoneNumber}
               onChange={handleChange}
               required
+               sx={{ backgroundColor: "white", borderRadius: 1 }}
             />
           </Grid>
           <Grid item xs={4}>
-            <FormLabel component="legend">Giới tính</FormLabel>
+            <FormLabel component="legend" sx={{fontWeight: "bold"}}>Giới tính</FormLabel>
             <RadioGroup row name="gender" value={formData.gender} onChange={handleChange}>
               <FormControlLabel value="male" control={<Radio />} label="Nam" />
               <FormControlLabel value="female" control={<Radio />} label="Nữ" />
@@ -180,6 +205,7 @@ export default function EmployerRegisterPage() {
           onChange={handleChange}
           margin="normal"
           required
+           sx={{ backgroundColor: "white", borderRadius: 1 }}
         />
         <TextField
           fullWidth
@@ -189,6 +215,7 @@ export default function EmployerRegisterPage() {
           onChange={handleChange}
           margin="normal"
           required
+           sx={{ backgroundColor: "white", borderRadius: 1 }}
         />
 
         {/* Điều khoản */}

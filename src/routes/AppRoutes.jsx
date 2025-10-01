@@ -14,7 +14,12 @@ import EmployerRegisterPage from "../pages/auth/EmployerRegisterPage";
 import ApplicantDashboard from "../pages/applicant/DashboardPage";
 
 // pages employer
-import EmployerDashboard from "../pages/employer/DashboardPage";
+import DashboardPage from "../pages/employer/DashboardPage"
+import JobManagePage from "../pages/employer/JobManagePage"
+import JobFormPage from "../pages/employer/JobFormPage"
+import ApplicantsPage from "../pages/employer/ApplicantsPage"
+import ProfilePage from "../pages/employer/ProfilePage"
+import InterviewPage from "../pages/employer/InterviewPage"
 
 // pages admin
 import AdminDashboard from "../pages/admin/DashboardPage";
@@ -40,8 +45,15 @@ function AppRoutes() {
         </Route>
 
         {/* Employer */}
-        <Route element={<EmployerLayout />}>
-          <Route path="/employer" element={<EmployerDashboard />} />
+        <Route path="/employer" element={<EmployerLayout />}>
+          <Route index element={<DashboardPage />} />
+          <Route path="dashboard" element={<DashboardPage />} />
+          <Route path="jobs" element={<JobManagePage />} />
+          <Route path="jobs/new" element={<JobFormPage />} />
+          <Route path="jobs/:id/edit" element={<JobFormPage />} />
+          <Route path="applicants" element={<ApplicantsPage />} />
+          <Route path="profile" element={<ProfilePage />} />
+          <Route path="interviews" element={<InterviewPage />} />
         </Route>
 
         {/* Admin */}
