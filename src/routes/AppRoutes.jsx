@@ -14,12 +14,12 @@ import EmployerRegisterPage from "../pages/auth/EmployerRegisterPage";
 import ApplicantDashboard from "../pages/applicant/DashboardPage";
 
 // pages employer
-import DashboardPage from "../pages/employer/DashboardPage"
-import JobManagePage from "../pages/employer/JobManagePage"
-import JobFormPage from "../pages/employer/JobFormPage"
-import ApplicantsPage from "../pages/employer/ApplicantsPage"
-import ProfilePage from "../pages/employer/ProfilePage"
-import InterviewPage from "../pages/employer/InterviewPage"
+import DashboardPage from "../pages/employer/DashboardPage";
+import JobManagePage from "../pages/employer/JobManagePage";
+import JobFormPage from "../pages/employer/JobFormPage";
+import ApplicantsPage from "../pages/employer/ApplicantsPage";
+import ProfilePage from "../pages/employer/ProfilePage";
+import InterviewPage from "../pages/employer/InterviewPage";
 
 // pages admin
 import AdminDashboard from "../pages/admin/DashboardPage";
@@ -27,7 +27,7 @@ import UsersPage from "../pages/admin/UsersPage";
 import CompaniesPage from "../pages/admin/CompaniesPage";
 import JobsPage from "../pages/admin/JobsPage";
 import RolesPage from "../pages/admin/RolesPage";
-import ProfilePage from "../pages/admin/ProfilePage";
+import AdminProfilePage from "../pages/admin/AdminProfilePage";
 
 function AppRoutes() {
   return (
@@ -76,7 +76,7 @@ function AppRoutes() {
             <Route path="companies" element={<CompaniesPage />} />
             <Route path="jobs" element={<JobsPage />} />
             <Route path="roles" element={<RolesPage />} />
-            <Route path="profile" element={<ProfilePage />} />
+            <Route path="profile" element={<AdminProfilePage />} />
           </Route>
         </Route>
       </Routes>

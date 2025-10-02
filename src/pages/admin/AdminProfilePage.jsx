@@ -14,7 +14,7 @@ import {
   Button,
 } from "@mui/material";
 
-export default function ProfilePage() {
+export default function AdminProfilePage() {
   const [profile, setProfile] = useState(null);
   const [formData, setFormData] = useState({
     fullName: "",
