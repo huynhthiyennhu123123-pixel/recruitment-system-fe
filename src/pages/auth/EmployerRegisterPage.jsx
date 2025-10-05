@@ -16,8 +16,10 @@ import {
 } from "@mui/material"
 import { Visibility, VisibilityOff } from "@mui/icons-material"
 import { registerEmployer } from "../../services/authService"
+import { useNavigate } from "react-router-dom"
 
 export default function EmployerRegisterPage() {
+  const navigate = useNavigate()
   const [formData, setFormData] = useState({
     email: "",
     password: "",
@@ -42,6 +44,8 @@ export default function EmployerRegisterPage() {
 
   const handleSubmit = async (e) => {
     e.preventDefault()
+    setMessage("")
+
     if (formData.password !== formData.confirmPassword) {
       setMessage("❌ Mật khẩu nhập lại không khớp")
       return
@@ -53,71 +57,89 @@ export default function EmployerRegisterPage() {
 
     try {
       const res = await registerEmployer(formData)
-      setMessage(res.success ? "✅ " + res.message : "❌ " + res.message)
-      if (res.success) {
-        localStorage.setItem("token", res.data.token)
+
+      if (res?.success) {
+        setMessage("✅ Đăng ký thành công! Vui lòng xác thực email.")
+        //  chuyển hướng đến trang xác thực email
+        navigate("/auth/check-email", { state: { email: formData.email } })
+      } else {
+        setMessage("❌ " + (res?.message || "Đăng ký thất bại"))
       }
     } catch (err) {
-      setMessage("❌ " + (err.message || "Đăng ký thất bại"))
+      console.error(err)
+      setMessage("❌ " + (err.response?.data?.message || "Lỗi khi đăng ký"))
     }
   }
 
   return (
-    <Container 
-  maxWidth="sm" 
-  sx={{ 
-    mt: 5, 
-    mb: 5, 
-    p: 4, 
-    borderRadius: 2, 
-    backgroundColor: "#e8f5e9" // xanh lá nhạt
-  }}
->
-  {/* Tiêu đề */}
-  <Typography 
-    variant="h5" 
-    gutterBottom 
-    align="center" 
-    sx={{ 
-      fontWeight: "bold", 
-      color: "#2e7d32" // xanh lá đậm
-    }}
-  >
-    ĐĂNG KÝ NHÀ TUYỂN DỤNG
-  </Typography>
-
+    <Container
+      maxWidth="sm"
+      sx={{
+        mt: -3,
+        mb: 5,
+        p: 3,
+        borderRadius: 2,
+        backgroundColor: "#ffffff"
+      }}
+    >
+      {/* Tiêu đề */}
+      <Typography
+        variant="h6"
+        align="center"
+        gutterBottom
+        sx={{
+          fontWeight: "bold",
+          color: "#2e7d32",
+          mb: 2
+        }}
+      >
+        ĐĂNG KÝ NHÀ TUYỂN DỤNG
+      </Typography>
 
       <form onSubmit={handleSubmit}>
         {/* Tài khoản */}
-        <Typography variant="subtitle1" sx={{ mt: 2, mb: 1, fontWeight: "bold", color: "#2e7d32" }}>
+        <Typography
+          variant="subtitle2"
+          sx={{ mt: 1, mb: 0.5, fontWeight: "bold", color: "#2e7d32" }}
+        >
           Thông Tin Tài Khoản:
         </Typography>
+
+        {/* Email */}
         <TextField
           fullWidth
+          size="small"
           label="Email"
           name="email"
           value={formData.email}
           onChange={handleChange}
-          margin="normal"
+          margin="dense"
           required
-           sx={{ backgroundColor: "white", borderRadius: 1 }}
+          sx={{ backgroundColor: "white", borderRadius: 1 }}
+          InputProps={{ sx: { height: 36 } }}
         />
 
         {/* Mật khẩu */}
         <TextField
           fullWidth
+          size="small"
           type={showPassword ? "text" : "password"}
           label="Mật khẩu"
           name="password"
           value={formData.password}
           onChange={handleChange}
-          margin="normal"
+          margin="dense"
           required
-           sx={{ backgroundColor: "white", borderRadius: 1 }}
+          sx={{ backgroundColor: "white", borderRadius: 1 }}
           InputProps={{
+            sx: { height: 36 },
             endAdornment: (
               <InputAdornment position="end">
-                <IconButton onClick={() => setShowPassword(!showPassword)} edge="end">
+                <IconButton
+                  onClick={() => setShowPassword(!showPassword)}
+                  edge="end"
+                  size="small"
+                >
                   {showPassword ? <VisibilityOff /> : <Visibility />}
                 </IconButton>
               </InputAdornment>
@@ -128,18 +150,24 @@ export default function EmployerRegisterPage() {
         {/* Nhập lại mật khẩu */}
         <TextField
           fullWidth
+          size="small"
           type={showConfirmPassword ? "text" : "password"}
           label="Nhập lại mật khẩu"
           name="confirmPassword"
           value={formData.confirmPassword}
           onChange={handleChange}
-          margin="normal"
+          margin="dense"
           required
-           sx={{ backgroundColor: "white", borderRadius: 1 }}
+          sx={{ backgroundColor: "white", borderRadius: 1 }}
           InputProps={{
+            sx: { height: 36 },
             endAdornment: (
               <InputAdornment position="end">
-                <IconButton onClick={() => setShowConfirmPassword(!showConfirmPassword)} edge="end">
+                <IconButton
+                  onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                  edge="end"
+                  size="small"
+                >
                   {showConfirmPassword ? <VisibilityOff /> : <Visibility />}
                 </IconButton>
               </InputAdornment>
@@ -147,100 +175,165 @@ export default function EmployerRegisterPage() {
           }}
         />
 
-        {/* Thông tin nhà tuyển dụng */}
-        <Typography variant="subtitle1" sx={{ mt: 3, mb: 1,fontWeight: "bold", color: "#2e7d32"}}>
-          Thông Tin Nhà Tuyển Dụng:
-        </Typography>
-        <Grid container spacing={2}>
-          <Grid item xs={6}>
-            <TextField
-              fullWidth
-              label="Họ"
-              name="firstName"
-              value={formData.firstName}
-              onChange={handleChange}
-              required
-               sx={{ backgroundColor: "white", borderRadius: 1 }}
-            />
-          </Grid>
-          <Grid item xs={6}>
-            <TextField
-              fullWidth
-              label="Tên"
-              name="lastName"
-              value={formData.lastName}
-              onChange={handleChange}
-              required
-               sx={{ backgroundColor: "white", borderRadius: 1 }}
-            />
-          </Grid>
-        </Grid>
+       <Typography
+  variant="subtitle2"
+  sx={{ mt: 2, mb: 0.5, fontWeight: "bold", color: "#2e7d32" }}
+>
+  Thông Tin Nhà Tuyển Dụng:
+</Typography>
 
-        <Grid container spacing={2} sx={{ mt: 1 }}>
-          <Grid item xs={8}>
-            <TextField
-              fullWidth
-              label="Số điện thoại"
-              name="phoneNumber"
-              value={formData.phoneNumber}
-              onChange={handleChange}
-              required
-               sx={{ backgroundColor: "white", borderRadius: 1 }}
-            />
-          </Grid>
-          <Grid item xs={4}>
-            <FormLabel component="legend" sx={{fontWeight: "bold"}}>Giới tính</FormLabel>
-            <RadioGroup row name="gender" value={formData.gender} onChange={handleChange}>
-              <FormControlLabel value="male" control={<Radio />} label="Nam" />
-              <FormControlLabel value="female" control={<Radio />} label="Nữ" />
-            </RadioGroup>
-          </Grid>
-        </Grid>
+{/* Hàng 1: Họ | Tên */}
+<Grid container spacing={1}>
+  <Grid item xs={6} >
+    <TextField
+      fullWidth
+      size="small"
+      label="Họ"
+      name="firstName"
+      value={formData.firstName}
+      onChange={handleChange}
+      required
+      sx={{ backgroundColor: "white", borderRadius: 1, marginInlineEnd:5 }}
+      InputProps={{ sx: { height: 36 } }}
+    />
+  </Grid>
+  <Grid item xs={6}>
+    <TextField
+      fullWidth
+      size="small"
+      label="Tên"
+      name="lastName"
+      value={formData.lastName}
+      onChange={handleChange}
+      required
+      sx={{ backgroundColor: "white", borderRadius: 1, marginInlineEnd:3}}
+      InputProps={{ sx: { height: 36, } }}
+    />
+  </Grid>
+</Grid>
+
+{/* Hàng 2: Số điện thoại | Giới tính */}
+<Grid container spacing={1} sx={{ mt: 1, alignItems: "center" }}>
+  <Grid item xs={6}>
+    <TextField
+      fullWidth
+      size="small"
+      label="Số điện thoại"
+      name="phoneNumber"
+      value={formData.phoneNumber}
+      onChange={handleChange}
+      required
+      sx={{ backgroundColor: "white", borderRadius: 1,marginInlineEnd:5 }}
+      InputProps={{ sx: { height: 36 } }}
+    />
+  </Grid>
+
+  <Grid item xs={6}
+        sx={{marginInlineStart:6 }}
+>
+    <FormLabel component="legend" sx={{ fontSize: 13, mb: 0.3 }}>
+      Giới tính
+    </FormLabel>
+    <RadioGroup
+      row
+      name="gender"
+      value={formData.gender}
+      onChange={handleChange}
+    >
+      <FormControlLabel
+        value="male"
+        control={<Radio size="small" />}
+        label={<Typography sx={{ fontSize: 13 }}>Nam</Typography>}
+      />
+      <FormControlLabel
+        value="female"
+        control={<Radio size="small" />}
+        label={<Typography sx={{ fontSize: 13 }}>Nữ</Typography>}
+      />
+    </RadioGroup>
+  </Grid>
+</Grid>
+
 
         <TextField
           fullWidth
+          size="small"
           label="Tên công ty"
           name="companyName"
           value={formData.companyName}
           onChange={handleChange}
-          margin="normal"
+          margin="dense"
           required
-           sx={{ backgroundColor: "white", borderRadius: 1 }}
+          sx={{ backgroundColor: "white", borderRadius: 1 }}
+          InputProps={{ sx: { height: 36 } }}
         />
+
         <TextField
           fullWidth
+          size="small"
           label="Địa điểm làm việc"
           name="companyAddress"
           value={formData.companyAddress}
           onChange={handleChange}
-          margin="normal"
+          margin="dense"
           required
-           sx={{ backgroundColor: "white", borderRadius: 1 }}
+          sx={{ backgroundColor: "white", borderRadius: 1 }}
+          InputProps={{ sx: { height: 36 } }}
         />
 
         {/* Điều khoản */}
         <FormControlLabel
-          control={<Checkbox name="agree" checked={formData.agree} onChange={handleChange} />}
+          control={
+            <Checkbox
+              name="agree"
+              checked={formData.agree}
+              onChange={handleChange}
+              size="small"
+            />
+          }
           label={
-            <span>
-              Tôi đã đọc và đồng ý với <a href="#">Điều khoản dịch vụ</a> và <a href="#">Chính sách bảo mật</a>
-            </span>
+            <Typography variant="body2" sx={{ fontSize: 13 }}>
+              Tôi đã đọc và đồng ý với{" "}
+              <a href="#" style={{ color: "#1b5e20" }}>
+                Điều khoản dịch vụ
+              </a>{" "}
+              và{" "}
+              <a href="#" style={{ color: "#1b5e20" }}>
+                Chính sách bảo mật
+              </a>
+            </Typography>
           }
         />
 
-        {/* Submit */}
-        <Box mt={2}>
-          <Button type="submit" variant="contained" color="success" fullWidth>
+        {/* Nút submit */}
+        <Box mt={1.5}>
+          <Button
+            type="submit"
+            variant="contained"
+            color="success"
+            fullWidth
+            sx={{
+              textTransform: "none",
+              fontWeight: "bold",
+              borderRadius: 1,
+              py: 0.8,
+              fontSize: 14
+            }}
+          >
             Hoàn tất
           </Button>
         </Box>
-      </form>
 
-      {message && (
-        <Typography variant="body2" sx={{ mt: 2 }} color="error">
-          {message}
-        </Typography>
-      )}
+        {message && (
+          <Typography
+            variant="body2"
+            sx={{ mt: 1.5, textAlign: "center" }}
+            color="error"
+          >
+            {message}
+          </Typography>
+        )}
+      </form>
     </Container>
   )
 }

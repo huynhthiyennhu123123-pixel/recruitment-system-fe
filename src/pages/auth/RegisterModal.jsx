@@ -28,7 +28,7 @@ export default function RegisterModal({ isOpen, onClose }) {
 
           <div className="option">
             <img src={applicantImg} alt="Ứng viên" />
-            <button className="btn-fill" onClick={() => handleSelect("/auth/register-applicant")}>
+            <button className="btn-fill" onClick={() => handleSelect("/auth/register")}>
               Tôi là ứng viên tìm việc
             </button>
           </div>

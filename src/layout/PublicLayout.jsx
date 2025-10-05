@@ -1,5 +1,7 @@
 import { Outlet, Link } from "react-router-dom"
 import Header from "./Header"
+import Footer from "./Footer"
+
 export default function PublicLayout() {
   return (
     <div>
@@ -10,9 +12,7 @@ export default function PublicLayout() {
         <Outlet /> {/* Trang con sẽ render ở đây */}
       </main>
 
-      <footer style={{ padding: "10px", background: "#264653", color: "white" }}>
-        <p>© 2025 JobRecruit. All rights reserved.</p>
-      </footer>
+      <Footer />
     </div>
   )
 }
