@@ -62,8 +62,8 @@ export default function EmployerLayout() {
                   "Quản lý dễ dàng",
                   "Kết nối ứng viên nhanh chóng"
                 ]}
-                typeSpeed={60}
-                backSpeed={40}
+                typeSpeed={100}
+                backSpeed={100}
                 loop
               />
             </Typography>

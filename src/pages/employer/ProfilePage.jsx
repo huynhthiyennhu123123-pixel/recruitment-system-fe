@@ -9,6 +9,7 @@ import {
   Avatar,
   Button
 } from "@mui/material"
+import JobList from "../../components/employer/JobList"   // import JobList
 
 export default function CompanyProfilePage() {
   const company = {
@@ -73,22 +74,7 @@ export default function CompanyProfilePage() {
         {/* Việc đang tuyển */}
         <Box mt={5}>
           <Typography variant="h6" gutterBottom>Việc đang tuyển</Typography>
-          <Grid container spacing={2}>
-            {company.jobs.map((job) => (
-              <Grid item xs={12} md={4} key={job.id}>
-                <Card>
-                  <CardContent>
-                    <Typography variant="subtitle1" fontWeight="bold">{job.title}</Typography>
-                    <Typography variant="body2">{job.location}</Typography>
-                    <Typography variant="body2">💰 {job.salary}</Typography>
-                    <Typography variant="caption" color="text.secondary">
-                      Cập nhật: {job.updated}
-                    </Typography>
-                  </CardContent>
-                </Card>
-              </Grid>
-            ))}
-          </Grid>
+           <JobList />
         </Box>
 
         {/* Hình ảnh công ty */}
@@ -108,3 +94,132 @@ export default function CompanyProfilePage() {
     </Box>
   )
 }
+
+
+
+// import {
+//   Box,
+//   Container,
+//   Typography,
+//   Grid,
+//   Card,
+//   CardContent,
+//   CardMedia,
+//   Avatar,
+//   Button
+// } from "@mui/material"
+// import { useEffect, useState } from "react"
+// import { employerService } from "../../services/employerService"
+// import JobList from "../../components/employer/JobList"
+
+// export default function CompanyProfilePage() {
+//   const [company, setCompany] = useState(null)
+
+//   useEffect(() => {
+//     const fetchCompany = async () => {
+//       try {
+//         const res = await employerService.getCompanyProfile()
+//         setCompany(res.data) // backend trả về { name, logo, cover, address, employees, website, description, jobs, gallery }
+//       } catch (err) {
+//         console.error("Lỗi khi tải thông tin công ty:", err)
+//       }
+//     }
+//     fetchCompany()
+//   }, [])
+
+//   if (!company) {
+//     return (
+//       <Box p={3}>
+//         <Typography>⏳ Đang tải thông tin công ty...</Typography>
+//       </Box>
+//     )
+//   }
+
+//   return (
+//     <Box>
+//       {/* Cover */}
+//       <Box
+//         sx={{
+//           backgroundImage: `url(${company.cover})`,
+//           backgroundSize: "cover",
+//           backgroundPosition: "center",
+//           height: 250,
+//           position: "relative"
+//         }}
+//       >
+//         <Container
+//           sx={{
+//             position: "absolute",
+//             bottom: -40,
+//             display: "flex",
+//             alignItems: "center"
+//           }}
+//         >
+//           <Avatar
+//             src={company.logo}
+//             sx={{ width: 80, height: 80, border: "3px solid white" }}
+//           />
+//           <Box ml={2}>
+//             <Typography variant="h5" fontWeight="bold" color="white">
+//               {company.name}
+//             </Typography>
+//             <Typography variant="body2" color="white">
+//               {company.address}
+//             </Typography>
+//             <Typography variant="body2" color="white">
+//               {company.employees}
+//             </Typography>
+//           </Box>
+//         </Container>
+//       </Box>
+
+//       <Container sx={{ mt: 8 }}>
+//         {/* Giới thiệu */}
+//         <Typography variant="h6" gutterBottom>
+//           Về công ty
+//         </Typography>
+//         <Typography variant="body1" sx={{ whiteSpace: "pre-line" }}>
+//           {company.description}
+//         </Typography>
+//         {company.website && (
+//           <Box mt={2}>
+//             <Button variant="outlined" href={company.website} target="_blank">
+//               Website: {company.website}
+//             </Button>
+//           </Box>
+//         )}
+
+//         {/* Việc đang tuyển */}
+//         <Box mt={5}>
+//           <Typography variant="h6" gutterBottom>
+//             Việc đang tuyển
+//           </Typography>
+//           <JobList jobs={company.jobs} />
+//         </Box>
+
+//         {/* Hình ảnh công ty */}
+//         {company.gallery && company.gallery.length > 0 && (
+//           <Box mt={5}>
+//             <Typography variant="h6" gutterBottom>
+//               Hình ảnh công ty
+//             </Typography>
+//             <Grid container spacing={2}>
+//               {company.gallery.map((img, i) => (
+//                 <Grid item xs={6} md={3} key={i}>
+//                   <Card>
+//                     <CardMedia
+//                       component="img"
+//                       height="150"
+//                       image={img}
+//                       alt="Company image"
+//                     />
+//                   </Card>
+//                 </Grid>
+//               ))}
+//             </Grid>
+//           </Box>
+//         )}
+//       </Container>
+//     </Box>
+//   )
+// }
