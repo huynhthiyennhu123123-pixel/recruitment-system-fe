@@ -1,10 +1,11 @@
 import * as React from "react";
 
-import { Outlet, NavLink } from "react-router-dom";
+import { Outlet, NavLink, Link } from "react-router-dom";
 import logo from "../assets/images/logo.png";
 
 import { styled, alpha } from "@mui/material/styles";
-import SearchIcon from "@mui/icons-material/Search";
+
+import LogoutIcon from "@mui/icons-material/Logout";
 
 import {
   AppBar,
@@ -36,40 +37,6 @@ import BusinessIcon from "@mui/icons-material/Business";
 import WorkIcon from "@mui/icons-material/Work";
 import SettingsIcon from "@mui/icons-material/Settings";
 
-const Search = styled("div")(({ theme }) => ({
-  position: "relative",
-  borderRadius: theme.shape.borderRadius,
-  backgroundColor: alpha(theme.palette.common.white, 0.15),
-  "&:hover": {
-    backgroundColor: alpha(theme.palette.common.white, 0.25),
-  },
-  marginLeft: theme.spacing(2),
-  width: "auto",
-}));
-
-const SearchIconWrapper = styled("div")(({ theme }) => ({
-  padding: theme.spacing(0, 2),
-  height: "100%",
-  position: "absolute",
-  pointerEvents: "none",
-  display: "flex",
-  alignItems: "center",
-  justifyContent: "center",
-}));
-
-const StyledInputBase = styled(InputBase)(({ theme }) => ({
-  color: "inherit",
-  "& .MuiInputBase-input": {
-    padding: theme.spacing(1, 1, 1, 0),
-    paddingLeft: `calc(1em + ${theme.spacing(4)})`, // chừa chỗ cho icon search
-    transition: theme.transitions.create("width"),
-    width: "100%",
-    [theme.breakpoints.up("md")]: {
-      width: "20ch",
-    },
-  },
-}));
-
 const drawerWidth = 240;
 export default function AdminLayout() {
   const [anchorElUser, setAnchorElUser] = React.useState(null);
@@ -85,42 +52,19 @@ export default function AdminLayout() {
   return (
     <Box sx={{ display: "flex" }}>
       <CssBaseline />
-
       <AppBar
         position="fixed"
         sx={{
-          zIndex: (theme) => theme.zIndex.drawer + 1,
-          bgcolor: "#2A9D8F",
-          color: "#fff",
+          width: `calc(100% - ${drawerWidth}px)`,
+          ml: `${drawerWidth}px`,
+          bgcolor: "#e2f1e6ff",
+          color: "#000000ff",
+          boxShadow: "none",
+          borderBottom: "1px solid #eee",
         }}
       >
         <Toolbar>
-          <Box sx={{ display: "flex", alignItems: "center" }}>
-            <img src={logo} alt="Logo" style={{ height: 75 }} />
-          </Box>
-          {/* Search */}
-          <Box sx={{ flexGrow: 1, mx: 3 }}>
-            <Box
-              sx={{
-                display: "flex",
-                alignItems: "center",
-                bgcolor: "rgba(255,255,255,0.2)",
-                px: 2,
-                py: 0.5,
-                borderRadius: 5,
-                maxWidth: 400,
-                mx: "auto",
-                "&:hover": { bgcolor: "rgba(255,255,255,0.3)" },
-              }}
-            >
-              <SearchIcon sx={{ mr: 1 }} />
-              <InputBase
-                placeholder="Search…"
-                sx={{ color: "inherit", flex: 1 }}
-              />
-            </Box>
-          </Box>
-
+          <Box sx={{ flexGrow: 1 }} />
           {/* Icons */}
           <IconButton size="large" color="inherit" sx={{ mr: 1 }}>
             <Badge badgeContent={4} color="error">
@@ -135,7 +79,7 @@ export default function AdminLayout() {
 
           {/* Avatar + Menu */}
           <Box sx={{ flexGrow: 0 }}>
-            <Tooltip title="Open settings">
+            <Tooltip>
               <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
                 <Avatar
                   alt="Admin User"
@@ -148,12 +92,9 @@ export default function AdminLayout() {
               sx={{
                 mt: "45px",
                 "& .MuiPaper-root": {
-                  bgcolor: "#3E3E3E", // nền xám đậm
-                  color: "#fff",
-                },
-                "& .MuiMenuItem-root:hover": {
-                  bgcolor: "#F5EDD7", // be nhạt hover
+                  bgcolor: "#fff",
                   color: "#000",
+                  minWidth: 220,
                 },
               }}
               anchorEl={anchorElUser}
@@ -162,10 +103,33 @@ export default function AdminLayout() {
               open={Boolean(anchorElUser)}
               onClose={handleCloseUserMenu}
             >
-              <MenuItem onClick={handleCloseUserMenu}>Profile</MenuItem>
-              <MenuItem onClick={handleCloseUserMenu}>Account</MenuItem>
-              <MenuItem onClick={handleCloseUserMenu}>Dashboard</MenuItem>
-              <MenuItem onClick={handleCloseUserMenu}>Logout</MenuItem>
+              {/* Header user info */}
+              <Box sx={{ px: 2, py: 1.5, borderBottom: "1px solid #eee" }}>
+                <Typography variant="subtitle1" fontWeight="bold">
+                  Admin User
+                </Typography>
+                <Typography variant="body2" color="text.secondary">
+                  admin@example.com
+                </Typography>
+              </Box>
+
+              {/* Menu items */}
+              <MenuItem
+                component={Link}
+                to="/admin/profile"
+                onClick={handleCloseUserMenu}
+              >
+                <SettingsIcon fontSize="small" sx={{ mr: 1 }} />
+                Thông tin tài khoản
+              </MenuItem>
+              <MenuItem onClick={handleCloseUserMenu}>
+                <PeopleIcon fontSize="small" sx={{ mr: 1 }} />
+                Đổi mật khẩu
+              </MenuItem>
+              <MenuItem onClick={handleCloseUserMenu}>
+                <LogoutIcon fontSize="small" sx={{ mr: 1 }} />
+                Đăng xuất
+              </MenuItem>
             </Menu>
           </Box>
         </Toolbar>
@@ -179,12 +143,23 @@ export default function AdminLayout() {
           [`& .MuiDrawer-paper`]: {
             width: drawerWidth,
             boxSizing: "border-box",
-            bgcolor: "#264653",
+            bgcolor: "#041f24ff",
             color: "#fff",
           },
         }}
       >
-        <Toolbar />
+        <Box
+          sx={{
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            py: 2,
+            borderBottom: "1px solid rghba(255, 255, 255, 0.1)",
+          }}
+        >
+          <img src={logo} alt="Logo" style={{ height: 80 }} />
+        </Box>
+
         <List>
           <ListItem disablePadding>
             <ListItemButton
@@ -193,15 +168,17 @@ export default function AdminLayout() {
               sx={{
                 "&:hover": { bgcolor: "rgba(255,255,255,0.1)" },
                 "&.active": {
-                  bgcolor: "rgba(255,255,255,0.2)",
+                  bgcolor: "#058551ff",
+                  borderRadius: 2,
+                  mx: 1,
                   fontWeight: "bold",
                 },
               }}
             >
               <ListItemIcon>
-                <DashboardIcon />
+                <DashboardIcon sx={{ color: "#dcf1e7fa" }} />
               </ListItemIcon>
-              <ListItemText primary="Dashboard" />
+              <ListItemText sx={{ color: "#dcf1e7fa" }} primary="Thống kê" />
             </ListItemButton>
           </ListItem>
 
@@ -212,15 +189,17 @@ export default function AdminLayout() {
               sx={{
                 "&:hover": { bgcolor: "rgba(255,255,255,0.1)" },
                 "&.active": {
-                  bgcolor: "rgba(255,255,255,0.2)",
+                  bgcolor: "#058551ff",
+                  borderRadius: 2,
+                  mx: 1,
                   fontWeight: "bold",
                 },
               }}
             >
-              <ListItemIcon>
+              <ListItemIcon sx={{ color: "#dcf1e7fa" }}>
                 <PeopleIcon />
               </ListItemIcon>
-              <ListItemText primary="Users" />
+              <ListItemText sx={{ color: "#dcf1e7fa" }} primary="Người dùng" />
             </ListItemButton>
           </ListItem>
 
@@ -231,15 +210,17 @@ export default function AdminLayout() {
               sx={{
                 "&:hover": { bgcolor: "rgba(255,255,255,0.1)" },
                 "&.active": {
-                  bgcolor: "rgba(255,255,255,0.2)",
+                  bgcolor: "#058551ff",
+                  borderRadius: 2,
+                  mx: 1,
                   fontWeight: "bold",
                 },
               }}
             >
-              <ListItemIcon>
+              <ListItemIcon sx={{ color: "#dcf1e7fa" }}>
                 <BusinessIcon />
               </ListItemIcon>
-              <ListItemText primary="Companies" />
+              <ListItemText sx={{ color: "#dcf1e7fa" }} primary="Công ty" />
             </ListItemButton>
           </ListItem>
 
@@ -250,15 +231,17 @@ export default function AdminLayout() {
               sx={{
                 "&:hover": { bgcolor: "rgba(255,255,255,0.1)" },
                 "&.active": {
-                  bgcolor: "rgba(255,255,255,0.2)",
+                  bgcolor: "#058551ff",
+                  borderRadius: 2,
+                  mx: 1,
                   fontWeight: "bold",
                 },
               }}
             >
-              <ListItemIcon>
+              <ListItemIcon sx={{ color: "#dcf1e7fa" }}>
                 <WorkIcon />
               </ListItemIcon>
-              <ListItemText primary="Jobs" />
+              <ListItemText sx={{ color: "#dcf1e7fa" }} primary="Tuyển dụng" />
             </ListItemButton>
           </ListItem>
 
@@ -269,15 +252,17 @@ export default function AdminLayout() {
               sx={{
                 "&:hover": { bgcolor: "rgba(255,255,255,0.1)" },
                 "&.active": {
-                  bgcolor: "rgba(255,255,255,0.2)",
+                  bgcolor: "#058551ff",
+                  borderRadius: 2,
+                  mx: 1,
                   fontWeight: "bold",
                 },
               }}
             >
-              <ListItemIcon>
+              <ListItemIcon sx={{ color: "#dcf1e7fa" }}>
                 <SettingsIcon />
               </ListItemIcon>
-              <ListItemText primary="Roles" />
+              <ListItemText sx={{ color: "#dcf1e7fa" }} primary="Roles" />
             </ListItemButton>
           </ListItem>
         </List>
@@ -288,7 +273,7 @@ export default function AdminLayout() {
         sx={{ flexGrow: 1, bgColor: "background.defauth", p: 3 }}
       >
         <Toolbar />
-        {/* Để nội dung không bị AppBar đè lên */}
+
         <Outlet />
       </Box>
     </Box>
