@@ -12,34 +12,54 @@ export default function LoginPage() {
   const handleChange = (e) =>
     setForm({ ...form, [e.target.name]: e.target.value });
 
-const handleSubmit = async (e) => {
-  e.preventDefault();
-  setLoading(true);
-  setError("");
-  setInfo("");
-  try {
-    const res = await login(form);
-    console.log("Login response:", res);
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setLoading(true);
+    setError("");
+    setInfo("");
+    try {
+      const res = await login(form);
+      console.log("Login response:", res);
 
-    if (res?.accessToken) {  // ✅ chỉ check accessToken
-      if (!res.user?.emailVerified) {
-        setError("Tài khoản chưa xác thực email.");
-        setLoading(false);
-        return;
+      if (res?.accessToken) {
+        const user = res.user || {};
+
+        if (!user.emailVerified) {
+          setError("Tài khoản chưa xác thực email.");
+          setLoading(false);
+          return;
+        }
+
+        // ✅ Lưu token và user vào localStorage
+        localStorage.setItem("accessToken", res.accessToken);
+        localStorage.setItem("user", JSON.stringify(user));
+
+        // ✅ Điều hướng theo vai trò
+        const role = user.role?.toUpperCase();
+
+        switch (role) {
+          case "APPLICANT":
+            navigate("/applicant/dashboard");
+            break;
+          case "EMPLOYER":
+            navigate("/employer/dashboard");
+            break;
+          case "ADMIN":
+            navigate("/admin/dashboard");
+            break;
+          default:
+            navigate("/");
+            break;
+        }
+      } else {
+        setError("Sai thông tin đăng nhập");
       }
-
-      const role = res.user?.role || "APPLICANT";
-      if (role === "APPLICANT") navigate("/applicant/dashboard");
-      else navigate("/");
-    } else {
-      setError("Sai thông tin đăng nhập");
+    } catch (err) {
+      console.error("Login error:", err);
+      setError(err?.message || "Đăng nhập thất bại. Vui lòng thử lại.");
     }
-  } catch (err) {
-    console.error("Login error:", err);
-    setError(err?.message || "Đăng nhập thất bại. Vui lòng thử lại.");
-  }
-  setLoading(false);
-};
+    setLoading(false);
+  };
 
   const handleResend = async () => {
     try {
@@ -53,7 +73,11 @@ const handleSubmit = async (e) => {
   };
 
   return (
-    <div>
+    <div className="max-w-md mx-auto bg-white p-6 rounded-2xl shadow">
+      <h1 className="text-2xl font-semibold text-center mb-6">
+        Đăng nhập vào hệ thống
+      </h1>
+
       {error && (
         <div className="mb-4 rounded-lg bg-red-50 text-red-600 p-3 text-sm">
           {error}
@@ -95,7 +119,10 @@ const handleSubmit = async (e) => {
         <Link to="/auth/register" className="text-green-600 hover:underline">
           Tạo tài khoản mới
         </Link>
-        <Link to="/auth/forgot-password" className="text-gray-500 hover:underline">
+        <Link
+          to="/auth/forgot-password"
+          className="text-gray-500 hover:underline"
+        >
           Quên mật khẩu?
         </Link>
         <button

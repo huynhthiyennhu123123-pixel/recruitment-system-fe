@@ -6,6 +6,7 @@ export default function RegisterPage() {
   const [form, setForm] = useState({
     email: "",
     password: "",
+    confirmPassword: "",
     firstName: "",
     lastName: "",
     phoneNumber: "",
@@ -22,14 +23,20 @@ export default function RegisterPage() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setLoading(true);
     setError("");
     setInfo("");
+
+    // ✅ Kiểm tra mật khẩu trùng khớp
+    if (form.password !== form.confirmPassword) {
+      setError("Mật khẩu xác nhận không khớp!");
+      return;
+    }
+
+    setLoading(true);
     try {
       const res = await register(form);
       if (res?.success || res?.data) {
         setInfo("✅ Đăng ký thành công! Vui lòng xác thực email trước khi đăng nhập.");
-        // chuyển sang trang check email kèm email đã nhập
         navigate("/auth/check-email", { state: { email: form.email } });
       } else {
         setError(res?.message || "Đăng ký thất bại!");
@@ -105,6 +112,18 @@ export default function RegisterPage() {
           className="w-full rounded-xl border px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-500"
         />
 
+        {/* ✅ Thêm xác nhận mật khẩu */}
+        <input
+          type="password"
+          name="confirmPassword"
+          placeholder="Xác nhận mật khẩu"
+          value={form.confirmPassword}
+          onChange={handleChange}
+          required
+          minLength={6}
+          className="w-full rounded-xl border px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-500"
+        />
+
         <input
           name="phoneNumber"
           placeholder="Số điện thoại"
@@ -112,17 +131,6 @@ export default function RegisterPage() {
           onChange={handleChange}
           className="w-full rounded-xl border px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-500"
         />
-
-        <select
-          name="role"
-          value={form.role}
-          onChange={handleChange}
-          className="w-full rounded-xl border px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-500"
-        >
-          <option value="APPLICANT">Ứng viên</option>
-          <option value="EMPLOYER">Nhà tuyển dụng</option>
-          
-        </select>
 
         <button
           type="submit"
