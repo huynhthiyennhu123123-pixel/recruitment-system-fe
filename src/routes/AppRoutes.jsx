@@ -44,7 +44,7 @@ import UsersPage from "../pages/admin/UsersPage";
 import CompaniesPage from "../pages/admin/CompaniesPage";
 import JobsPage from "../pages/admin/JobsPage";
 import RolesPage from "../pages/admin/RolesPage";
-import ProfilePage from "../pages/admin/ProfilePage";
+import AdminProfilePage from "../pages/admin/AdminProfilePage";
 
 // Route Guard
 import PrivateRoute from "../components/common/PrivateRoute";
@@ -121,7 +121,7 @@ function App() {
             <Route path="companies" element={<CompaniesPage />} />
             <Route path="jobs" element={<JobsPage />} />
             <Route path="roles" element={<RolesPage />} />
-            <Route path="profile" element={<ProfilePage />} />
+            <Route path="profile" element={<AdminProfilePage />} />
           </Route>
         </Route>
       </Routes>

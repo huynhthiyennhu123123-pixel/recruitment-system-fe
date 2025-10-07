@@ -17,50 +17,47 @@ export default function LoginPage() {
     setLoading(true);
     setError("");
     setInfo("");
-
     try {
       const res = await login(form);
       console.log("Login response:", res);
 
-      // ✅ Kiểm tra token hợp lệ
       if (res?.accessToken) {
-        const user = res.user;
+        const user = res.user || {};
 
-        // ✅ Nếu chưa xác thực email
-        if (!user?.emailVerified) {
-          setError("Tài khoản chưa xác thực email. Vui lòng kiểm tra hộp thư.");
+        if (!user.emailVerified) {
+          setError("Tài khoản chưa xác thực email.");
           setLoading(false);
           return;
         }
 
-        // ✅ Lưu token & user vào localStorage
+        // ✅ Lưu token và user vào localStorage
         localStorage.setItem("accessToken", res.accessToken);
-        localStorage.setItem("refreshToken", res.refreshToken || "");
         localStorage.setItem("user", JSON.stringify(user));
 
         // ✅ Điều hướng theo vai trò
-        switch (user.role) {
-          case "ADMIN":
-            navigate("/admin/dashboard");
+        const role = user.role?.toUpperCase();
+
+        switch (role) {
+          case "APPLICANT":
+            navigate("/applicant/dashboard");
             break;
           case "EMPLOYER":
             navigate("/employer/dashboard");
             break;
-          case "APPLICANT":
+          case "ADMIN":
+            navigate("/admin/dashboard");
+            break;
           default:
             navigate("/");
             break;
         }
       } else {
-        setError("Sai thông tin đăng nhập.");
+        setError("Sai thông tin đăng nhập");
       }
     } catch (err) {
       console.error("Login error:", err);
-      const message =
-        err?.response?.data?.message || "Đăng nhập thất bại. Vui lòng thử lại.";
-      setError(message);
+      setError(err?.message || "Đăng nhập thất bại. Vui lòng thử lại.");
     }
-
     setLoading(false);
   };
 
@@ -76,7 +73,11 @@ export default function LoginPage() {
   };
 
   return (
-    <div>
+    <div className="max-w-md mx-auto bg-white p-6 rounded-2xl shadow">
+      <h1 className="text-2xl font-semibold text-center mb-6">
+        Đăng nhập vào hệ thống
+      </h1>
+
       {error && (
         <div className="mb-4 rounded-lg bg-red-50 text-red-600 p-3 text-sm text-center">
           {error}
@@ -118,7 +119,10 @@ export default function LoginPage() {
         <Link to="/auth/register" className="text-green-600 hover:underline">
           Tạo tài khoản mới
         </Link>
-        <Link to="/auth/forgot-password" className="text-gray-500 hover:underline">
+        <Link
+          to="/auth/forgot-password"
+          className="text-gray-500 hover:underline"
+        >
           Quên mật khẩu?
         </Link>
         <button

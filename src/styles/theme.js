@@ -6,8 +6,8 @@ const theme = createTheme({
     primary: { main: "#058551" }, // xanh chủ đạo bạn đang dùng
     secondary: { main: "#2a9d8f" }, // xanh phụ (nếu muốn)
     background: {
-      default: "#f7faf9", // nền tổng thể
-      paper: "#ffffff", // nền thẻ Paper/Card
+      default: "#f7faf9",
+      paper: "#ffffff",
     },
     text: {
       primary: "#111827",
