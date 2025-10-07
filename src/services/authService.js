@@ -20,8 +20,7 @@ export const login = async (data) => {
   const res = await axiosClient.post("/auth/login", data);
   const payload = res.data?.data || res.data;
 
-  const token = payload?.token;   // ✅ BE trả về token
-  if (token) {
+const token = payload?.accessToken;  if (token) {
     localStorage.setItem("accessToken", token); // lưu vào accessToken cho dễ xài
   }
   if (payload?.refreshToken) {

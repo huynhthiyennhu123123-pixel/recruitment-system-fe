@@ -12,55 +12,78 @@ export default function LoginPage() {
   const handleChange = (e) =>
     setForm({ ...form, [e.target.name]: e.target.value });
 
-const handleSubmit = async (e) => {
-  e.preventDefault();
-  setLoading(true);
-  setError("");
-  setInfo("");
-  try {
-    const res = await login(form);
-    console.log("Login response:", res);
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setLoading(true);
+    setError("");
+    setInfo("");
 
-    if (res?.accessToken) {  // ✅ chỉ check accessToken
-      if (!res.user?.emailVerified) {
-        setError("Tài khoản chưa xác thực email.");
-        setLoading(false);
-        return;
+    try {
+      const res = await login(form);
+      console.log("Login response:", res);
+
+      // ✅ Kiểm tra token hợp lệ
+      if (res?.accessToken) {
+        const user = res.user;
+
+        // ✅ Nếu chưa xác thực email
+        if (!user?.emailVerified) {
+          setError("Tài khoản chưa xác thực email. Vui lòng kiểm tra hộp thư.");
+          setLoading(false);
+          return;
+        }
+
+        // ✅ Lưu token & user vào localStorage
+        localStorage.setItem("accessToken", res.accessToken);
+        localStorage.setItem("refreshToken", res.refreshToken || "");
+        localStorage.setItem("user", JSON.stringify(user));
+
+        // ✅ Điều hướng theo vai trò
+        switch (user.role) {
+          case "ADMIN":
+            navigate("/admin/dashboard");
+            break;
+          case "EMPLOYER":
+            navigate("/employer/dashboard");
+            break;
+          case "APPLICANT":
+          default:
+            navigate("/");
+            break;
+        }
+      } else {
+        setError("Sai thông tin đăng nhập.");
       }
-
-      const role = res.user?.role || "APPLICANT";
-      if (role === "APPLICANT") navigate("/applicant/dashboard");
-      else navigate("/");
-    } else {
-      setError("Sai thông tin đăng nhập");
+    } catch (err) {
+      console.error("Login error:", err);
+      const message =
+        err?.response?.data?.message || "Đăng nhập thất bại. Vui lòng thử lại.";
+      setError(message);
     }
-  } catch (err) {
-    console.error("Login error:", err);
-    setError(err?.message || "Đăng nhập thất bại. Vui lòng thử lại.");
-  }
-  setLoading(false);
-};
+
+    setLoading(false);
+  };
 
   const handleResend = async () => {
     try {
       const res = await resendVerification(form.email);
       if (res?.success) {
-        setInfo("Đã gửi lại email xác nhận. Vui lòng kiểm tra hộp thư.");
+        setInfo("✅ Đã gửi lại email xác nhận. Vui lòng kiểm tra hộp thư.");
       }
     } catch (err) {
-      setError("Không thể gửi lại email xác nhận.");
+      setError("❌ Không thể gửi lại email xác nhận.");
     }
   };
 
   return (
     <div>
       {error && (
-        <div className="mb-4 rounded-lg bg-red-50 text-red-600 p-3 text-sm">
+        <div className="mb-4 rounded-lg bg-red-50 text-red-600 p-3 text-sm text-center">
           {error}
         </div>
       )}
       {info && (
-        <div className="mb-4 rounded-lg bg-green-50 text-green-600 p-3 text-sm">
+        <div className="mb-4 rounded-lg bg-green-50 text-green-600 p-3 text-sm text-center">
           {info}
         </div>
       )}
