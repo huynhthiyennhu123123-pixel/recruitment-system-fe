@@ -29,6 +29,9 @@ export default function EmployerRegisterPage() {
     phoneNumber: "",
     gender: "",
     companyName: "",
+    companyDescription: "",
+    companyWebsite: "",
+    companyIndustry: "",
     companyAddress: "",
     role: "EMPLOYER",
     agree: false
@@ -57,11 +60,9 @@ export default function EmployerRegisterPage() {
 
     try {
       const res = await registerEmployer(formData)
-
       if (res?.success) {
         setMessage("✅ Đăng ký thành công! Vui lòng xác thực email.")
-        //  chuyển hướng đến trang xác thực email
-        navigate("/auth/check-email", { state: { email: formData.email } })
+        navigate("/auth/login", { state: { email: formData.email } })
       } else {
         setMessage("❌ " + (res?.message || "Đăng ký thất bại"))
       }
@@ -82,22 +83,16 @@ export default function EmployerRegisterPage() {
         backgroundColor: "#ffffff"
       }}
     >
-      {/* Tiêu đề */}
       <Typography
         variant="h6"
         align="center"
         gutterBottom
-        sx={{
-          fontWeight: "bold",
-          color: "#2e7d32",
-          mb: 2
-        }}
+        sx={{ fontWeight: "bold", color: "#2e7d32", mb: 2 }}
       >
         ĐĂNG KÝ NHÀ TUYỂN DỤNG
       </Typography>
 
       <form onSubmit={handleSubmit}>
-        {/* Tài khoản */}
         <Typography
           variant="subtitle2"
           sx={{ mt: 1, mb: 0.5, fontWeight: "bold", color: "#2e7d32" }}
@@ -115,8 +110,6 @@ export default function EmployerRegisterPage() {
           onChange={handleChange}
           margin="dense"
           required
-          sx={{ backgroundColor: "white", borderRadius: 1 }}
-          InputProps={{ sx: { height: 36 } }}
         />
 
         {/* Mật khẩu */}
@@ -130,16 +123,10 @@ export default function EmployerRegisterPage() {
           onChange={handleChange}
           margin="dense"
           required
-          sx={{ backgroundColor: "white", borderRadius: 1 }}
           InputProps={{
-            sx: { height: 36 },
             endAdornment: (
               <InputAdornment position="end">
-                <IconButton
-                  onClick={() => setShowPassword(!showPassword)}
-                  edge="end"
-                  size="small"
-                >
+                <IconButton onClick={() => setShowPassword(!showPassword)}>
                   {showPassword ? <VisibilityOff /> : <Visibility />}
                 </IconButton>
               </InputAdornment>
@@ -158,15 +145,11 @@ export default function EmployerRegisterPage() {
           onChange={handleChange}
           margin="dense"
           required
-          sx={{ backgroundColor: "white", borderRadius: 1 }}
           InputProps={{
-            sx: { height: 36 },
             endAdornment: (
               <InputAdornment position="end">
                 <IconButton
                   onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                  edge="end"
-                  size="small"
                 >
                   {showConfirmPassword ? <VisibilityOff /> : <Visibility />}
                 </IconButton>
@@ -175,86 +158,75 @@ export default function EmployerRegisterPage() {
           }}
         />
 
-       <Typography
-  variant="subtitle2"
-  sx={{ mt: 2, mb: 0.5, fontWeight: "bold", color: "#2e7d32" }}
->
-  Thông Tin Nhà Tuyển Dụng:
-</Typography>
+        {/* Thông tin nhà tuyển dụng */}
+        <Typography
+          variant="subtitle2"
+          sx={{ mt: 2, mb: 0.5, fontWeight: "bold", color: "#2e7d32" }}
+        >
+          Thông Tin Nhà Tuyển Dụng:
+        </Typography>
 
-{/* Hàng 1: Họ | Tên */}
-<Grid container spacing={1}>
-  <Grid item xs={6} >
-    <TextField
-      fullWidth
-      size="small"
-      label="Họ"
-      name="firstName"
-      value={formData.firstName}
-      onChange={handleChange}
-      required
-      sx={{ backgroundColor: "white", borderRadius: 1, marginInlineEnd:5 }}
-      InputProps={{ sx: { height: 36 } }}
-    />
-  </Grid>
-  <Grid item xs={6}>
-    <TextField
-      fullWidth
-      size="small"
-      label="Tên"
-      name="lastName"
-      value={formData.lastName}
-      onChange={handleChange}
-      required
-      sx={{ backgroundColor: "white", borderRadius: 1, marginInlineEnd:3}}
-      InputProps={{ sx: { height: 36, } }}
-    />
-  </Grid>
-</Grid>
+        {/* Họ và Tên */}
+        <Grid container spacing={1}>
+          <Grid item xs={6}>
+            <TextField
+              fullWidth
+              size="small"
+              label="Họ"
+              name="firstName"
+              value={formData.firstName}
+              onChange={handleChange}
+              required
+              sx={{ marginInlineEnd:5 }}
 
-{/* Hàng 2: Số điện thoại | Giới tính */}
-<Grid container spacing={1} sx={{ mt: 1, alignItems: "center" }}>
-  <Grid item xs={6}>
-    <TextField
-      fullWidth
-      size="small"
-      label="Số điện thoại"
-      name="phoneNumber"
-      value={formData.phoneNumber}
-      onChange={handleChange}
-      required
-      sx={{ backgroundColor: "white", borderRadius: 1,marginInlineEnd:5 }}
-      InputProps={{ sx: { height: 36 } }}
-    />
-  </Grid>
+            />
+          </Grid>
+          <Grid item xs={6}>
+            <TextField
+              fullWidth
+              size="small"
+              label="Tên"
+              name="lastName"
+              value={formData.lastName}
+              onChange={handleChange}
+              required
+              sx={{ marginInlineEnd:7 }}
+            />
+          </Grid>
+        </Grid>
 
-  <Grid item xs={6}
-        sx={{marginInlineStart:6 }}
->
-    <FormLabel component="legend" sx={{ fontSize: 13, mb: 0.3 }}>
-      Giới tính
-    </FormLabel>
-    <RadioGroup
-      row
-      name="gender"
-      value={formData.gender}
-      onChange={handleChange}
-    >
-      <FormControlLabel
-        value="male"
-        control={<Radio size="small" />}
-        label={<Typography sx={{ fontSize: 13 }}>Nam</Typography>}
-      />
-      <FormControlLabel
-        value="female"
-        control={<Radio size="small" />}
-        label={<Typography sx={{ fontSize: 13 }}>Nữ</Typography>}
-      />
-    </RadioGroup>
-  </Grid>
-</Grid>
+        {/* Số điện thoại + Giới tính */}
+        <Grid container spacing={1} sx={{ mt: 1 }}>
+          <Grid item xs={6}>
+            <TextField
+              fullWidth
+              size="small"
+              label="Số điện thoại"
+              name="phoneNumber"
+              value={formData.phoneNumber}
+              onChange={handleChange}
+              required
+              sx={{ marginInlineEnd:5 }}
+            />
+          </Grid>
+          <Grid item xs={6} sx={{ marginInlineStart:9 }}>
+            <FormLabel component="legend" sx={{ fontSize: 13, mb: 0.3 }}>
+              Giới tính
+            </FormLabel>
+            <RadioGroup
+              row
+              name="gender"
+              value={formData.gender}
+              onChange={handleChange}
+              
+            >
+              <FormControlLabel value="male" control={<Radio size="small" />} label="Nam" />
+              <FormControlLabel value="female" control={<Radio size="small" />} label="Nữ" />
+            </RadioGroup>
+          </Grid>
+        </Grid>
 
-
+        {/* Công ty */}
         <TextField
           fullWidth
           size="small"
@@ -264,21 +236,49 @@ export default function EmployerRegisterPage() {
           onChange={handleChange}
           margin="dense"
           required
-          sx={{ backgroundColor: "white", borderRadius: 1 }}
-          InputProps={{ sx: { height: 36 } }}
         />
 
         <TextField
           fullWidth
           size="small"
-          label="Địa điểm làm việc"
+          label="Mô tả công ty"
+          name="companyDescription"
+          value={formData.companyDescription}
+          onChange={handleChange}
+          margin="dense"
+          multiline
+          rows={2}
+        />
+
+        <TextField
+          fullWidth
+          size="small"
+          label="Website công ty"
+          name="companyWebsite"
+          value={formData.companyWebsite}
+          onChange={handleChange}
+          margin="dense"
+        />
+
+        <TextField
+          fullWidth
+          size="small"
+          label="Ngành nghề"
+          name="companyIndustry"
+          value={formData.companyIndustry}
+          onChange={handleChange}
+          margin="dense"
+        />
+
+        <TextField
+          fullWidth
+          size="small"
+          label="Địa chỉ công ty"
           name="companyAddress"
           value={formData.companyAddress}
           onChange={handleChange}
           margin="dense"
           required
-          sx={{ backgroundColor: "white", borderRadius: 1 }}
-          InputProps={{ sx: { height: 36 } }}
         />
 
         {/* Điều khoản */}
@@ -293,7 +293,7 @@ export default function EmployerRegisterPage() {
           }
           label={
             <Typography variant="body2" sx={{ fontSize: 13 }}>
-              Tôi đã đọc và đồng ý với{" "}
+              Tôi đồng ý với{" "}
               <a href="#" style={{ color: "#1b5e20" }}>
                 Điều khoản dịch vụ
               </a>{" "}
@@ -305,7 +305,6 @@ export default function EmployerRegisterPage() {
           }
         />
 
-        {/* Nút submit */}
         <Box mt={1.5}>
           <Button
             type="submit"
@@ -325,11 +324,7 @@ export default function EmployerRegisterPage() {
         </Box>
 
         {message && (
-          <Typography
-            variant="body2"
-            sx={{ mt: 1.5, textAlign: "center" }}
-            color="error"
-          >
+          <Typography variant="body2" sx={{ mt: 1.5, textAlign: "center" }} color="error">
             {message}
           </Typography>
         )}

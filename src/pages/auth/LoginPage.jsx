@@ -65,10 +65,10 @@ export default function LoginPage() {
     try {
       const res = await resendVerification(form.email);
       if (res?.success) {
-        setInfo("Đã gửi lại email xác nhận. Vui lòng kiểm tra hộp thư.");
+        setInfo("✅ Đã gửi lại email xác nhận. Vui lòng kiểm tra hộp thư.");
       }
     } catch (err) {
-      setError("Không thể gửi lại email xác nhận.");
+      setError("❌ Không thể gửi lại email xác nhận.");
     }
   };
 
@@ -79,12 +79,12 @@ export default function LoginPage() {
       </h1>
 
       {error && (
-        <div className="mb-4 rounded-lg bg-red-50 text-red-600 p-3 text-sm">
+        <div className="mb-4 rounded-lg bg-red-50 text-red-600 p-3 text-sm text-center">
           {error}
         </div>
       )}
       {info && (
-        <div className="mb-4 rounded-lg bg-green-50 text-green-600 p-3 text-sm">
+        <div className="mb-4 rounded-lg bg-green-50 text-green-600 p-3 text-sm text-center">
           {info}
         </div>
       )}

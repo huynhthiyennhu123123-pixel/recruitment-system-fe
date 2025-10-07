@@ -14,3 +14,8 @@ export const latestJobs = (params) => {
 export const getJobDetail = (id) => {
   return axiosClient.get(`/public/jobs/${id}`);
 };
+
+export const createJobPosting = async (data) => {
+  const res = await axiosClient.post("/jobs/manage", data)
+  return res.data
+}
