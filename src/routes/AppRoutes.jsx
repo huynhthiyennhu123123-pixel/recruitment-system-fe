@@ -38,6 +38,8 @@ import CompanyProfilePage from "../pages/employer/ProfilePage";
 import InterviewPage from "../pages/employer/InterviewPage";
 import JobPostEdit from "../pages/employer/JobPostEdit";
 import CompanyProfileEdit from "../pages/employer/CompanyProfileEdit";
+import EmployerJobDetail from "../pages/employer/EmployerJobDetail";
+
 
 
 
@@ -108,7 +110,7 @@ function App() {
             <Route index element={<EmployerDashboard />} />
             <Route path="dashboard" element={<EmployerDashboard />} />
             <Route path="jobs" element={<JobManagePage />} />
-            <Route path="/employer/jobs/:id" element={<JobDetailPage />} />
+            <Route path="jobs/:id" element={<EmployerJobDetail />} />
             <Route path="jobs/new" element={<JobCreatePage />} />
             <Route path="jobs/:id/edit" element={<JobPostEdit  />} />
             <Route path="applicants" element={<ApplicantsPage />} />
