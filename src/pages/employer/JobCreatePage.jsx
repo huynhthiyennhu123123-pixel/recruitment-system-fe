@@ -205,7 +205,7 @@ export default function JobPostCreate() {
                 type="number"
                 label={<Label icon={<MonetizationOnOutlined />} text="Lương tối thiểu" />}
                 fullWidth
-                sx={{marginInlineEnd:-6 }}
+                sx={{marginInlineEnd:-4 }}
                 value={form.salaryMin}
                 onChange={handleChange}
               />
@@ -237,9 +237,9 @@ export default function JobPostCreate() {
     fullWidth
     sx={{marginInlineEnd:6 }}
   >
-    <MenuItem value="VND">VND (₫)</MenuItem>
-    <MenuItem value="USD">USD ($)</MenuItem>
-    <MenuItem value="EUR">EUR (€)</MenuItem>
+    <MenuItem value="VND">VND</MenuItem>
+    <MenuItem value="USD">USD</MenuItem>
+    <MenuItem value="EUR">EUR</MenuItem>
   </TextField>
 </Grid>
             <Grid item xs={12} md={4}>
@@ -275,7 +275,7 @@ export default function JobPostCreate() {
                 name="requirements"
                 fullWidth
                 multiline
-                sx={{marginInlineEnd:20 }}
+                sx={{marginInlineEnd:19 }}
                 rows={2}
                 label={<Label icon={<CheckCircleOutline />} text="Yêu cầu ứng viên" />}
                 value={form.requirements}
@@ -304,7 +304,7 @@ export default function JobPostCreate() {
                 name="jobDescription"
                 fullWidth
                 multiline
-                sx={{marginInlineEnd:20 }}
+                sx={{marginInlineEnd:19 }}
                 rows={2}
                 label={<Label icon={<DescriptionOutlined />} text="Mô tả công việc" />}
                 value={form.jobDescription}
@@ -315,7 +315,7 @@ export default function JobPostCreate() {
               <TextField
                 name="location"
                 fullWidth
-                sx={{marginInlineEnd:67 }}
+                sx={{marginInlineEnd:64 }}
                 label={<Label icon={<LocationOnOutlined />} text="Địa điểm làm việc" />}
                 value={form.location}
                 onChange={handleChange}

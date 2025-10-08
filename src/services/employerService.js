@@ -17,10 +17,13 @@ export async function getMyJobs(page = 0, size = 10, sortBy = "createdAt", sortD
   return res.json()
 }
 
-export async function getJobById(id) {
-  const res = await fetch(`${API_URL}/jobs/manage/${id}`, { headers: getAuthHeaders() })
+export async function getPublicJobById(id) {
+  const res = await fetch(`${API_URL}/public/jobs/${id}`, {
+    headers: { "Content-Type": "application/json" },
+  })
   return res.json()
 }
+
 
 
 
