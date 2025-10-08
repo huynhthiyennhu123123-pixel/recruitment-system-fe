@@ -37,6 +37,9 @@ import ApplicantsPage from "../pages/employer/ApplicantsPage";
 import CompanyProfilePage from "../pages/employer/ProfilePage";
 import InterviewPage from "../pages/employer/InterviewPage";
 import JobPostEdit from "../pages/employer/JobPostEdit";
+import CompanyProfileEdit from "../pages/employer/CompanyProfileEdit";
+
+
 
 
 // Pages Admin
@@ -111,6 +114,8 @@ function App() {
             <Route path="applicants" element={<ApplicantsPage />} />
             <Route path="interviews" element={<InterviewPage />} />
             <Route path="profile" element={<CompanyProfilePage />} />
+            <Route path="CompanyProfileEdit" element={<CompanyProfileEdit />} />
+
           </Route>
         </Route>
 

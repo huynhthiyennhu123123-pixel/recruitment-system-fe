@@ -1,4 +1,4 @@
-import { Outlet, Link } from "react-router-dom"
+import { Outlet, Link, useNavigate } from "react-router-dom"
 import {
   AppBar,
   Toolbar,
@@ -9,7 +9,9 @@ import {
   MenuItem,
   IconButton,
   Container,
-  Grid
+  Grid,
+  Snackbar,
+  Alert
 } from "@mui/material"
 import DashboardIcon from "@mui/icons-material/Dashboard"
 import WorkIcon from "@mui/icons-material/Work"
@@ -20,37 +22,40 @@ import AccountCircle from "@mui/icons-material/AccountCircle"
 import { ReactTyped } from "react-typed"
 import { useState } from "react"
 import logo from "../assets/images/logo.png"
+import { logout } from "../services/authService"
 
 export default function EmployerLayout() {
   const [anchorEl, setAnchorEl] = useState(null)
+  const [snackbar, setSnackbar] = useState({ open: false, message: "", severity: "success" })
+  const navigate = useNavigate()
 
-  const handleMenu = (event) => {
-    setAnchorEl(event.currentTarget)
+  const handleMenu = (event) => setAnchorEl(event.currentTarget)
+  const handleClose = () => setAnchorEl(null)
+
+  // ✅ Hàm đăng xuất
+  const handleLogout = async () => {
+    try {
+      await logout()
+      setSnackbar({ open: true, message: "Đăng xuất thành công!", severity: "success" })
+      setTimeout(() => navigate("/"), 1200)
+    } catch (err) {
+      console.error("❌ Lỗi khi đăng xuất:", err)
+      setSnackbar({ open: true, message: "Lỗi khi đăng xuất!", severity: "error" })
+    } finally {
+      setAnchorEl(null)
+    }
   }
 
-  const handleClose = () => {
-    setAnchorEl(null)
-  }
+  const handleCloseSnackbar = () => setSnackbar({ ...snackbar, open: false })
 
   return (
     <Box sx={{ display: "flex", flexDirection: "column", minHeight: "100vh" }}>
       {/* Header */}
       <AppBar position="sticky" sx={{ bgcolor: "#2a9d8f" }}>
         <Toolbar>
-           {/* Logo + Typed text */}
-          <Box
-            sx={{
-              display: "flex",
-              alignItems: "center",
-              flexGrow: 1,
-              gap: 1
-            }}
-          >
-            <img
-              src={logo}   
-              alt="JobRecruit Logo"
-              style={{ height: 70, borderRadius: "6px" }}
-            />
+          {/* Logo + Typed text */}
+          <Box sx={{ display: "flex", alignItems: "center", flexGrow: 1, gap: 1 }}>
+            <img src={logo} alt="JobRecruit Logo" style={{ height: 70, borderRadius: "6px" }} />
             <Typography
               variant="h6"
               component="div"
@@ -69,45 +74,20 @@ export default function EmployerLayout() {
             </Typography>
           </Box>
 
-
-           <Button
-            color="inherit"
-            component={Link}
-            to="/employer/dashboard"
-            startIcon={<DashboardIcon />}
-          >
+          {/* Menu chính */}
+          <Button color="inherit" component={Link} to="/employer/dashboard" startIcon={<DashboardIcon />}>
             Dashboard
           </Button>
-          <Button
-            color="inherit"
-            component={Link}
-            to="/employer/jobs"
-            startIcon={<WorkIcon />}
-          >
+          <Button color="inherit" component={Link} to="/employer/jobs" startIcon={<WorkIcon />}>
             Tin tuyển dụng
           </Button>
-          <Button
-            color="inherit"
-            component={Link}
-            to="/employer/applicants"
-            startIcon={<PeopleIcon />}
-          >
+          <Button color="inherit" component={Link} to="/employer/applicants" startIcon={<PeopleIcon />}>
             Ứng viên
           </Button>
-          <Button
-            color="inherit"
-            component={Link}
-            to="/employer/interviews"
-            startIcon={<EventIcon />}
-          >
+          <Button color="inherit" component={Link} to="/employer/interviews" startIcon={<EventIcon />}>
             Phỏng vấn
           </Button>
-          <Button
-            color="inherit"
-            component={Link}
-            to="/employer/profile"
-            startIcon={<BusinessIcon />}
-          >
+          <Button color="inherit" component={Link} to="/employer/profile" startIcon={<BusinessIcon />}>
             Hồ sơ công ty
           </Button>
 
@@ -115,15 +95,14 @@ export default function EmployerLayout() {
           <IconButton color="inherit" onClick={handleMenu}>
             <AccountCircle />
           </IconButton>
-          <Menu
-            anchorEl={anchorEl}
-            open={Boolean(anchorEl)}
-            onClose={handleClose}
-          >
+          <Menu anchorEl={anchorEl} open={Boolean(anchorEl)} onClose={handleClose}>
             <MenuItem onClick={handleClose} component={Link} to="/employer/profile">
               Tài khoản của tôi
             </MenuItem>
-            <MenuItem onClick={handleClose}>Đăng xuất</MenuItem>
+            <MenuItem onClick={handleClose} component={Link} to="/employer/CompanyProfileEdit">
+              Cập nhật thông tin
+            </MenuItem>
+            <MenuItem onClick={handleLogout}>Đăng xuất</MenuItem>
           </Menu>
         </Toolbar>
       </AppBar>
@@ -151,8 +130,7 @@ export default function EmployerLayout() {
                 JobRecruit Employer
               </Typography>
               <Typography variant="body2">
-                Nền tảng giúp Nhà tuyển dụng đăng tin, quản lý ứng viên và
-                phỏng vấn nhanh chóng, hiệu quả.
+                Nền tảng giúp Nhà tuyển dụng đăng tin, quản lý ứng viên và phỏng vấn nhanh chóng, hiệu quả.
               </Typography>
             </Grid>
 
@@ -198,6 +176,18 @@ export default function EmployerLayout() {
           </Box>
         </Container>
       </Box>
+
+      {/* Snackbar thông báo */}
+      <Snackbar
+        open={snackbar.open}
+        autoHideDuration={2500}
+        onClose={handleCloseSnackbar}
+        anchorOrigin={{ vertical: "top", horizontal: "right" }}
+      >
+        <Alert onClose={handleCloseSnackbar} severity={snackbar.severity} variant="filled">
+          {snackbar.message}
+        </Alert>
+      </Snackbar>
     </Box>
   )
 }

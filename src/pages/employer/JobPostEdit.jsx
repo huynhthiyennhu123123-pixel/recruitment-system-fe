@@ -22,7 +22,7 @@ import {
   GroupsOutlined,
   BuildCircleOutlined,
 } from "@mui/icons-material"
-import { getJobById, updateJob } from "../../services/employerService"
+import { getPublicJobById, updateJob } from "../../services/employerService"
 
 export default function JobPostEdit() {
   const { id } = useParams()
@@ -51,38 +51,41 @@ export default function JobPostEdit() {
 
   // ✅ Load dữ liệu khi vào trang
   useEffect(() => {
-    const fetchJob = async () => {
-      try {
-        const res = await getJobById(id)
-        if (res?.success && res.data) {
-          const j = res.data
-          setForm({
-            title: j.title,
-            description: j.description,
-            requirements: j.requirements,
-            benefits: j.benefits,
-            skillsRequired: j.skillsRequired,
-            salaryMin: j.salaryMin,
-            salaryMax: j.salaryMax,
-            salaryCurrency: j.salaryCurrency,
-            jobType: j.jobType,
-            numberOfPositions: j.numberOfPositions,
-            experienceRequired: j.experienceRequired,
-            educationRequired: j.educationRequired,
-            location: j.location,
-            applicationDeadline: j.applicationDeadline?.split("T")[0],
-            status: j.status,
-          })
-        } else setErrorMsg("Không thể tải dữ liệu tin tuyển dụng.")
-      } catch (err) {
-        console.error("Fetch job failed:", err)
-        setErrorMsg("Lỗi khi tải tin tuyển dụng.")
-      } finally {
-        setLoading(false)
+  const fetchJob = async () => {
+    try {
+      const res = await getPublicJobById(id)
+      if (res?.success && res.data) {
+        const j = res.data
+        setForm({
+          title: j.title || "",
+          description: j.description || "",
+          requirements: j.requirements || "",
+          benefits: j.benefits || "",
+          skillsRequired: j.skillsRequired || "",
+          salaryMin: j.salaryMin || "",
+          salaryMax: j.salaryMax || "",
+          salaryCurrency: j.salaryCurrency || "VND",
+          jobType: j.jobType || "FULL_TIME",
+          numberOfPositions: j.numberOfPositions || 1,
+          experienceRequired: j.experienceRequired || "",
+          educationRequired: j.educationRequired || "",
+          location: j.location || "",
+          applicationDeadline: j.applicationDeadline?.split("T")[0] || "",
+          status: j.status || "DRAFT",
+        })
+      } else {
+        setErrorMsg("Không thể tải dữ liệu tin tuyển dụng.")
       }
+    } catch (err) {
+      console.error("Fetch job failed:", err)
+      setErrorMsg("Lỗi khi tải tin tuyển dụng.")
+    } finally {
+      setLoading(false)
     }
-    fetchJob()
-  }, [id])
+  }
+  fetchJob()
+}, [id])
+
 
   const handleChange = (e) => {
     const { name, value } = e.target
