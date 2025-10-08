@@ -27,6 +27,7 @@ import ProfilePage from "../pages/applicant/ProfilePage";
 import JobDetailPage from "../pages/applicant/JobDetailPage";
 import ApplyJobPage from "../pages/applicant/ApplyJobPage";
 import ApplicationsPage from "../pages/applicant/ApplicationsPage";
+import ApplicationDetailPage from "../pages/applicant/ApplicationDetailPage";
 
 // Pages Employer
 import EmployerDashboard from "../pages/employer/DashboardPage";
@@ -95,6 +96,7 @@ function App() {
             <Route path="dashboard" element={<DashboardPage />} />
             <Route path="profile" element={<ProfilePage />} />
             <Route path="applications" element={<ApplicationsPage />} />
+            <Route path="applications/:id" element={<ApplicationDetailPage />} /> 
             <Route path="jobs/:id" element={<JobDetailPage />} />
             <Route path="jobs/:id/apply" element={<ApplyJobPage />} />
           </Route>
