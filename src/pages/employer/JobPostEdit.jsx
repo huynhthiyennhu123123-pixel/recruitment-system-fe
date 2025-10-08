@@ -8,7 +8,6 @@ import {
   MenuItem,
   Button,
   Paper,
-  Alert,
   CircularProgress,
 } from "@mui/material"
 import {
@@ -22,7 +21,8 @@ import {
   GroupsOutlined,
   BuildCircleOutlined,
 } from "@mui/icons-material"
-import { getPublicJobById, updateJob } from "../../services/employerService"
+import { getEmployerJobById, updateJob } from "../../services/employerService"
+import { Snackbar, Alert } from "@mui/material"
 
 export default function JobPostEdit() {
   const { id } = useParams()
@@ -48,33 +48,34 @@ export default function JobPostEdit() {
     applicationDeadline: "",
     status: "DRAFT",
   })
+const [snackbar, setSnackbar] = useState({ open: false, message: "", severity: "success" })
 
-  // ✅ Load dữ liệu khi vào trang
-  useEffect(() => {
+const handleCloseSnackbar = () => setSnackbar({ ...snackbar, open: false })
+  //  Load dữ liệu khi vào trang
+ useEffect(() => {
   const fetchJob = async () => {
     try {
-      const res = await getPublicJobById(id)
-      if (res?.success && res.data) {
-        const j = res.data
+      const job = await getEmployerJobById(id)
+      if (job) {
         setForm({
-          title: j.title || "",
-          description: j.description || "",
-          requirements: j.requirements || "",
-          benefits: j.benefits || "",
-          skillsRequired: j.skillsRequired || "",
-          salaryMin: j.salaryMin || "",
-          salaryMax: j.salaryMax || "",
-          salaryCurrency: j.salaryCurrency || "VND",
-          jobType: j.jobType || "FULL_TIME",
-          numberOfPositions: j.numberOfPositions || 1,
-          experienceRequired: j.experienceRequired || "",
-          educationRequired: j.educationRequired || "",
-          location: j.location || "",
-          applicationDeadline: j.applicationDeadline?.split("T")[0] || "",
-          status: j.status || "DRAFT",
+          title: job.title,
+          description: job.description,
+          requirements: job.requirements,
+          benefits: job.benefits,
+          skillsRequired: job.skillsRequired,
+          salaryMin: job.salaryMin,
+          salaryMax: job.salaryMax,
+          salaryCurrency: job.salaryCurrency,
+          jobType: job.jobType,
+          numberOfPositions: job.numberOfPositions,
+          experienceRequired: job.experienceRequired,
+          educationRequired: job.educationRequired,
+          location: job.location,
+          applicationDeadline: job.applicationDeadline?.split("T")[0],
+          status: job.status,
         })
       } else {
-        setErrorMsg("Không thể tải dữ liệu tin tuyển dụng.")
+        setErrorMsg("Không tìm thấy tin tuyển dụng này.")
       }
     } catch (err) {
       console.error("Fetch job failed:", err)
@@ -83,6 +84,7 @@ export default function JobPostEdit() {
       setLoading(false)
     }
   }
+
   fetchJob()
 }, [id])
 
@@ -93,41 +95,55 @@ export default function JobPostEdit() {
   }
 
   const handleSubmit = async (e) => {
-    e.preventDefault()
-    setSaving(true)
-    setSuccessMsg("")
-    setErrorMsg("")
-    try {
-      const payload = {
-        title: form.title,
-        description: form.description,
-        requirements: form.requirements,
-        benefits: form.benefits,
-        skillsRequired: form.skillsRequired,
-        jobType: form.jobType,
-        salaryMin: parseFloat(form.salaryMin || 0),
-        salaryMax: parseFloat(form.salaryMax || 0),
-        salaryCurrency: form.salaryCurrency,
-        numberOfPositions: parseInt(form.numberOfPositions || 1),
-        experienceRequired: form.experienceRequired,
-        educationRequired: form.educationRequired,
-        location: form.location,
-        applicationDeadline: `${form.applicationDeadline}T00:00:00`,
-        status: form.status,
-      }
-
-      const res = await updateJob(id, payload)
-      if (res?.success) {
-        setSuccessMsg("✅ Cập nhật tin tuyển dụng thành công!")
-        setTimeout(() => navigate(`/employer/jobs/${id}`), 1500)
-      } else setErrorMsg(res?.message || "Không thể cập nhật tin.")
-    } catch (err) {
-      console.error("Update job failed:", err)
-      setErrorMsg(err.response?.data?.message || "Lỗi kết nối đến server.")
-    } finally {
-      setSaving(false)
+  e.preventDefault()
+  setSaving(true)
+  setSuccessMsg("")
+  setErrorMsg("")
+  try {
+    const payload = {
+      title: form.title,
+      description: form.description,
+      requirements: form.requirements,
+      benefits: form.benefits,
+      skillsRequired: form.skillsRequired,
+      jobType: form.jobType,
+      salaryMin: parseFloat(form.salaryMin || 0),
+      salaryMax: parseFloat(form.salaryMax || 0),
+      salaryCurrency: form.salaryCurrency,
+      numberOfPositions: parseInt(form.numberOfPositions || 1),
+      experienceRequired: form.experienceRequired,
+      educationRequired: form.educationRequired,
+      location: form.location,
+      applicationDeadline: `${form.applicationDeadline}T00:00:00`,
+      status: form.status,
     }
+
+    const res = await updateJob(id, payload)
+    if (res?.success) {
+      setSnackbar({
+        open: true,
+        message: "✅ Cập nhật tin tuyển dụng thành công!",
+        severity: "success",
+      })
+      setTimeout(() => navigate(`/employer/jobs/${id}`), 1500)
+    } else {
+      setSnackbar({
+        open: true,
+        message: res?.message || "Không thể cập nhật tin.",
+        severity: "error",
+      })
+    }
+  } catch (err) {
+    console.error("Update job failed:", err)
+    setSnackbar({
+      open: true,
+      message: err.response?.data?.message || "Lỗi kết nối đến server.",
+      severity: "error",
+    })
+  } finally {
+    setSaving(false)
   }
+}
 
   if (loading)
     return (
@@ -267,7 +283,7 @@ export default function JobPostEdit() {
                           type="number"
                           label={<Label icon={<MonetizationOnOutlined />} text="Lương tối đa" />}
                           fullWidth
-                          sx={{marginInlineEnd:-4 }}
+                          sx={{marginInlineEnd:-2 }}
                           value={form.salaryMax}
                           onChange={handleChange}
                         />
@@ -301,7 +317,7 @@ export default function JobPostEdit() {
                           value={form.status}
                           onChange={handleChange}
                           fullWidth
-                          sx={{marginInlineEnd:6 }}
+                          sx={{marginInlineEnd:4 }}
                           
                         >
                           <MenuItem value="DRAFT">Bản nháp</MenuItem>
@@ -314,7 +330,7 @@ export default function JobPostEdit() {
                           name="skillsRequired"
                           fullWidth
                           multiline
-                          sx={{marginInlineEnd:22 }}
+                          sx={{marginInlineEnd:24 }}
                           rows={2}
                           label={<Label icon={<BuildCircleOutlined />} text="Kỹ năng yêu cầu" />}
                           value={form.skillsRequired}
@@ -326,7 +342,7 @@ export default function JobPostEdit() {
                           name="requirements"
                           fullWidth
                           multiline
-                          sx={{marginInlineEnd:20 }}
+                          sx={{marginInlineEnd:19 }}
                           rows={2}
                           label={<Label icon={<CheckCircleOutline />} text="Yêu cầu ứng viên" />}
                           value={form.requirements}
@@ -355,10 +371,10 @@ export default function JobPostEdit() {
                           name="jobDescription"
                           fullWidth
                           multiline
-                          sx={{marginInlineEnd:20 }}
+                          sx={{marginInlineEnd:19 }}
                           rows={2}
                           label={<Label icon={<DescriptionOutlined />} text="Mô tả công việc" />}
-                          value={form.jobDescription}
+                          value={form.description}
                           onChange={handleChange}
                         />
                       </Grid>
@@ -366,7 +382,7 @@ export default function JobPostEdit() {
                         <TextField
                           name="location"
                           fullWidth
-                          sx={{marginInlineEnd:67 }}
+                          sx={{marginInlineEnd:64 }}
                           label={<Label icon={<LocationOnOutlined />} text="Địa điểm làm việc" />}
                           value={form.location}
                           onChange={handleChange}
@@ -458,7 +474,7 @@ export default function JobPostEdit() {
                 <Typography variant="subtitle2" fontWeight="bold" color="#2e7d32">
                   Mô tả công việc
                 </Typography>
-                <Typography variant="body2">{form.jobDescription || "..."}</Typography>
+                <Typography variant="body2">{form.description || "..."}</Typography>
               </Box>
               <Box sx={{ mt: 2 }}>
                 <Typography variant="subtitle2" fontWeight="bold" color="#2e7d32">
@@ -473,6 +489,22 @@ export default function JobPostEdit() {
                 <Typography variant="body2">{form.benefits || "..."}</Typography>
               </Box>
             </Paper>
+            <Snackbar
+              open={snackbar.open}
+              autoHideDuration={3000}
+              onClose={handleCloseSnackbar}
+              anchorOrigin={{ vertical: "top", horizontal: "right" }}
+            >
+              <Alert
+                onClose={handleCloseSnackbar}
+                severity={snackbar.severity}
+                variant="filled"
+                sx={{ width: "100%" }}
+              >
+                {snackbar.message}
+              </Alert>
+            </Snackbar>
+
     </Box>
   )
 }

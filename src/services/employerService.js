@@ -62,6 +62,22 @@ export async function updateJobStatus(id, status) {
   return res.json()
 }
 
+// Lấy danh sách job của employer (có phân trang)
+export async function getEmployerJobs(page = 0, size = 10, sortBy = "createdAt", sortDir = "DESC") {
+  const res = await fetch(
+    `${API_URL}/jobs/manage?page=${page}&size=${size}&sortBy=${sortBy}&sortDir=${sortDir}`,
+    { headers: getAuthHeaders() }
+  )
+  return res.json()
+}
+
+
+export async function getEmployerJobById(jobId) {
+  const res = await getEmployerJobs(0, 50) // lấy trước 50 job mới nhất
+  if (!res?.data?.content) return null
+  const found = res.data.content.find((job) => job.id === Number(jobId))
+  return found || null
+}
 
 /* ======================
  * HỒ SƠ CÔNG TY
