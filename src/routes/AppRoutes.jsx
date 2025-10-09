@@ -11,6 +11,8 @@ import AdminLayout from "../layout/AdminLayout";
 
 // Pages Public
 import HomePage from "../pages/public/HomePage";
+import JobListPage from "../pages/public/JobListPage";
+import PublicJobDetailPage from "../pages/public/JobDetailPage";
 
 // Pages Auth
 import LoginPage from "../pages/auth/LoginPage";
@@ -73,6 +75,8 @@ function App() {
         {/* Public */}
         <Route element={<PublicLayout />}>
           <Route index element={<HomePage />} />
+          <Route path="jobs" element={<JobListPage />} />
+          <Route path="jobs/:id" element={<PublicJobDetailPage />} />
         </Route>
 
         {/* Auth */}
