@@ -17,7 +17,8 @@ export default function EmployerJobDetailModern() {
   const [job, setJob] = useState(null)
   const [tab, setTab] = useState(0)
   const [loading, setLoading] = useState(false)
-
+  const user = JSON.parse(localStorage.getItem("user"))
+  const companyId = user?.company?.id
   useEffect(() => {
     const fetchJob = async () => {
       setLoading(true)
@@ -204,7 +205,7 @@ export default function EmployerJobDetailModern() {
                   color="success"
                   size="small"
                   sx={{ borderRadius: 2, fontWeight: "bold" }}
-                   onClick={() => navigate(`/employer/profile`)}
+                   onClick={() => navigate(`/employer/company/${companyId}`)}
                 >
                   Xem hồ sơ công ty
                 </Button>

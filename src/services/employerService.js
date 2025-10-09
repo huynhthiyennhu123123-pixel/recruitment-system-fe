@@ -82,11 +82,34 @@ export async function getEmployerJobById(jobId) {
 /* ======================
  * HỒ SƠ CÔNG TY
  * ====================== */
-export async function getCompanyProfile() {
-  const res = await fetch(`${API_URL}/companies/my`, { headers: getAuthHeaders() })
+
+export async function getPublicCompanyById(id) {
+  const res = await fetch(`${API_URL}/companies/${id}/public`, {
+    headers: { "Content-Type": "application/json" },
+  })
   return res.json()
 }
+export async function getEmployerCompanyId() {
+  try {
+    // Ưu tiên lấy từ user nếu có
+    const user = JSON.parse(localStorage.getItem("user"))
+    if (user?.company?.id) return user.company.id
 
+    // Nếu không có, lấy từ job đầu tiên mà employer đã tạo
+    const res = await getEmployerJobs(0, 1, "createdAt", "DESC")
+    const firstJob = res?.data?.content?.[0]
+    if (firstJob?.company?.id) {
+      localStorage.setItem("companyId", firstJob.company.id) // Lưu tạm để tái sử dụng
+      return firstJob.company.id
+    }
+
+    // Nếu vẫn không có
+    return null
+  } catch (err) {
+    console.error("❌ Lỗi khi lấy companyId:", err)
+    return null
+  }
+}
 export async function updateCompanyProfile(data) {
   const res = await fetch(`${API_URL}/companies/my`, {
     method: "PUT",

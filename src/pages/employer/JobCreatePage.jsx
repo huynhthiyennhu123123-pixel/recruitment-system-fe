@@ -235,7 +235,7 @@ export default function JobPostCreate() {
     value={form.salaryCurrency}
     onChange={handleChange}
     fullWidth
-    sx={{marginInlineEnd:6 }}
+    sx={{marginInlineEnd:9 }}
   >
     <MenuItem value="VND">VND</MenuItem>
     <MenuItem value="USD">USD</MenuItem>
@@ -250,7 +250,7 @@ export default function JobPostCreate() {
                 value={form.status}
                 onChange={handleChange}
                 fullWidth
-                sx={{marginInlineEnd:6 }}
+                sx={{marginInlineEnd:4 }}
                 
               >
                 <MenuItem value="DRAFT">Bản nháp</MenuItem>

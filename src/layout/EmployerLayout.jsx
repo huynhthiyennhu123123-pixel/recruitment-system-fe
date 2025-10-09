@@ -1,3 +1,4 @@
+import React, { useState, useEffect } from "react"
 import { Outlet, Link, useNavigate } from "react-router-dom"
 import {
   AppBar,
@@ -11,8 +12,8 @@ import {
   Container,
   Grid,
   Snackbar,
-  Alert
 } from "@mui/material"
+import MuiAlert from "@mui/material/Alert"
 import DashboardIcon from "@mui/icons-material/Dashboard"
 import WorkIcon from "@mui/icons-material/Work"
 import PeopleIcon from "@mui/icons-material/People"
@@ -20,14 +21,27 @@ import EventIcon from "@mui/icons-material/Event"
 import BusinessIcon from "@mui/icons-material/Business"
 import AccountCircle from "@mui/icons-material/AccountCircle"
 import { ReactTyped } from "react-typed"
-import { useState } from "react"
 import logo from "../assets/images/logo.png"
 import { logout } from "../services/authService"
+import { getEmployerCompanyId } from "../services/employerService"
+
+const Alert = React.forwardRef(function Alert(props, ref) {
+  return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />
+})
 
 export default function EmployerLayout() {
   const [anchorEl, setAnchorEl] = useState(null)
   const [snackbar, setSnackbar] = useState({ open: false, message: "", severity: "success" })
+  const [companyId, setCompanyId] = useState(null)
   const navigate = useNavigate()
+  
+ useEffect(() => {
+  const fetchCompanyId = async () => {
+    const id = await getEmployerCompanyId()
+    setCompanyId(id)
+  }
+  fetchCompanyId()
+}, [])
 
   const handleMenu = (event) => setAnchorEl(event.currentTarget)
   const handleClose = () => setAnchorEl(null)
@@ -48,6 +62,7 @@ export default function EmployerLayout() {
 
   const handleCloseSnackbar = () => setSnackbar({ ...snackbar, open: false })
 
+
   return (
     <Box sx={{ display: "flex", flexDirection: "column", minHeight: "100vh" }}>
       {/* Header */}
@@ -56,16 +71,12 @@ export default function EmployerLayout() {
           {/* Logo + Typed text */}
           <Box sx={{ display: "flex", alignItems: "center", flexGrow: 1, gap: 1 }}>
             <img src={logo} alt="JobRecruit Logo" style={{ height: 70, borderRadius: "6px" }} />
-            <Typography
-              variant="h6"
-              component="div"
-              sx={{ fontWeight: "bold", color: "white" }}
-            >
+            <Typography variant="h6" component="div" sx={{ fontWeight: "bold", color: "white" }}>
               <ReactTyped
                 strings={[
                   "JobRecruit Employer",
                   "Quản lý dễ dàng",
-                  "Kết nối ứng viên nhanh chóng"
+                  "Kết nối ứng viên nhanh chóng",
                 ]}
                 typeSpeed={100}
                 backSpeed={100}
@@ -87,18 +98,27 @@ export default function EmployerLayout() {
           <Button color="inherit" component={Link} to="/employer/interviews" startIcon={<EventIcon />}>
             Phỏng vấn
           </Button>
-          <Button color="inherit" component={Link} to="/employer/profile" startIcon={<BusinessIcon />}>
-            Hồ sơ công ty
-          </Button>
+          
+            <Button
+              color="inherit"
+              component={Link}
+              to={`/employer/company/${companyId}`}
+              startIcon={<BusinessIcon />}
+            >
+              Hồ sơ công ty
+            </Button>
+        
 
           {/* Dropdown tài khoản */}
           <IconButton color="inherit" onClick={handleMenu}>
             <AccountCircle />
           </IconButton>
           <Menu anchorEl={anchorEl} open={Boolean(anchorEl)} onClose={handleClose}>
-            <MenuItem onClick={handleClose} component={Link} to="/employer/profile">
-              Tài khoản của tôi
-            </MenuItem>
+           
+              <MenuItem onClick={handleClose} component={Link} to={`/employer/company/${companyId}`}>
+                Tài khoản của tôi
+              </MenuItem>
+          
             <MenuItem onClick={handleClose} component={Link} to="/employer/CompanyProfileEdit">
               Cập nhật thông tin
             </MenuItem>
@@ -119,7 +139,7 @@ export default function EmployerLayout() {
           bgcolor: "#1a7265ff",
           color: "white",
           mt: "auto",
-          py: 4
+          py: 4,
         }}
       >
         <Container maxWidth="lg">
@@ -184,7 +204,7 @@ export default function EmployerLayout() {
         onClose={handleCloseSnackbar}
         anchorOrigin={{ vertical: "top", horizontal: "right" }}
       >
-        <Alert onClose={handleCloseSnackbar} severity={snackbar.severity} variant="filled">
+        <Alert onClose={handleCloseSnackbar} severity={snackbar.severity}>
           {snackbar.message}
         </Alert>
       </Snackbar>
