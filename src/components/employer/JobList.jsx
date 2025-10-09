@@ -1,20 +1,28 @@
 import React, { useEffect, useState } from "react"
-import { Box, Typography, Grid, Card, CardContent, Avatar, Divider, CircularProgress } from "@mui/material"
+import {
+  Box,
+  Typography,
+  Grid,
+  Card,
+  CardContent,
+  Avatar,
+  Divider,
+  CircularProgress
+} from "@mui/material"
+import { useNavigate } from "react-router-dom"
 import { getEmployerJobs } from "../../services/employerService"
 
 export default function JobList() {
   const [jobs, setJobs] = useState([])
   const [loading, setLoading] = useState(true)
+  const navigate = useNavigate() 
 
   useEffect(() => {
     const fetchJobs = async () => {
       try {
-        const res = await getEmployerJobs(0, 50) // lấy 50 job mới nhất
-        if (res?.data?.content) {
-          setJobs(res.data.content)
-        } else {
-          setJobs([])
-        }
+        const res = await getEmployerJobs(0, 50)
+        if (res?.data?.content) setJobs(res.data.content)
+        else setJobs([])
       } catch (err) {
         console.error("❌ Lỗi khi tải việc làm:", err)
       } finally {
@@ -43,11 +51,17 @@ export default function JobList() {
       {jobs.map((job, index) => (
         <Card
           key={job.id}
+          onClick={() => navigate(`/employer/jobs/${job.id}`)} 
           sx={{
             mb: 2,
             borderRadius: 2,
             transition: "0.3s",
-            "&:hover": { boxShadow: 6, transform: "translateY(-2px)" }
+            cursor: "pointer",
+            "&:hover": {
+              boxShadow: 6,
+              transform: "translateY(-2px)",
+              bgcolor: "#f0fdf4"
+            }
           }}
         >
           <CardContent>

@@ -239,20 +239,28 @@ export default function CompanyProfilePage() {
             </Typography>
             <Grid container spacing={2}>
               {company.companyPhotos.map((img, i) => (
-                <Grid item xs={6} md={3} key={i}>
+                <Grid item xs={6} sm={4} md={3} key={i}>
                   <Card
                     sx={{
                       borderRadius: 2,
                       overflow: "hidden",
                       boxShadow: "0 3px 10px rgba(0,0,0,0.1)",
+                      height: 200, // 👈 Chiều cao cố định
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
                     }}
                   >
-                    <CardMedia
+                    <Box
                       component="img"
-                      height="160"
-                      image={img}
+                      src={img}
                       alt={`Ảnh ${i + 1}`}
-                      sx={{ objectFit: "cover" }}
+                      sx={{
+                        width: "100%",
+                        height: "100%",
+                        objectFit: "cover", // 👈 Đảm bảo ảnh không méo
+                        borderRadius: 2,
+                      }}
                     />
                   </Card>
                 </Grid>
@@ -260,6 +268,7 @@ export default function CompanyProfilePage() {
             </Grid>
           </Box>
         )}
+
       </Container>
     </Box>
   )
