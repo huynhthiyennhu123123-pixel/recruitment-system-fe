@@ -25,6 +25,8 @@ import {
   getPublicCompanyById,
   updateCompanyProfile,
 } from "../../services/employerService"
+import { uploadToCloudinary } from "../../utils/cloudinaryUpload"
+
 
 export default function CompanyProfileEdit() {
   const [form, setForm] = useState({
@@ -155,6 +157,11 @@ export default function CompanyProfileEdit() {
     })
 }, [])
 
+  //  Xóa ảnh khỏi danh sách
+  const handleRemoveImage = (index) => {
+    setImages((prev) => prev.filter((_, i) => i !== index))
+  }
+
 
   const handleChange = (e) => {
     const { name, value } = e.target
@@ -162,21 +169,17 @@ export default function CompanyProfileEdit() {
   }
 
   const handleDrop = async (acceptedFiles) => {
-  const uploadPromises = acceptedFiles.map(async (file) => {
-    const formData = new FormData()
-    formData.append("file", file)
-    formData.append("upload_preset", "your_upload_preset") // preset trong Cloudinary
-
-    const res = await fetch("https://api.cloudinary.com/v1_1/YOUR_CLOUD_NAME/image/upload", {
-      method: "POST",
-      body: formData,
-    })
-    const data = await res.json()
-    return { preview: data.secure_url } // dùng link thật
-  })
-
-  const uploaded = await Promise.all(uploadPromises)
-  setImages([...images, ...uploaded])
+  try {
+    const uploadedImages = await Promise.all(
+      acceptedFiles.map(async (file) => {
+        const url = await uploadToCloudinary(file)
+        return { preview: url }
+      })
+    )
+    setImages((prev) => [...prev, ...uploadedImages])
+  } catch (err) {
+    console.error("❌ Lỗi khi upload ảnh:", err)
+  }
 }
 
 
@@ -423,21 +426,41 @@ export default function CompanyProfileEdit() {
                         : "Kéo & thả ảnh hoặc nhấn để chọn"}
                     </Typography>
                     <Grid container spacing={2} mt={2}>
-                      {images.map((file, i) => (
-                        <Grid item key={i}>
-                          <img
-                            src={file.preview}
-                            alt="preview"
-                            width={100}
-                            height={100}
-                            style={{
-                              borderRadius: "8px",
-                              objectFit: "cover",
-                            }}
-                          />
-                        </Grid>
-                      ))}
-                    </Grid>
+  {images.map((file, i) => (
+    <Grid item key={i}>
+      <Box sx={{ position: "relative", display: "inline-block" }}>
+        <img
+          src={file.preview}
+          alt="preview"
+          width={100}
+          height={100}
+          style={{
+            borderRadius: "8px",
+            objectFit: "cover",
+            boxShadow: "0 2px 6px rgba(0,0,0,0.15)",
+          }}
+        />
+        <Button
+          onClick={() => handleRemoveImage(i)}
+          size="small"
+          sx={{
+            position: "absolute",
+            top: -8,
+            right: -8,
+            minWidth: 0,
+            bgcolor: "rgba(0,0,0,0.6)",
+            color: "white",
+            borderRadius: "50%",
+            "&:hover": { bgcolor: "rgba(255,0,0,0.8)" },
+          }}
+        >
+          ✕
+        </Button>
+      </Box>
+    </Grid>
+  ))}
+</Grid>
+
                   </Box>
                 </Grid>
               </Grid>

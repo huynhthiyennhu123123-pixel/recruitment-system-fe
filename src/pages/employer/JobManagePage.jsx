@@ -86,18 +86,21 @@ export default function JobManagePage() {
 }
 
 
-  const getStatusColor = (status) => {
-    switch (status) {
-      case "ACTIVE":
-        return "success"
-      case "DRAFT":
-        return "default"
+  // Hàm xác định màu cho Chip
+const getStatusColor = (status) => {
+  switch (status) {
+    case "ACTIVE":
+      return "success" // Màu xanh lá
+    case "DRAFT":
+      return "info" // Màu vàng
       case "EXPIRED":
-        return "warning"
-      default:
-        return "info"
-    }
+      return "warning" // Màu vàng
+    case "CLOSED":
+      return "default" // Màu xám
+    default:
+      return "default"
   }
+}
 
   const columns = [
     {
@@ -120,18 +123,23 @@ export default function JobManagePage() {
       headerName: "Trạng thái",
       width: 150,
       renderCell: (params) => (
-        <Chip
-          label={
-            params.row.status === "ACTIVE"
-              ? "Đang hiển thị"
-              : params.row.status === "DRAFT"
-              ? "Bản nháp"
-              : "Hết hạn"
-          }
-          color={getStatusColor(params.row.status)}
-          size="small"
-        />
-      ),
+      <Chip
+        label={
+          params.row.status === "ACTIVE"
+            ? "Đang hiển thị"
+            : params.row.status === "DRAFT"
+            ? "Bản nháp"
+            : params.row.status === "EXPIRED"
+            ? "Hết hạn"
+            : params.row.status === "CLOSED"
+            ? "Đã xóa mềm"
+            : "Không xác định"
+        }
+        color={getStatusColor(params.row.status)}
+        size="small"
+        sx={{ fontWeight: 500 }}
+      />
+    )
     },
     { field: "applicationsCount", headerName: "Ứng viên", width: 110 },
     { field: "viewsCount", headerName: "Lượt xem", width: 110 },
@@ -192,6 +200,8 @@ export default function JobManagePage() {
   const activeCount = jobs.filter((j) => j.status === "ACTIVE").length
   const draftCount = jobs.filter((j) => j.status === "DRAFT").length
   const expiredCount = jobs.filter((j) => j.status === "EXPIRED").length
+  const closeCount = jobs.filter((j) => j.status === "CLOSED").length
+
 
   return (
     <Box sx={{ maxWidth: 1300, mx: "auto", my: 4 }}>
@@ -224,6 +234,8 @@ export default function JobManagePage() {
           { label: "Đang hiển thị", value: activeCount, color: "#2e7d32" },
           { label: "Bản nháp", value: draftCount, color: "#9e9e9e" },
           { label: "Hết hạn", value: expiredCount, color: "#f9a825" },
+          { label: "Đã xóa mềm", value: closeCount, color: "#dd1547ff" },
+
         ].map((item, idx) => (
           <Grid item xs={12} md={4} key={idx}>
             <Paper
