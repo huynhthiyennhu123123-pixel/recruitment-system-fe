@@ -1,77 +1,89 @@
-import React from "react"
-import { Box, Typography, Grid, Card, CardContent, Avatar, Divider } from "@mui/material"
+import React, { useEffect, useState } from "react"
+import { Box, Typography, Grid, Card, CardContent, Avatar, Divider, CircularProgress } from "@mui/material"
+import { getEmployerJobs } from "../../services/employerService"
 
 export default function JobList() {
-  const jobs = [
-    {
-      id: 1,
-      title: "Nhân Viên Phát Triển Thị Trường Thức Ăn Thủy Sản Tôm Giống",
-      company: "Công Ty TNHH TM & DV Diên Khánh",
-      location: "Bạc Liêu, Cà Mau, Cần Thơ",
-      salary: "12 - 20 triệu",
-      logo: "/assets/dienkhanh.png",
-      updated: "4 giờ trước"
-    },
-    {
-      id: 2,
-      title: "Kỹ Sư Xây Dựng - Cần Thơ",
-      company: "CÔNG TY CỔ PHẦN XÂY DỰNG ĐẦU TƯ VÀ PHÁT TRIỂN 209",
-      location: "Cần Thơ",
-      salary: "18 triệu",
-      logo: "/assets/xaydung209.png",
-      updated: "4 giờ trước"
-    },
-    {
-      id: 3,
-      title: "Nhân Viên Tư Vấn Bán Hàng Tại Showroom (Khu vực miền Tây)",
-      company: "Công Ty Cổ Phần Tập Đoàn Thế Giới Điện Giải",
-      location: "Cần Thơ, Đồng Tháp, Tiền Giang",
-      salary: "12 triệu",
-      logo: "/assets/diengiai.png",
-      updated: "1 ngày trước"
-    },
-    {
-      id: 4,
-      title: "Cần Thơ - Nhân Viên Xử Lý Tín Dụng Tại Thực Địa",
-      company: "FE CREDIT",
-      location: "Cần Thơ",
-      salary: "8 - 25 triệu",
-      logo: "/assets/fe-logo.png",
-      updated: "1 ngày trước"
+  const [jobs, setJobs] = useState([])
+  const [loading, setLoading] = useState(true)
+
+  useEffect(() => {
+    const fetchJobs = async () => {
+      try {
+        const res = await getEmployerJobs(0, 50) // lấy 50 job mới nhất
+        if (res?.data?.content) {
+          setJobs(res.data.content)
+        } else {
+          setJobs([])
+        }
+      } catch (err) {
+        console.error("❌ Lỗi khi tải việc làm:", err)
+      } finally {
+        setLoading(false)
+      }
     }
-  ]
+    fetchJobs()
+  }, [])
+
+  if (loading)
+    return (
+      <Box textAlign="center" py={3}>
+        <CircularProgress color="success" />
+      </Box>
+    )
+
+  if (jobs.length === 0)
+    return (
+      <Typography textAlign="center" color="text.secondary" mt={3}>
+        Hiện tại chưa có tin tuyển dụng nào.
+      </Typography>
+    )
 
   return (
     <Box>
       {jobs.map((job, index) => (
-        <Card key={job.id} sx={{ mb: 2, "&:hover": { boxShadow: 6 } }}>
+        <Card
+          key={job.id}
+          sx={{
+            mb: 2,
+            borderRadius: 2,
+            transition: "0.3s",
+            "&:hover": { boxShadow: 6, transform: "translateY(-2px)" }
+          }}
+        >
           <CardContent>
             <Grid container spacing={2}>
               {/* Logo */}
               <Grid item>
-                <Avatar src={job.logo} variant="square" sx={{ width: 56, height: 56 }} />
+                <Avatar
+                  src={job.company?.logoUrl || "/assets/default-logo.png"}
+                  variant="square"
+                  sx={{ width: 56, height: 56 }}
+                />
               </Grid>
 
               {/* Nội dung */}
               <Grid item xs>
-                <Typography variant="subtitle1" fontWeight="bold" color="primary">
+                <Typography variant="subtitle1" fontWeight="bold" color="#2a9d8f">
                   {job.title}
                 </Typography>
                 <Typography variant="body2" color="text.secondary">
-                  {job.company}
+                  {job.company?.name}
                 </Typography>
                 <Typography variant="body2" color="text.secondary">
-                  {job.location}
+                  📍 {job.location || "Đang cập nhật"}
                 </Typography>
                 <Typography variant="body2" sx={{ mt: 0.5 }}>
-                  💰 {job.salary} | 👥 Nhân viên
+                  💰{" "}
+                  {job.salaryMin && job.salaryMax
+                    ? `${job.salaryMin.toLocaleString()} - ${job.salaryMax.toLocaleString()} ${job.salaryCurrency}`
+                    : "Thỏa thuận"}
                 </Typography>
               </Grid>
 
               {/* Cập nhật */}
               <Grid item xs={12} md="auto" textAlign={{ xs: "left", md: "right" }}>
                 <Typography variant="caption" color="text.secondary">
-                  Cập nhật: {job.updated}
+                  Cập nhật: {new Date(job.updatedAt).toLocaleDateString("vi-VN")}
                 </Typography>
               </Grid>
             </Grid>
