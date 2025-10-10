@@ -6,6 +6,7 @@ import { FaUserCircle, FaSignOutAlt, FaBriefcase } from "react-icons/fa";
 
 export default function Header() {
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [menuOpen, setMenuOpen] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -15,18 +16,28 @@ export default function Header() {
 
   const handleLogout = () => {
     localStorage.removeItem("token");
+    localStorage.removeItem("refreshToken");
     localStorage.removeItem("user");
     navigate("/auth/login");
+    window.location.reload(); // reload nhẹ để cập nhật UI
   };
 
-  // ✅ Nền tùy layout
+  // ✅ Màu nền phù hợp theo layout
   const isEmployer = location.pathname.startsWith("/employer");
   const isApplicant = location.pathname.startsWith("/applicant");
-  const bgColor = isEmployer ? "#f9fafb" : isApplicant ? "#f9fffb" : "white";
+  const isAdmin = location.pathname.startsWith("/admin");
+
+  const bgColor = isEmployer
+    ? "#f9fafb"
+    : isApplicant
+    ? "#f9fffb"
+    : isAdmin
+    ? "#fff5f5"
+    : "white";
 
   return (
     <header
-      className="header"
+      className="header shadow-sm"
       style={{
         backgroundColor: bgColor,
         borderBottom: "1px solid #e5e7eb",
@@ -39,33 +50,43 @@ export default function Header() {
       <div className="header-left">
         <Link to="/" className="logo flex items-center gap-1">
           <FaBriefcase className="text-[#00b14f]" size={22} />
-          <span className="text-[#00b14f] font-bold text-lg">Job</span>
-          Recruit
+          <span className="text-[#00b14f] font-bold text-lg">Job</span>Recruit
         </Link>
       </div>
 
       {/* Menu giữa */}
-      <nav className="header-center">
-        <Link to="/">Trang chủ</Link>
-        <Link to="/jobs">Tìm việc làm</Link>
-        <Link to="/companies">Công ty</Link>
-        <Link to="/about">Giới thiệu</Link>
-        <Link to="/contact">Liên hệ</Link>
-      </nav>
+      {!token || role === "APPLICANT" ? (
+        <nav className="header-center">
+          <Link to="/">Trang chủ</Link>
+          <Link to="/jobs">Tìm việc làm</Link>
+          <Link to="/companies">Công ty</Link>
+          <Link to="/about">Giới thiệu</Link>
+          <Link to="/contact">Liên hệ</Link>
+        </nav>
+      ) : role === "EMPLOYER" ? (
+        <nav className="header-center">
+          <Link to="/employer/dashboard">Trang tuyển dụng</Link>
+          <Link to="/employer/jobs">Tin tuyển dụng</Link>
+          <Link to="/employer/applicants">Ứng viên</Link>
+        </nav>
+      ) : role === "ADMIN" ? (
+        <nav className="header-center">
+          <Link to="/admin/dashboard">Quản trị</Link>
+          <Link to="/admin/users">Người dùng</Link>
+          <Link to="/admin/companies">Công ty</Link>
+          <Link to="/admin/jobs">Việc làm</Link>
+        </nav>
+      ) : null}
 
       {/* Menu phải */}
       <div className="header-right">
-        {/* ❌ Chưa đăng nhập */}
         {!token ? (
           <>
-            <Link
-              to="/auth/login"
-              className="btn-outline hover:shadow-sm transition-all"
-            >
+            <Link to="/auth/login" className="btn-outline">
               Đăng nhập
             </Link>
             <button
-              className="btn-primary hover:shadow-sm transition-all"
+              className="btn-primary"
               onClick={() => setIsModalOpen(true)}
             >
               Đăng ký
@@ -78,50 +99,114 @@ export default function Header() {
             </Link>
           </>
         ) : (
-          /* ✅ Đã đăng nhập */
-          <div className="user-menu">
-            <div className="user-info">
-              <FaUserCircle className="icon" />
-              <span className="username font-medium">
+          <div className="relative">
+            <button
+              onClick={() => setMenuOpen(!menuOpen)}
+              className="flex items-center gap-2 hover:opacity-80 transition"
+            >
+              <FaUserCircle className="text-2xl text-[#00b14f]" />
+              <span className="font-medium">
                 {user?.firstName
                   ? `${user.firstName} ${user.lastName || ""}`
                   : "Người dùng"}
               </span>
-            </div>
+            </button>
 
-            {/* Dropdown menu */}
-            <div className="user-dropdown">
-              {role === "APPLICANT" && (
-                <>
-                  <Link to="/applicant/dashboard">🏠 Bảng điều khiển</Link>
-                  <Link to="/applicant/profile">👤 Hồ sơ của tôi</Link>
-                  <Link to="/applicant/applications">📄 Đơn ứng tuyển</Link>
-                  <Link to="/jobs" className="text-[#00b14f] font-medium">
-                    🔍 Tìm việc làm
-                  </Link>
-                </>
-              )}
+            {menuOpen && (
+              <div className="absolute right-0 mt-3 w-48 bg-white shadow-lg rounded-lg overflow-hidden text-gray-700 z-50">
+                {role === "APPLICANT" && (
+                  <>
+                    <Link
+                      to="/applicant/dashboard"
+                      className="block px-4 py-2 hover:bg-gray-100"
+                      onClick={() => setMenuOpen(false)}
+                    >
+                      Bảng điều khiển
+                    </Link>
+                    <Link
+                      to="/applicant/profile"
+                      className="block px-4 py-2 hover:bg-gray-100"
+                      onClick={() => setMenuOpen(false)}
+                    >
+                      Hồ sơ của tôi
+                    </Link>
+                    <Link
+                      to="/applicant/applications"
+                      className="block px-4 py-2 hover:bg-gray-100"
+                      onClick={() => setMenuOpen(false)}
+                    >
+                      Đơn ứng tuyển
+                    </Link>
+                  </>
+                )}
 
-              {role === "EMPLOYER" && (
-                <>
-                  <Link to="/employer/dashboard">📊 Trang tuyển dụng</Link>
-                  <Link to="/employer/jobs">📢 Quản lý tin tuyển</Link>
-                  <Link to="/employer/profile">🏢 Hồ sơ công ty</Link>
-                </>
-              )}
+                {role === "EMPLOYER" && (
+                  <>
+                    <Link
+                      to="/employer/dashboard"
+                      className="block px-4 py-2 hover:bg-gray-100"
+                      onClick={() => setMenuOpen(false)}
+                    >
+                      Bảng điều khiển
+                    </Link>
+                    <Link
+                      to="/employer/jobs"
+                      className="block px-4 py-2 hover:bg-gray-100"
+                      onClick={() => setMenuOpen(false)}
+                    >
+                      Quản lý tin tuyển
+                    </Link>
+                    <Link
+                      to="/employer/profile"
+                      className="block px-4 py-2 hover:bg-gray-100"
+                      onClick={() => setMenuOpen(false)}
+                    >
+                      Hồ sơ công ty
+                    </Link>
+                  </>
+                )}
 
-              {role === "ADMIN" && (
-                <>
-                  <Link to="/admin/dashboard">🛠 Trang quản trị</Link>
-                  <Link to="/admin/users">👥 Người dùng</Link>
-                  <Link to="/admin/companies">🏢 Công ty</Link>
-                </>
-              )}
+                {role === "ADMIN" && (
+                  <>
+                    <Link
+                      to="/admin/dashboard"
+                      className="block px-4 py-2 hover:bg-gray-100"
+                      onClick={() => setMenuOpen(false)}
+                    >
+                      Trang quản trị
+                    </Link>
+                    <Link
+                      to="/admin/users"
+                      className="block px-4 py-2 hover:bg-gray-100"
+                      onClick={() => setMenuOpen(false)}
+                    >
+                      Người dùng
+                    </Link>
+                    <Link
+                      to="/admin/companies"
+                      className="block px-4 py-2 hover:bg-gray-100"
+                      onClick={() => setMenuOpen(false)}
+                    >
+                      Công ty
+                    </Link>
+                    <Link
+                      to="/admin/jobs"
+                      className="block px-4 py-2 hover:bg-gray-100"
+                      onClick={() => setMenuOpen(false)}
+                    >
+                      Việc làm
+                    </Link>
+                  </>
+                )}
 
-              <button onClick={handleLogout} className="logout-btn">
-                <FaSignOutAlt /> Đăng xuất
-              </button>
-            </div>
+                <button
+                  onClick={handleLogout}
+                  className="w-full text-left px-4 py-2 text-red-600 hover:bg-gray-100 flex items-center gap-2"
+                >
+                  <FaSignOutAlt /> Đăng xuất
+                </button>
+              </div>
+            )}
           </div>
         )}
       </div>
