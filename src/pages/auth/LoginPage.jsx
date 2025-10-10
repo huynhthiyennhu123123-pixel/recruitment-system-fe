@@ -39,7 +39,7 @@ export default function LoginPage() {
 
         switch (role) {
           case "APPLICANT":
-            navigate("/applicant/dashboard");
+            navigate("/");
             break;
           case "EMPLOYER":
             navigate("/employer/dashboard");
