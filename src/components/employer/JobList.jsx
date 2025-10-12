@@ -19,6 +19,7 @@ export default function JobList() {
 
   useEffect(() => {
     const fetchJobs = async () => {
+
       try {
         const res = await getEmployerJobs(0, 50)
         if (res?.data?.content) setJobs(res.data.content)
@@ -30,6 +31,7 @@ export default function JobList() {
       }
     }
     fetchJobs()
+
   }, [])
 
   if (loading)
@@ -69,10 +71,23 @@ export default function JobList() {
               {/* Logo */}
               <Grid item>
                 <Avatar
-                  src={job.company?.logoUrl || "/assets/default-logo.png"}
+                  src={
+                    job.company?.logoUrl ||
+                    job.createdBy?.avatarUrl || // ✅ thêm dòng này
+                    "/assets/default-logo.png"
+                  }
+                  alt={job.company?.name || "Company Logo"}
                   variant="square"
-                  sx={{ width: 56, height: 56 }}
+                  sx={{
+                    width: 56,
+                    height: 56,
+                    borderRadius: 1,
+                    objectFit: "cover",
+                    bgcolor: "#e0f2f1",
+                  }}
                 />
+
+
               </Grid>
 
               {/* Nội dung */}
