@@ -66,37 +66,71 @@ export default function CompanyProfilePage() {
       {/* Cover section */}
       <Box
         sx={{
-          height: 280,
-          background: "linear-gradient(135deg, #e8f5e9, #c8e6c9)",
           position: "relative",
+          backgroundColor: "#f9fef9",
+          mb: 8,
         }}
       >
+        {/* Nền mờ */}
+        <Box
+          sx={{
+            height: 200,
+            backgroundImage: `url(${company.coverPhoto || company.companyPhotos?.[0] || "/assets/default-cover.jpg"})`,
+            backgroundSize: "cover",
+            backgroundPosition: "center",
+            filter: "blur(8px)",
+            transform: "scale(1.1)",
+            borderRadius: 2,
+          }}
+        />
+
+        {/* Overlay mờ sáng */}
+        <Box
+          sx={{
+            position: "absolute",
+            inset: 0,
+            backgroundColor: "rgba(255,255,255,0.4)",
+            borderRadius: 2,
+          }}
+        />
+
+        {/* Thông tin công ty */}
         <Container
           sx={{
             position: "absolute",
-            bottom: -50,
+            bottom: -60, // avatar nhô ra khỏi cover
+            left: 24,
             display: "flex",
             alignItems: "center",
             gap: 2,
+            zIndex: 2,
           }}
         >
           <Avatar
-            src={company.logoUrl || ""}
+            src={
+              company.logoUrl ||
+              company.avatarUrl ||
+              company.companyPhotos?.[0] ||
+              "/assets/default-logo.png"
+            }
+            alt={company.name}
             sx={{
-              width: 100,
-              height: 100,
-              border: "4px solid white",
+              width: 150,
+              height: 150,
+              border: "5px solid white",
               bgcolor: "#2e7d32",
-              fontSize: 36,
+              fontSize: 40,
+              boxShadow: "0 4px 12px rgba(0,0,0,0.2)",
             }}
           >
             {company.name?.charAt(0)}
           </Avatar>
+
           <Box>
-            <Typography variant="h5" fontWeight="bold" color="#2e7d32">
+            <Typography variant="h4" fontWeight="bold" color="#000000">
               {company.name}
             </Typography>
-            <Typography variant="body2" color="text.secondary">
+            <Typography variant="h6" color="#2e7d32" sx={{marginTop:2}}>
               {company.address}
             </Typography>
             {company.isVerified && (
@@ -111,6 +145,7 @@ export default function CompanyProfilePage() {
           </Box>
         </Container>
       </Box>
+
 
       {/* Body */}
       <Container sx={{ mt: 10 }}>
