@@ -34,7 +34,7 @@ import ApplyJobPage from "../pages/applicant/ApplyJobPage";
 import ApplicationsPage from "../pages/applicant/ApplicationsPage";
 import ApplicationDetailPage from "../pages/applicant/ApplicationDetailPage";
 import ApplicantInterviews from "../pages/applicant/ApplicantInterviews";
-import CompanyDetailPage from "../pages/applicant/CompanyDetailPage";
+
 
 // Pages Employer
 import EmployerDashboard from "../pages/employer/DashboardPage";
