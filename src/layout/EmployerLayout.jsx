@@ -48,7 +48,7 @@ export default function EmployerLayout() {
   const handleMenu = (event) => setAnchorEl(event.currentTarget)
   const handleClose = () => setAnchorEl(null)
 
-  // ✅ Hàm đăng xuất
+  // Hàm đăng xuất
   const handleLogout = async () => {
     try {
       await logout()

@@ -13,7 +13,7 @@ import AdminLayout from "../layout/AdminLayout";
 import HomePage from "../pages/public/HomePage";
 import JobListPage from "../pages/public/JobListPage";
 import PublicJobDetailPage from "../pages/public/JobDetailPage"; 
-import CompanyDetailPage from "../pages/public/CompanyDetailPage";
+// import CompanyDetailPage from "../pages/public/CompanyDetailPage";
 import AboutPage from "../pages/public/AboutPage";
 
 

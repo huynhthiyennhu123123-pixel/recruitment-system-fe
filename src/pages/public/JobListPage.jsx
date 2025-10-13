@@ -1,8 +1,9 @@
-import React, { useState, useEffect } from "react"
+import React, { useEffect, useState } from "react"
+import { getPublicJobs,searchJobs } from "../../services/jobService"
 import JobSearchSection from "../../layout/JobSearchSection"
-import { searchJobs } from "../../services/jobService"
 import JobCard from "../../components/job/JobCard"
-import { Box, Typography, CircularProgress } from "@mui/material"
+import { CircularProgress, Box, Typography } from "@mui/material"
+
 
 export default function JobListPage() {
   const [jobs, setJobs] = useState([])
@@ -11,14 +12,15 @@ export default function JobListPage() {
   const fetchJobs = async (filters = {}) => {
     setLoading(true)
     try {
-      const res = await searchJobs({ ...filters, page: 0, size: 12 })
-      setJobs(res.data.data.content || [])
+      const res = await getPublicJobs(filters)
+      if (res?.data?.data?.content) setJobs(res.data.data.content)
     } catch (err) {
-      console.error("Lỗi khi tải danh sách việc làm:", err)
+      console.error(err)
     } finally {
       setLoading(false)
     }
   }
+  
 
   useEffect(() => {
     fetchJobs()
@@ -27,9 +29,11 @@ export default function JobListPage() {
   return (
     <Box>
       <JobSearchSection onSearch={fetchJobs} />
+
       <Typography variant="h5" mt={3}>
         Danh sách việc làm
       </Typography>
+
       {loading ? (
         <Box textAlign="center" py={4}>
           <CircularProgress color="success" />
