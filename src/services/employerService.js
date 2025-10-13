@@ -73,7 +73,7 @@ export async function getEmployerJobs(page = 0, size = 10, sortBy = "createdAt",
 
 
 export async function getEmployerJobById(jobId) {
-  const res = await getEmployerJobs(0, 50) // lấy trước 50 job mới nhất
+  const res = await getEmployerJobs(0, 50) 
   if (!res?.data?.content) return null
   const found = res.data.content.find((job) => job.id === Number(jobId))
   return found || null

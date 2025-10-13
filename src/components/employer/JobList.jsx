@@ -19,6 +19,7 @@ export default function JobList() {
 
   useEffect(() => {
     const fetchJobs = async () => {
+
       try {
         const res = await getEmployerJobs(0, 50)
         if (res?.data?.content) setJobs(res.data.content)
@@ -30,6 +31,7 @@ export default function JobList() {
       }
     }
     fetchJobs()
+
   }, [])
 
   if (loading)
@@ -53,6 +55,7 @@ export default function JobList() {
           key={job.id}
           onClick={() => navigate(`/employer/jobs/${job.id}`)} 
           sx={{
+            position: "relative",
             mb: 2,
             borderRadius: 2,
             transition: "0.3s",
@@ -69,12 +72,35 @@ export default function JobList() {
               {/* Logo */}
               <Grid item>
                 <Avatar
-                  src={job.company?.logoUrl || "/assets/default-logo.png"}
+                  src={
+                    job.company?.logoUrl ||
+                    job.createdBy?.avatarUrl || // ✅ thêm dòng này
+                    "/assets/default-logo.png"
+                  }
+                  alt={job.company?.name || "Company Logo"}
                   variant="square"
-                  sx={{ width: 56, height: 56 }}
+                  sx={{
+                    width: 56,
+                    height: 56,
+                    borderRadius: 1,
+                    objectFit: "cover",
+                    bgcolor: "#e0f2f1",
+                  }}
                 />
-              </Grid>
 
+
+              </Grid>
+                  <Box
+                    sx={{
+                      position: "absolute",
+                      top: 8,
+                      right: 12,
+                    }}
+                  >
+                    <Typography variant="caption" color="text.secondary">
+                      Cập nhật: {new Date(job.updatedAt).toLocaleDateString("vi-VN")}
+                    </Typography>
+                  </Box>
               {/* Nội dung */}
               <Grid item xs>
                 <Typography variant="subtitle1" fontWeight="bold" color="#2a9d8f">
@@ -91,13 +117,6 @@ export default function JobList() {
                   {job.salaryMin && job.salaryMax
                     ? `${job.salaryMin.toLocaleString()} - ${job.salaryMax.toLocaleString()} ${job.salaryCurrency}`
                     : "Thỏa thuận"}
-                </Typography>
-              </Grid>
-
-              {/* Cập nhật */}
-              <Grid item xs={12} md="auto" textAlign={{ xs: "left", md: "right" }}>
-                <Typography variant="caption" color="text.secondary">
-                  Cập nhật: {new Date(job.updatedAt).toLocaleDateString("vi-VN")}
                 </Typography>
               </Grid>
             </Grid>

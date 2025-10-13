@@ -61,7 +61,11 @@ export default function EmployerJobDetailModern() {
       <Paper sx={{ p: 4, mb: 3, borderRadius: 3, background: "linear-gradient(90deg,#e8f5e9,#f9fef9)" }}>
         <Grid container spacing={2} alignItems="center">
           <Grid item>
-            <Avatar sx={{ width: 70, height: 70, bgcolor: "#2e7d32" }}><WorkOutline /></Avatar>
+            <Avatar sx={{ width: 70, height: 70, bgcolor: "#2e7d32" }} src={
+                    job.company?.logoUrl ||
+                    job.createdBy?.avatarUrl || // ✅ thêm dòng này
+                    "/assets/default-logo.png"
+                  }><WorkOutline /></Avatar>
           </Grid>
           <Grid item xs>
             <Typography variant="h5" fontWeight="bold" color="#2e7d32">{job.title}</Typography>
@@ -128,7 +132,11 @@ export default function EmployerJobDetailModern() {
           {/* Logo + Name */}
           <Grid item xs={12} md={3} textAlign="center">
             <Avatar
-              src={job.company?.logoUrl || ""}
+              src={
+                    job.company?.logoUrl ||
+                    job.createdBy?.avatarUrl || 
+                    "/assets/default-logo.png"
+                  }
               alt={job.company?.name}
               sx={{
                 width: 100,
@@ -205,7 +213,8 @@ export default function EmployerJobDetailModern() {
                   color="success"
                   size="small"
                   sx={{ borderRadius: 2, fontWeight: "bold" }}
-                   onClick={() => navigate(`/employer/company/${companyId}`)}
+                   onClick={() => navigate(`/employer/company/${job.company.id}`)}
+                   
                 >
                   Xem hồ sơ công ty
                 </Button>
