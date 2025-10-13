@@ -44,11 +44,11 @@ const ApplicationDetailPage = () => {
     setWithdrawing(true)
     try {
       await withdrawApplication(id)
-      alert("✅ Rút đơn thành công!")
+      alert("Rút đơn thành công!")
       navigate("/applicant/applications")
     } catch (err) {
       console.error("Rút đơn thất bại:", err)
-      alert("❌ Rút đơn thất bại!")
+      alert("Rút đơn thất bại!")
     } finally {
       setWithdrawing(false)
     }
@@ -99,18 +99,20 @@ const ApplicationDetailPage = () => {
               </p>
             </div>
 
-            <button
-              onClick={handleWithdraw}
-              disabled={withdrawing}
-              className={`mt-4 sm:mt-0 px-5 py-2.5 rounded-lg text-white font-medium flex items-center gap-2 transition ${
-                withdrawing
-                  ? "bg-gray-400 cursor-not-allowed"
-                  : "bg-red-500 hover:bg-red-600"
-              }`}
-            >
-              {withdrawing && <FaSpinner className="animate-spin" />}
-              {withdrawing ? "Đang rút..." : "Rút đơn"}
-            </button>
+            {application.status !== "WITHDRAWN" && application.status !== "CANCELLED" && (
+              <button
+                onClick={handleWithdraw}
+                disabled={withdrawing}
+                className={`mt-4 sm:mt-0 px-5 py-2.5 rounded-lg text-white font-medium flex items-center gap-2 transition ${withdrawing
+                    ? "bg-gray-400 cursor-not-allowed"
+                    : "bg-red-500 hover:bg-red-600"
+                  }`}
+              >
+                {withdrawing && <FaSpinner className="animate-spin" />}
+                {withdrawing ? "Đang rút..." : "Rút đơn"}
+              </button>
+            )}
+
           </div>
 
           <div className="space-y-4 text-gray-700 leading-relaxed">

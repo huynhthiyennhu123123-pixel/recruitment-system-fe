@@ -32,10 +32,13 @@ export const login = async (data) => {
   const refreshToken = payload?.refreshToken;
   const user = payload?.user;
 
-  // ✅ Lưu token và user vào localStorage
-  if (accessToken) localStorage.setItem("accessToken", accessToken);
-  if (refreshToken) localStorage.setItem("refreshToken", refreshToken);
-  if (user) localStorage.setItem("user", JSON.stringify(user));
+// ✅ Lưu token và user vào localStorage (đồng bộ với Header.jsx)
+if (accessToken) localStorage.setItem("token", accessToken); // 👈 đổi key
+if (refreshToken) localStorage.setItem("refreshToken", refreshToken);
+if (user) localStorage.setItem("user", JSON.stringify(user));
+
+
+
 
   // ✅ Trả về dữ liệu chuẩn hóa
   return {
