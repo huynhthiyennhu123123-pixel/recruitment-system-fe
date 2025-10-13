@@ -62,15 +62,44 @@ export default function ApplyJobPage() {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    if (!form.resumeUrl) {
-      alert("⚠️ Bạn cần upload CV trong hồ sơ trước khi nộp đơn!")
-      navigate("/applicant/profile")
-      return
+    let resumeUrl = form.resumeUrl?.trim() || "";
+
+    // ⚠️ Nếu chưa có CV
+    if (!resumeUrl) {
+      alert("⚠️ Bạn cần upload CV trước khi nộp đơn!");
+      navigate("/applicant/profile");
+      return;
+    }
+
+    // ✅ Chuyển localhost → domain hợp lệ để backend chấp nhận
+    if (resumeUrl.includes("localhost:5173")) {
+      resumeUrl = resumeUrl.replace(
+        "http://localhost:5173",
+        "https://example.com"
+      );
+    }
+    if (resumeUrl.includes("localhost:8081")) {
+      resumeUrl = resumeUrl.replace(
+        "http://localhost:8081",
+        "https://example.com"
+      );
+    }
+
+    // ✅ Nếu chỉ có /uploads → thêm domain
+    if (resumeUrl.startsWith("/uploads")) {
+      resumeUrl = `https://example.com${resumeUrl}`;
+    }
+
+    // ⚠️ Nếu vẫn không hợp lệ
+    if (!resumeUrl.startsWith("http")) {
+      alert("⚠️ URL CV không hợp lệ — vui lòng upload lại CV!");
+      navigate("/applicant/profile");
+      return;
     }
 
     console.log("📤 resumeUrl gửi lên backend:", resumeUrl);
 
-    setLoading(true)
+    setLoading(true);
     try {
       const payload = {
         jobPostingId: Number(id),
@@ -153,7 +182,7 @@ export default function ApplyJobPage() {
             }`}
           >
             <FaPaperPlane />
-{loading ? "Đang nộp..." : "Nộp đơn ngay"}
+            {loading ? "Đang nộp..." : "Nộp đơn ngay"}
           </button>
         </form>
       </div>
