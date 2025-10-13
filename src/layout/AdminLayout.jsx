@@ -1,12 +1,6 @@
 import * as React from "react";
-
 import { Outlet, NavLink, Link } from "react-router-dom";
 import logo from "../assets/images/logo.png";
-
-import { styled, alpha } from "@mui/material/styles";
-
-import LogoutIcon from "@mui/icons-material/Logout";
-
 import {
   AppBar,
   Toolbar,
@@ -19,11 +13,8 @@ import {
   CssBaseline,
   Box,
   IconButton,
-  InputBase,
-  Button,
   Badge,
   Menu,
-  MenuItem,
   Tooltip,
   Avatar,
   ListItemButton,
@@ -32,54 +23,50 @@ import {
 import DashboardIcon from "@mui/icons-material/Dashboard";
 import PeopleIcon from "@mui/icons-material/People";
 import MailIcon from "@mui/icons-material/Mail";
-import NotificationsIcon from "@mui/icons-material/Notifications";
 import BusinessIcon from "@mui/icons-material/Business";
 import WorkIcon from "@mui/icons-material/Work";
 import SettingsIcon from "@mui/icons-material/Settings";
+import LogoutIcon from "@mui/icons-material/Logout";
+
+import NotificationMenu from "../components/common/NotificationMenu";
 
 const drawerWidth = 240;
+
 export default function AdminLayout() {
   const [anchorElUser, setAnchorElUser] = React.useState(null);
-
-  const handleOpenUserMenu = (event) => {
-    setAnchorElUser(event.currentTarget);
-  };
-
-  const handleCloseUserMenu = () => {
-    setAnchorElUser(null);
-  };
+  const handleOpenUserMenu = (event) => setAnchorElUser(event.currentTarget);
+  const handleCloseUserMenu = () => setAnchorElUser(null);
 
   return (
     <Box sx={{ display: "flex" }}>
       <CssBaseline />
+
       <AppBar
         position="fixed"
         sx={{
           width: `calc(100% - ${drawerWidth}px)`,
           ml: `${drawerWidth}px`,
           bgcolor: "#e2f1e6ff",
-          color: "#000000ff",
+          color: "#000",
           boxShadow: "none",
           borderBottom: "1px solid #eee",
         }}
       >
         <Toolbar>
           <Box sx={{ flexGrow: 1 }} />
-          {/* Icons */}
+
+          {/* MAIL */}
           <IconButton size="large" color="inherit" sx={{ mr: 1 }}>
             <Badge badgeContent={4} color="error">
               <MailIcon />
             </Badge>
           </IconButton>
-          <IconButton size="large" color="inherit" sx={{ mr: 1 }}>
-            <Badge badgeContent={17} color="error">
-              <NotificationsIcon />
-            </Badge>
-          </IconButton>
 
-          {/* Avatar + Menu */}
+          <NotificationMenu />
+
+          {/* AVATAR NGƯỜI DÙNG */}
           <Box sx={{ flexGrow: 0 }}>
-            <Tooltip>
+            <Tooltip title="Tài khoản">
               <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
                 <Avatar
                   alt="Admin User"
@@ -88,6 +75,7 @@ export default function AdminLayout() {
                 />
               </IconButton>
             </Tooltip>
+
             <Menu
               sx={{
                 mt: "45px",
@@ -98,12 +86,9 @@ export default function AdminLayout() {
                 },
               }}
               anchorEl={anchorElUser}
-              anchorOrigin={{ vertical: "top", horizontal: "right" }}
-              transformOrigin={{ vertical: "top", horizontal: "right" }}
               open={Boolean(anchorElUser)}
               onClose={handleCloseUserMenu}
             >
-              {/* Header user info */}
               <Box sx={{ px: 2, py: 1.5, borderBottom: "1px solid #eee" }}>
                 <Typography variant="subtitle1" fontWeight="bold">
                   Admin User
@@ -113,23 +98,18 @@ export default function AdminLayout() {
                 </Typography>
               </Box>
 
-              {/* Menu items */}
-              <MenuItem
-                component={Link}
-                to="/admin/profile"
-                onClick={handleCloseUserMenu}
-              >
+              <ListItemButton component={Link} to="/admin/profile">
                 <SettingsIcon fontSize="small" sx={{ mr: 1 }} />
                 Thông tin tài khoản
-              </MenuItem>
-              <MenuItem onClick={handleCloseUserMenu}>
+              </ListItemButton>
+              <ListItemButton>
                 <PeopleIcon fontSize="small" sx={{ mr: 1 }} />
                 Đổi mật khẩu
-              </MenuItem>
-              <MenuItem onClick={handleCloseUserMenu}>
+              </ListItemButton>
+              <ListItemButton>
                 <LogoutIcon fontSize="small" sx={{ mr: 1 }} />
                 Đăng xuất
-              </MenuItem>
+              </ListItemButton>
             </Menu>
           </Box>
         </Toolbar>
@@ -154,126 +134,53 @@ export default function AdminLayout() {
             alignItems: "center",
             justifyContent: "center",
             py: 2,
-            borderBottom: "1px solid rghba(255, 255, 255, 0.1)",
+            borderBottom: "1px solid rgba(255,255,255,0.1)",
           }}
         >
           <img src={logo} alt="Logo" style={{ height: 80 }} />
         </Box>
 
         <List>
-          <ListItem disablePadding>
-            <ListItemButton
-              component={NavLink}
-              to="/admin/dashboard"
-              sx={{
-                "&:hover": { bgcolor: "rgba(255,255,255,0.1)" },
-                "&.active": {
-                  bgcolor: "#058551ff",
-                  borderRadius: 2,
-                  mx: 1,
-                  fontWeight: "bold",
-                },
-              }}
-            >
-              <ListItemIcon>
-                <DashboardIcon sx={{ color: "#dcf1e7fa" }} />
-              </ListItemIcon>
-              <ListItemText sx={{ color: "#dcf1e7fa" }} primary="Thống kê" />
-            </ListItemButton>
-          </ListItem>
-
-          <ListItem disablePadding>
-            <ListItemButton
-              component={NavLink}
-              to="/admin/users"
-              sx={{
-                "&:hover": { bgcolor: "rgba(255,255,255,0.1)" },
-                "&.active": {
-                  bgcolor: "#058551ff",
-                  borderRadius: 2,
-                  mx: 1,
-                  fontWeight: "bold",
-                },
-              }}
-            >
-              <ListItemIcon sx={{ color: "#dcf1e7fa" }}>
-                <PeopleIcon />
-              </ListItemIcon>
-              <ListItemText sx={{ color: "#dcf1e7fa" }} primary="Người dùng" />
-            </ListItemButton>
-          </ListItem>
-
-          <ListItem disablePadding>
-            <ListItemButton
-              component={NavLink}
-              to="/admin/companies"
-              sx={{
-                "&:hover": { bgcolor: "rgba(255,255,255,0.1)" },
-                "&.active": {
-                  bgcolor: "#058551ff",
-                  borderRadius: 2,
-                  mx: 1,
-                  fontWeight: "bold",
-                },
-              }}
-            >
-              <ListItemIcon sx={{ color: "#dcf1e7fa" }}>
-                <BusinessIcon />
-              </ListItemIcon>
-              <ListItemText sx={{ color: "#dcf1e7fa" }} primary="Công ty" />
-            </ListItemButton>
-          </ListItem>
-
-          <ListItem disablePadding>
-            <ListItemButton
-              component={NavLink}
-              to="/admin/jobs"
-              sx={{
-                "&:hover": { bgcolor: "rgba(255,255,255,0.1)" },
-                "&.active": {
-                  bgcolor: "#058551ff",
-                  borderRadius: 2,
-                  mx: 1,
-                  fontWeight: "bold",
-                },
-              }}
-            >
-              <ListItemIcon sx={{ color: "#dcf1e7fa" }}>
-                <WorkIcon />
-              </ListItemIcon>
-              <ListItemText sx={{ color: "#dcf1e7fa" }} primary="Tuyển dụng" />
-            </ListItemButton>
-          </ListItem>
-
-          <ListItem disablePadding>
-            <ListItemButton
-              component={NavLink}
-              to="/admin/roles"
-              sx={{
-                "&:hover": { bgcolor: "rgba(255,255,255,0.1)" },
-                "&.active": {
-                  bgcolor: "#058551ff",
-                  borderRadius: 2,
-                  mx: 1,
-                  fontWeight: "bold",
-                },
-              }}
-            >
-              <ListItemIcon sx={{ color: "#dcf1e7fa" }}>
-                <SettingsIcon />
-              </ListItemIcon>
-              <ListItemText sx={{ color: "#dcf1e7fa" }} primary="Roles" />
-            </ListItemButton>
-          </ListItem>
+          {[
+            {
+              to: "/admin/dashboard",
+              icon: <DashboardIcon />,
+              text: "Thống kê",
+            },
+            { to: "/admin/users", icon: <PeopleIcon />, text: "Người dùng" },
+            { to: "/admin/companies", icon: <BusinessIcon />, text: "Công ty" },
+            { to: "/admin/jobs", icon: <WorkIcon />, text: "Tuyển dụng" },
+            { to: "/admin/roles", icon: <SettingsIcon />, text: "Roles" },
+          ].map((item) => (
+            <ListItem key={item.to} disablePadding>
+              <ListItemButton
+                component={NavLink}
+                to={item.to}
+                sx={{
+                  "&:hover": { bgcolor: "rgba(255,255,255,0.1)" },
+                  "&.active": {
+                    bgcolor: "#058551ff",
+                    borderRadius: 2,
+                    mx: 1,
+                    fontWeight: "bold",
+                  },
+                }}
+              >
+                <ListItemIcon sx={{ color: "#dcf1e7fa" }}>
+                  {item.icon}
+                </ListItemIcon>
+                <ListItemText sx={{ color: "#dcf1e7fa" }} primary={item.text} />
+              </ListItemButton>
+            </ListItem>
+          ))}
         </List>
       </Drawer>
 
       <Box
         component="main"
-        sx={{ flexGrow: 1, bgColor: "background.defauth", p: 3 }}
+        sx={{ flexGrow: 1, bgColor: "background.default", p: 3 }}
       >
         <Toolbar />
-
         <Outlet />
       </Box>
     </Box>
