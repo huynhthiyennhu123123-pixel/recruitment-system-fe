@@ -1,127 +1,45 @@
-import React, { useEffect, useState } from "react";
-import { useLocation, Link, useNavigate } from "react-router-dom";
-import { searchJobs } from "../../services/jobService";
-import { FaMapMarkerAlt, FaSpinner } from "react-icons/fa";
+import React, { useState, useEffect } from "react"
+import JobSearchSection from "../../layout/JobSearchSection"
+import { searchJobs } from "../../services/jobService"
+import JobCard from "../../components/job/JobCard"
+import { Box, Typography, CircularProgress } from "@mui/material"
 
 export default function JobListPage() {
-  const location = useLocation();
-  const navigate = useNavigate();
-  const queryParams = new URLSearchParams(location.search);
+  const [jobs, setJobs] = useState([])
+  const [loading, setLoading] = useState(true)
 
-  // 📊 State
-  const [jobs, setJobs] = useState([]);
-  const [page, setPage] = useState(0);
-  const [totalPages, setTotalPages] = useState(1);
-  const [loading, setLoading] = useState(true);
-
-  // 🎯 Bộ lọc (filter)
-  const [filters, setFilters] = useState({
-    keyword: queryParams.get("keyword") || "",
-    location: queryParams.get("location") || "",
-    salary: "",
-    jobType: "",
-    level: "",
-    experience: "",
-  });
-
-  // 📦 Hàm fetch job list
-  const fetchJobs = async () => {
-    setLoading(true);
+  const fetchJobs = async (filters = {}) => {
+    setLoading(true)
     try {
-      const res = await searchJobs({
-        ...filters,
-        page,
-        size: 6,
-        sortBy: "createdAt",
-        sortDir: "DESC",
-      });
-      setJobs(res?.data?.content || []);
-      setTotalPages(res?.data?.totalPages || 1);
+      const res = await searchJobs({ ...filters, page: 0, size: 12 })
+      setJobs(res.data.data.content || [])
     } catch (err) {
-      console.error("Lỗi tải danh sách việc làm:", err);
+      console.error("Lỗi khi tải danh sách việc làm:", err)
     } finally {
-      setLoading(false);
+      setLoading(false)
     }
-  };
+  }
 
   useEffect(() => {
-    fetchJobs();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [filters, page]);
-
-  // 🧭 Khi thay đổi filter
-  const handleFilterChange = (key, value) => {
-    setPage(0);
-    setFilters((prev) => ({ ...prev, [key]: value }));
-  };
-
-  // 🧹 Reset toàn bộ bộ lọc
-  const resetFilters = () => {
-    setFilters({
-      keyword: "",
-      location: "",
-      salary: "",
-      jobType: "",
-      level: "",
-      experience: "",
-    });
-    setPage(0);
-  };
-
-  if (loading)
-    return (
-      <div className="flex justify-center items-center h-80 text-gray-500">
-        <FaSpinner className="animate-spin mr-2" /> Đang tải danh sách việc làm...
-      </div>
-    );
-
-  const JobCard = ({ job }) => (
-    <div className="bg-white border border-gray-200 rounded-2xl p-5 hover:shadow-md transition">
-      <h3 className="text-lg font-semibold text-gray-800 mb-1">{job.title}</h3>
-      <p className="text-sm text-gray-500 mb-1 font-medium">
-        {job.company?.name || "Công ty chưa xác định"}
-      </p>
-      <p className="flex items-center gap-1 text-gray-600 text-sm mb-2">
-        <FaMapMarkerAlt className="text-[#00b14f]" />{" "}
-        {job.location || "Không rõ"}
-      </p>
-      {job.salaryMin && job.salaryMax && (
-        <p className="text-[#00b14f] font-medium mb-2">
-          {job.salaryMin.toLocaleString("vi-VN")}₫ -{" "}
-          {job.salaryMax.toLocaleString("vi-VN")}₫
-        </p>
-      )}
-      <Link
-        to={`/jobs/${job.id}`}
-        className="inline-block text-sm text-[#00b14f] font-medium hover:underline"
-      >
-        Xem chi tiết
-      </Link>
-    </div>
-  );
+    fetchJobs()
+  }, [])
 
   return (
-    <div className="max-w-7xl mx-auto py-10 px-4 grid grid-cols-1 lg:grid-cols-4 gap-8">
-      {/* Sidebar filter */}
-      <aside className="bg-white rounded-2xl border border-gray-200 p-5 h-fit">
-        <h2 className="text-lg font-bold mb-4 text-[#00b14f]">
-          Bộ lọc tìm kiếm
-        </h2>
-
-        {/* Từ khóa */}
-        <input
-          type="text"
-          placeholder="Từ khóa..."
-          value={filters.keyword}
-          onChange={(e) => handleFilterChange("keyword", e.target.value)}
-          className="w-full border border-gray-300 rounded-md px-3 py-2 mb-3 text-sm outline-none focus:border-[#00b14f]"
-        />
-
-        {/* Địa điểm */}
-        <select
-          value={filters.location}
-          onChange={(e) => handleFilterChange("location", e.target.value)}
-          className="w-full border border-gray-300 rounded-md px-3 py-2 mb-3 text-sm"
+    <Box>
+      <JobSearchSection onSearch={fetchJobs} />
+      <Typography variant="h5" mt={3}>
+        Danh sách việc làm
+      </Typography>
+      {loading ? (
+        <Box textAlign="center" py={4}>
+          <CircularProgress color="success" />
+        </Box>
+      ) : (
+        <Box
+          display="grid"
+          gridTemplateColumns="repeat(auto-fit,minmax(280px,1fr))"
+          gap={2}
+          mt={2}
         >
           <option value="">Tất cả địa điểm</option>
           <option value="cantho">Cần Thơ</option>

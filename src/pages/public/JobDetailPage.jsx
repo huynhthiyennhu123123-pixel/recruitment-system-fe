@@ -1,43 +1,33 @@
-import React, { useEffect, useState } from "react";
-import { useParams, Link, useNavigate } from "react-router-dom";
-import { getJobDetail } from "../../services/jobService";
-import {
-  FaMapMarkerAlt,
-  FaMoneyBillWave,
-  FaClock,
-  FaBuilding,
-  FaArrowLeft,
-  FaSpinner,
-} from "react-icons/fa";
+import React, { useEffect, useState } from "react"
+import { useParams } from "react-router-dom"
+import { getJobDetail } from "../../services/jobService"
+import { Box, Typography, Divider, CircularProgress } from "@mui/material"
 
 export default function JobDetailPage() {
-  const { id } = useParams();
-  const navigate = useNavigate();
-  const [job, setJob] = useState(null);
-  const [loading, setLoading] = useState(true);
-
-  const fetchJobDetail = async () => {
-    setLoading(true);
-    try {
-      const res = await getJobDetail(id);
-      setJob(res?.data?.data || res?.data || res); // ✅ fix path API
-    } catch (err) {
-      console.error("Lỗi tải chi tiết công việc:", err);
-    } finally {
-      setLoading(false);
-    }
-  };
+  const { id } = useParams()
+  const [job, setJob] = useState(null)
+  const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    fetchJobDetail();
-  }, [id]);
+    const fetchJob = async () => {
+      try {
+        const res = await getJobDetail(id)
+        setJob(res.data.data)
+      } catch (err) {
+        console.error("Lỗi khi lấy chi tiết việc làm:", err)
+      } finally {
+        setLoading(false)
+      }
+    }
+    fetchJob()
+  }, [id])
 
   if (loading)
     return (
-      <div className="flex justify-center items-center h-80 text-gray-500">
-        <FaSpinner className="animate-spin mr-2" /> Đang tải thông tin công việc...
-      </div>
-    );
+      <Box textAlign="center" py={4}>
+        <CircularProgress color="success" />
+      </Box>
+    )
 
   if (!job)
     return (
