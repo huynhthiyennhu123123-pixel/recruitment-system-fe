@@ -28,15 +28,15 @@ export default function Header() {
       </div>
 
       {/* Menu giữa */}
-      <nav className="header-center">
+      {/* <nav className="header-center">
         <Link to="/jobs">Việc làm ▾</Link>
         <Link to="/cv">Tạo CV ▾</Link>
         <Link to="/tools">Công cụ ▾</Link>
         <Link to="/career">Cẩm nang nghề nghiệp ▾</Link>
         <Link to="/pro" className="pro">
           JobRecruit Pro
-        </Link>
-      </nav>
+        </Link> 
+      </nav> */}
 
       {/* Nút bên phải */}
       <div className="header-right">

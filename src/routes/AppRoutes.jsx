@@ -9,8 +9,13 @@ import ApplicantLayout from "../layout/ApplicantLayout";
 import EmployerLayout from "../layout/EmployerLayout";
 import AdminLayout from "../layout/AdminLayout";
 
-// Pages Public
+// 🔹 Pages Public
 import HomePage from "../pages/public/HomePage";
+import JobListPage from "../pages/public/JobListPage";
+import PublicJobDetailPage from "../pages/public/JobDetailPage"; 
+import CompanyDetailPage from "../pages/public/CompanyDetailPage";
+import AboutPage from "../pages/public/AboutPage";
+
 
 // Pages Auth
 import LoginPage from "../pages/auth/LoginPage";
@@ -71,8 +76,13 @@ function App() {
     <BrowserRouter>
       <Routes>
         {/* Public */}
+        
         <Route element={<PublicLayout />}>
           <Route index element={<HomePage />} />
+          <Route path="jobs" element={<JobListPage />} />
+          <Route path="jobs/:id" element={<PublicJobDetailPage />} />
+          <Route path="companies/:id" element={<CompanyDetailPage />} />
+          <Route path="about" element={<AboutPage />} />
         </Route>
 
         {/* Auth */}
@@ -115,8 +125,10 @@ function App() {
             <Route path="jobs/:id/edit" element={<JobPostEdit  />} />
             <Route path="applicants" element={<ApplicantsPage />} />
             <Route path="interviews" element={<InterviewPage />} />
-            <Route path="/employer/company/:id" element={<CompanyProfilePage />} />
+            <Route path="company/:id" element={<CompanyProfilePage />} />
             <Route path="CompanyProfileEdit" element={<CompanyProfileEdit />} />
+            {/* <Route path="interviews/:id" element={<InterviewDetailPage />} /> */}
+
 
           </Route>
         </Route>

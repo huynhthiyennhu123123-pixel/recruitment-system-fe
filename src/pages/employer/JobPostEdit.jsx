@@ -122,7 +122,7 @@ const handleCloseSnackbar = () => setSnackbar({ ...snackbar, open: false })
     if (res?.success) {
       setSnackbar({
         open: true,
-        message: "✅ Cập nhật tin tuyển dụng thành công!",
+        message: "Cập nhật tin tuyển dụng thành công!",
         severity: "success",
       })
       setTimeout(() => navigate(`/employer/jobs/${id}`), 1500)
@@ -368,7 +368,7 @@ const handleCloseSnackbar = () => setSnackbar({ ...snackbar, open: false })
                       </Grid>
                       <Grid item xs={12} md={4}>
                         <TextField
-                          name="jobDescription"
+                          name="description"
                           fullWidth
                           multiline
                           sx={{marginInlineEnd:19 }}
