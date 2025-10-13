@@ -24,15 +24,22 @@ export default function JobDetailPage() {
     try {
       const res = await getJobDetail(id)
       const data = res?.data?.data
+      console.log("Job detail:", data)
       setJob(data)
     } catch (err) {
-      console.error("Get job detail error:", err)
+      console.error("❌ Lỗi khi tải chi tiết công việc:", err)
     }
     setLoading(false)
   }
 
-  if (loading) return <p className="p-6 text-gray-500 italic">Đang tải...</p>
-  if (!job) return <p className="p-6 text-gray-500 italic">Không tìm thấy công việc</p>
+  if (loading)
+    return <p className="p-6 text-gray-500 italic">Đang tải...</p>
+  if (!job)
+    return <p className="p-6 text-gray-500 italic">Không tìm thấy công việc</p>
+
+  // ✅ Lấy ID công ty an toàn dù API khác nhau
+  const companyId = job.company?.id || job.companyId
+  const companyName = job.company?.name || job.companyName || "Công ty ẩn danh"
 
   return (
     <div className="max-w-5xl mx-auto px-6 py-8 bg-gray-50 min-h-screen">
@@ -43,15 +50,27 @@ export default function JobDetailPage() {
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between">
           <div className="space-y-1 text-gray-700">
             <p className="flex items-center gap-2">
-              <FaBuilding className="text-gray-400" /> {job.company?.name || "Công ty ẩn danh"}
+              <FaBuilding className="text-gray-400" />{" "}
+              {companyId ? (
+                <Link
+                  to={`/applicant/companies/${companyId}`}
+                  className="text-blue-600 hover:underline"
+                >
+                  {companyName}
+                </Link>
+              ) : (
+                companyName
+              )}
             </p>
+
             <p className="flex items-center gap-2">
-              <FaMapMarkerAlt className="text-gray-400" /> {job.location}
+              <FaMapMarkerAlt className="text-gray-400" />{" "}
+              {job.location || "Không xác định"}
             </p>
             <p className="flex items-center gap-2">
               <FaMoneyBillWave className="text-gray-400" />
               {job.salaryMin && job.salaryMax
-                ? `${job.salaryMin.toLocaleString()} - ${job.salaryMax.toLocaleString()} VND`
+                ? `${job.salaryMin.toLocaleString()}đ - ${job.salaryMax.toLocaleString()}đ`
                 : "Thỏa thuận"}
             </p>
           </div>
@@ -71,7 +90,9 @@ export default function JobDetailPage() {
         <h2 className="text-xl font-semibold text-gray-800 mb-3 flex items-center gap-2">
           <FaClipboardList className="text-[#00b14f]" /> Mô tả công việc
         </h2>
-        <p className="text-gray-700 whitespace-pre-line leading-relaxed">{job.description}</p>
+        <p className="text-gray-700 whitespace-pre-line leading-relaxed">
+          {job.description || "Chưa có mô tả công việc."}
+        </p>
       </div>
 
       {/* Yêu cầu */}
@@ -80,32 +101,45 @@ export default function JobDetailPage() {
           <h2 className="text-xl font-semibold text-gray-800 mb-3 flex items-center gap-2">
             <FaCheckCircle className="text-[#00b14f]" /> Yêu cầu công việc
           </h2>
-          <p className="text-gray-700 whitespace-pre-line leading-relaxed">{job.requirements}</p>
+          <p className="text-gray-700 whitespace-pre-line leading-relaxed">
+            {job.requirements}
+          </p>
         </div>
       )}
 
       {/* Thông tin công ty */}
-      {job.company && (
-        <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
-          <h2 className="text-xl font-semibold text-gray-800 mb-3 flex items-center gap-2">
-            <FaBuilding className="text-[#00b14f]" /> Thông tin công ty
-          </h2>
-          <p className="font-bold text-gray-800 mb-1">{job.company.name}</p>
-          {job.company.description && (
-            <p className="text-gray-600 mb-2">{job.company.description}</p>
-          )}
-          {job.company.website && (
-            <a
-              href={job.company.website}
-              target="_blank"
-              rel="noreferrer"
-              className="text-[#00b14f] hover:underline"
+      <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
+        <h2 className="text-xl font-semibold text-gray-800 mb-3 flex items-center gap-2">
+          <FaBuilding className="text-[#00b14f]" /> Thông tin công ty
+        </h2>
+
+        <p className="font-bold text-gray-800 mb-1">{companyName}</p>
+        {job.company?.description && (
+          <p className="text-gray-600 mb-2">{job.company.description}</p>
+        )}
+        {job.company?.website && (
+          <a
+            href={job.company.website}
+            target="_blank"
+            rel="noreferrer"
+            className="text-[#00b14f] hover:underline"
+          >
+            {job.company.website}
+          </a>
+        )}
+
+        {/* 🆕 Nút xem công ty */}
+        {companyId && (
+          <div className="mt-4">
+            <Link
+              to={`/applicant/companies/${companyId}`}
+              className="inline-block border border-[#00b14f] text-[#00b14f] hover:bg-[#00b14f] hover:text-white font-medium px-4 py-2 rounded-lg transition"
             >
-              {job.company.website}
-            </a>
-          )}
-        </div>
-      )}
+              Xem trang công ty →
+            </Link>
+          </div>
+        )}
+      </div>
     </div>
   )
 }

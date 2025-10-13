@@ -26,7 +26,14 @@ export default function InterviewPage() {
       setLoading(true)
       try {
         const res = await getInterviews()
-        setInterviews(res?.data || [])
+        setInterviews(
+          Array.isArray(res?.data)
+            ? res.data
+            : Array.isArray(res?.data?.data)
+              ? res.data.data
+              : []
+        )
+
       } catch (err) {
         console.error("❌ Lỗi khi tải danh sách phỏng vấn:", err)
       } finally {
@@ -121,10 +128,10 @@ export default function InterviewPage() {
                                 i.status === "SCHEDULED"
                                   ? "Đã lên lịch"
                                   : i.status === "COMPLETED"
-                                  ? "Đã hoàn thành"
-                                  : i.status === "CANCELED"
-                                  ? "Đã huỷ"
-                                  : i.status
+                                    ? "Đã hoàn thành"
+                                    : i.status === "CANCELED"
+                                      ? "Đã huỷ"
+                                      : i.status
                               }
                               color={getStatusColor(i.status)}
                               size="small"
