@@ -15,19 +15,24 @@ export default function InterviewPage() {
   const [openForm, setOpenForm] = useState(false)
   const [openDetail, setOpenDetail] = useState(null)
 
-  const fetchData = async () => {
-    setLoading(true)
-    const res = await getMyInterviews({ page: 0, size: 20 })
-    setInterviews(res?.content || [])
-    setLoading(false)
-  }
+  useEffect(() => {
+    const fetchInterviews = async () => {
+      setLoading(true)
+      try {
+        const res = await getInterviews()
+        setInterviews(
+          Array.isArray(res?.data)
+            ? res.data
+            : Array.isArray(res?.data?.data)
+              ? res.data.data
+              : []
+        )
 
-  useEffect(() => { fetchData() }, [])
-
-  const handleCancel = async (id) => {
-    if (window.confirm("Xác nhận hủy lịch phỏng vấn này?")) {
-      await cancelInterview(id, "Hủy bởi nhà tuyển dụng")
-      fetchData()
+      } catch (err) {
+        console.error("❌ Lỗi khi tải danh sách phỏng vấn:", err)
+      } finally {
+        setLoading(false)
+      }
     }
   }
 
@@ -95,7 +100,23 @@ export default function InterviewPage() {
                         <Typography variant="body2" color="text.secondary">
                           Địa điểm: {i.location || "Trực tuyến"}  
                         </Typography>
-                        <Chip label={i.status} color={colorMap[i.status] || "default"} size="small" sx={{ mt: 1 }} />
+                        {i.status && (
+                          <Box sx={{ mt: 1 }}>
+                            <Chip
+                              label={
+                                i.status === "SCHEDULED"
+                                  ? "Đã lên lịch"
+                                  : i.status === "COMPLETED"
+                                    ? "Đã hoàn thành"
+                                    : i.status === "CANCELED"
+                                      ? "Đã huỷ"
+                                      : i.status
+                              }
+                              color={getStatusColor(i.status)}
+                              size="small"
+                            />
+                          </Box>
+                        )}
                       </>
                     }
                   />
