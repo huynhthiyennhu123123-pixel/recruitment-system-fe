@@ -1,146 +1,117 @@
 import React, { useEffect, useState } from "react"
 import {
-  Box,
-  Typography,
-  Paper,
-  List,
-  ListItem,
-  ListItemText,
-  ListItemAvatar,
-  Avatar,
-  Button,
-  Chip,
-  CircularProgress,
-  Divider,
+  Box, Typography, Paper, List, ListItem, ListItemText, Avatar, Divider,
+  Button, Chip, CircularProgress, Stack
 } from "@mui/material"
 import EventAvailableOutlined from "@mui/icons-material/EventAvailableOutlined"
 import PersonOutline from "@mui/icons-material/PersonOutline"
-import { getInterviews } from "../../services/employerService"
+import { getMyInterviews, cancelInterview, completeInterview } from "../../services/interviewService"
+import InterviewFormDialog from "./InterviewFormDialog"
+import InterviewDetailDialog from "./InterviewDetailDialog"
 
 export default function InterviewPage() {
   const [interviews, setInterviews] = useState([])
-  const [loading, setLoading] = useState(false)
+  const [loading, setLoading] = useState(true)
+  const [openForm, setOpenForm] = useState(false)
+  const [openDetail, setOpenDetail] = useState(null)
 
-  useEffect(() => {
-    const fetchInterviews = async () => {
-      setLoading(true)
-      try {
-        const res = await getInterviews()
-        setInterviews(res?.data || [])
-      } catch (err) {
-        console.error("❌ Lỗi khi tải danh sách phỏng vấn:", err)
-      } finally {
-        setLoading(false)
-      }
-    }
-    fetchInterviews()
-  }, [])
+  const fetchData = async () => {
+    setLoading(true)
+    const res = await getMyInterviews({ page: 0, size: 20 })
+    setInterviews(res?.content || [])
+    setLoading(false)
+  }
 
-  const getStatusColor = (status) => {
-    switch (status) {
-      case "SCHEDULED":
-        return "info"
-      case "COMPLETED":
-        return "success"
-      case "CANCELED":
-        return "error"
-      default:
-        return "default"
+  useEffect(() => { fetchData() }, [])
+
+  const handleCancel = async (id) => {
+    if (window.confirm("Xác nhận hủy lịch phỏng vấn này?")) {
+      await cancelInterview(id, "Hủy bởi nhà tuyển dụng")
+      fetchData()
     }
+  }
+
+  const handleComplete = async (id) => {
+    if (window.confirm("Xác nhận hoàn tất phỏng vấn này?")) {
+      await completeInterview(id, "Phỏng vấn thành công")
+      fetchData()
+    }
+  }
+
+  const colorMap = {
+    SCHEDULED: "info",
+    COMPLETED: "success",
+    CANCELLED: "error",
+    RESCHEDULED: "warning"
   }
 
   return (
     <Box sx={{ maxWidth: 1000, mx: "auto", my: 4 }}>
-      <Typography
-        variant="h5"
-        fontWeight="bold"
-        color="#2e7d32"
-        gutterBottom
-        sx={{ display: "flex", alignItems: "center", gap: 1 }}
-      >
-        <EventAvailableOutlined sx={{ fontSize: 28 }} />
-        Lịch phỏng vấn
-      </Typography>
+      <Stack direction="row" justifyContent="space-between" alignItems="center">
+        <Typography variant="h5" fontWeight="bold" color="#2e7d32" sx={{ display: "flex", gap: 1 }}>
+          <EventAvailableOutlined /> Lịch phỏng vấn
+        </Typography>
+        <Button variant="contained" color="success" onClick={() => setOpenForm(true)}>
+          + Tạo lịch
+        </Button>
+      </Stack>
 
-      <Paper sx={{ p: 2, borderRadius: 3, mt: 2 }}>
+      <Paper sx={{ p: 2, mt: 2, borderRadius: 3 }}>
         {loading ? (
-          <Box textAlign="center" py={5}>
-            <CircularProgress color="success" />
-          </Box>
+          <Box textAlign="center" py={5}><CircularProgress color="success" /></Box>
         ) : interviews.length === 0 ? (
-          <Typography
-            variant="body1"
-            color="text.secondary"
-            textAlign="center"
-            py={5}
-          >
-            Hiện chưa có lịch phỏng vấn nào.
+          <Typography textAlign="center" color="text.secondary" py={5}>
+            Chưa có lịch phỏng vấn nào.
           </Typography>
         ) : (
           <List>
             {interviews.map((i, idx) => (
-              <React.Fragment key={i.id || idx}>
+              <React.Fragment key={i.id}>
                 <ListItem
                   alignItems="flex-start"
                   secondaryAction={
-                    <Button
-                      variant="outlined"
-                      size="small"
-                      sx={{ borderRadius: 2 }}
-                      color="success"
-                    >
-                      Xem chi tiết
-                    </Button>
+                    <Stack direction="row" spacing={1}>
+                      <Button size="small" variant="outlined" onClick={() => setOpenDetail(i)}>Chi tiết</Button>
+                      {i.status === "SCHEDULED" && (
+                        <>
+                          <Button size="small" color="success" onClick={() => handleComplete(i.id)}>Hoàn tất</Button>
+                          <Button size="small" color="error" onClick={() => handleCancel(i.id)}>Hủy</Button>
+                        </>
+                      )}
+                    </Stack>
                   }
                 >
-                  <ListItemAvatar>
-                    <Avatar sx={{ bgcolor: "#2e7d32" }}>
-                      <PersonOutline />
-                    </Avatar>
-                  </ListItemAvatar>
-
+                  <Avatar sx={{ bgcolor: "#2e7d32", mr: 2 }}>
+                    <PersonOutline />
+                  </Avatar>
                   <ListItemText
                     primary={
-                      <Typography variant="subtitle1" fontWeight="bold">
-                        {i.candidateName || "Ứng viên ẩn danh"} —{" "}
-                        {i.jobTitle || "Không xác định"}
+                      <Typography fontWeight="bold">
+                        📞 {i.interviewType} – {new Date(i.scheduledAt).toLocaleString("vi-VN")}
                       </Typography>
                     }
                     secondary={
                       <>
                         <Typography variant="body2" color="text.secondary">
-                          ⏰{" "}
-                          {i.date
-                            ? new Date(i.date).toLocaleString("vi-VN")
-                            : "Chưa có thời gian"}
+                          Địa điểm: {i.location || "Trực tuyến"}  
                         </Typography>
-                        {i.status && (
-                          <Box sx={{ mt: 1 }}>
-                            <Chip
-                              label={
-                                i.status === "SCHEDULED"
-                                  ? "Đã lên lịch"
-                                  : i.status === "COMPLETED"
-                                  ? "Đã hoàn thành"
-                                  : i.status === "CANCELED"
-                                  ? "Đã huỷ"
-                                  : i.status
-                              }
-                              color={getStatusColor(i.status)}
-                              size="small"
-                            />
-                          </Box>
-                        )}
+                        <Chip label={i.status} color={colorMap[i.status] || "default"} size="small" sx={{ mt: 1 }} />
                       </>
                     }
                   />
                 </ListItem>
-                {idx < interviews.length - 1 && <Divider variant="inset" component="li" />}
+                {idx < interviews.length - 1 && <Divider />}
               </React.Fragment>
             ))}
           </List>
         )}
       </Paper>
+
+      {/* Dialogs */}
+      <InterviewFormDialog open={openForm} onClose={() => { setOpenForm(false); fetchData() }} />
+      {openDetail && (
+        <InterviewDetailDialog interview={openDetail} onClose={() => setOpenDetail(null)} />
+      )}
     </Box>
   )
 }
