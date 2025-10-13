@@ -66,37 +66,71 @@ export default function CompanyProfilePage() {
       {/* Cover section */}
       <Box
         sx={{
-          height: 280,
-          background: "linear-gradient(135deg, #e8f5e9, #c8e6c9)",
           position: "relative",
+          backgroundColor: "#f9fef9",
+          mb: 8,
         }}
       >
+        {/* Nền mờ */}
+        <Box
+          sx={{
+            height: 200,
+            backgroundImage: `url(${company.coverPhoto || company.companyPhotos?.[0] || "/assets/default-cover.jpg"})`,
+            backgroundSize: "cover",
+            backgroundPosition: "center",
+            filter: "blur(8px)",
+            transform: "scale(1.1)",
+            borderRadius: 2,
+          }}
+        />
+
+        {/* Overlay mờ sáng */}
+        <Box
+          sx={{
+            position: "absolute",
+            inset: 0,
+            backgroundColor: "rgba(255,255,255,0.4)",
+            borderRadius: 2,
+          }}
+        />
+
+        {/* Thông tin công ty */}
         <Container
           sx={{
             position: "absolute",
-            bottom: -50,
+            bottom: -60, // avatar nhô ra khỏi cover
+            left: 24,
             display: "flex",
             alignItems: "center",
             gap: 2,
+            zIndex: 2,
           }}
         >
           <Avatar
-            src={company.logoUrl || ""}
+            src={
+              company.logoUrl ||
+              company.avatarUrl ||
+              company.companyPhotos?.[0] ||
+              "/assets/default-logo.png"
+            }
+            alt={company.name}
             sx={{
-              width: 100,
-              height: 100,
-              border: "4px solid white",
+              width: 150,
+              height: 150,
+              border: "5px solid white",
               bgcolor: "#2e7d32",
-              fontSize: 36,
+              fontSize: 40,
+              boxShadow: "0 4px 12px rgba(0,0,0,0.2)",
             }}
           >
             {company.name?.charAt(0)}
           </Avatar>
+
           <Box>
-            <Typography variant="h5" fontWeight="bold" color="#2e7d32">
+            <Typography variant="h4" fontWeight="bold" color="#000000">
               {company.name}
             </Typography>
-            <Typography variant="body2" color="text.secondary">
+            <Typography variant="h6" color="#2e7d32" sx={{marginTop:2}}>
               {company.address}
             </Typography>
             {company.isVerified && (
@@ -111,6 +145,7 @@ export default function CompanyProfilePage() {
           </Box>
         </Container>
       </Box>
+
 
       {/* Body */}
       <Container sx={{ mt: 10 }}>
@@ -205,6 +240,103 @@ export default function CompanyProfilePage() {
               <strong>{company.hiringSuccessRate || 0}%</strong>
             </Typography>
           </Box>
+
+          {/* ✅ Thông tin thêm */}
+          <Box
+            mt={3}
+            p={3}
+            bgcolor="#f9fef9"
+            borderRadius={2}
+            border="1px solid #c8e6c9"
+          >
+            <Typography variant="subtitle1" fontWeight="bold" color="#2e7d32" gutterBottom>
+              Thông tin thêm
+            </Typography>
+            <Divider sx={{ mb: 2 }} />
+
+            {/* Lợi ích công ty */}
+            {company.benefits?.length > 0 && (
+              <Box mb={2}>
+                <Typography variant="body1" fontWeight="bold">
+                  🌟 Phúc lợi công ty:
+                </Typography>
+                <Box mt={1} display="flex" flexWrap="wrap" gap={1}>
+                  {company.benefits.map((benefit, i) => (
+                    <Chip key={i} label={benefit} color="success" variant="outlined" />
+                  ))}
+                </Box>
+              </Box>
+            )}
+
+            {/* Giờ làm việc */}
+            {company.workingHours && (
+              <Box mb={2}>
+                <Typography variant="body1" fontWeight="bold">
+                  ⏰ Giờ làm việc:
+                </Typography>
+                <Typography variant="body2" sx={{ mt: 0.5 }}>
+                  {company.workingHours}
+                </Typography>
+              </Box>
+            )}
+
+            {/* Liên hệ */}
+            <Box mb={2}>
+              <Typography variant="body1" fontWeight="bold">
+                📞 Liên hệ:
+              </Typography>
+              <Typography variant="body2" sx={{ mt: 0.5 }}>
+                {company.phoneNumber && (
+                  <>
+                    <strong>Điện thoại:</strong> {company.phoneNumber}
+                    <br />
+                  </>
+                )}
+                {company.contactEmail && (
+                  <>
+                    <strong>Email:</strong>{" "}
+                    <a href={`mailto:${company.contactEmail}`} style={{ color: "#2e7d32" }}>
+                      {company.contactEmail}
+                    </a>
+                  </>
+                )}
+              </Typography>
+            </Box>
+
+            {/* Mạng xã hội */}
+            {company.socialLinks && (
+              <Box>
+                <Typography variant="body1" fontWeight="bold">
+                  🌐 Mạng xã hội:
+                </Typography>
+                <Box mt={1} display="flex" flexWrap="wrap" gap={2}>
+                  {company.socialLinks.facebook && (
+                    <Button
+                      variant="outlined"
+                      color="success"
+                      href={company.socialLinks.facebook}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      Facebook
+                    </Button>
+                  )}
+                  {company.socialLinks.linkedin && (
+                    <Button
+                      variant="outlined"
+                      color="success"
+                      href={company.socialLinks.linkedin}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      LinkedIn
+                    </Button>
+                  )}
+                </Box>
+              </Box>
+            )}
+          </Box>
+
         </Paper>
 
         {/* Job list */}

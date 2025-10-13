@@ -12,6 +12,8 @@ import {
   Container,
   Grid,
   Snackbar,
+  Avatar,
+  Divider,
 } from "@mui/material"
 import MuiAlert from "@mui/material/Alert"
 import DashboardIcon from "@mui/icons-material/Dashboard"
@@ -61,6 +63,7 @@ export default function EmployerLayout() {
   }
 
   const handleCloseSnackbar = () => setSnackbar({ ...snackbar, open: false })
+  const user = JSON.parse(localStorage.getItem("user"))
 
 
   return (
@@ -111,10 +114,35 @@ export default function EmployerLayout() {
 
           {/* Dropdown tài khoản */}
           <IconButton color="inherit" onClick={handleMenu}>
-            <AccountCircle />
+            {user?.avatarUrl || user?.company?.logoUrl ? (
+              <Avatar
+                src={user.avatarUrl || user.company.logoUrl}
+                alt={user.fullName || "User Avatar"}
+                sx={{ width: 36, height: 36 }}
+              />
+            ) : (
+              <AccountCircle sx={{ fontSize: 36 }} />
+            )}
           </IconButton>
+
           <Menu anchorEl={anchorEl} open={Boolean(anchorEl)} onClose={handleClose}>
-           
+              <MenuItem disabled sx={{ opacity: 1, display: "flex", alignItems: "center", gap: 1 }}>
+              <Avatar
+                src={user?.avatarUrl || user?.company?.logoUrl}
+                alt={user?.fullName || "User Avatar"}
+                sx={{ width: 32, height: 32 }}
+              />
+              <Box>
+                <Typography variant="body2" sx={{ fontWeight: "bold" }}>
+                  {user?.fullName || "Người dùng"}
+                </Typography>
+                <Typography variant="caption" color="text.secondary">
+                  {user?.email}
+                </Typography>
+              </Box>
+            </MenuItem>
+            <Divider />
+
               <MenuItem onClick={handleClose} component={Link} to={`/employer/company/${companyId}`}>
                 Tài khoản của tôi
               </MenuItem>
