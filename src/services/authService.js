@@ -23,40 +23,42 @@ export const register = async (data) => {
   return res.data;
 };
 
-// ✅ Đăng nhập
+
+// ✅ Đăng nhập (dùng chung cho tất cả vai trò)
 export const login = async (data) => {
-  const res = await axiosClient.post("/auth/login", data);
-  const payload = res.data?.data || res.data;
+  const res = await axiosClient.post("/auth/login", data)
+  const payload = res.data?.data || res.data
 
-  const accessToken = payload?.accessToken;
-  const refreshToken = payload?.refreshToken;
-  const user = payload?.user;
+  const accessToken = payload?.accessToken
+  const refreshToken = payload?.refreshToken
+  const user = payload?.user
 
-  // ✅ Lưu token và user vào localStorage (đồng bộ với axiosClient)
-  if (accessToken) localStorage.setItem("accessToken", accessToken);
-  if (refreshToken) localStorage.setItem("refreshToken", refreshToken);
-  if (user) localStorage.setItem("user", JSON.stringify(user));
+  // ✅ Lưu token và user vào localStorage (chuẩn key)
+  if (accessToken) localStorage.setItem("accessToken", accessToken)
+  if (refreshToken) localStorage.setItem("refreshToken", refreshToken)
+  if (user) localStorage.setItem("user", JSON.stringify(user))
 
+  // ✅ Trả về dữ liệu chuẩn hóa
   return {
     accessToken: accessToken || null,
     refreshToken: refreshToken || null,
     user: user || null,
     type: payload?.tokenType || "Bearer",
-  };
-};
+  }
+}
 
-// ✅ Lấy thông tin user hiện tại
+
+// ✅ Lấy thông tin người dùng hiện tại
 export const me = () => axiosClient.get("/auth/me");
 
-/// ✅ Đăng xuất
+// ✅ Đăng xuất (dùng chung cho Applicant & Employer)
 export const logout = async () => {
   try {
-    // Gọi API logout nếu backend có
     await axiosClient.post("/auth/logout");
   } catch (err) {
     console.warn("⚠️ API logout không khả dụng hoặc bị lỗi:", err.message);
   } finally {
-    // ✅ Dọn dẹp toàn bộ dữ liệu đăng nhập
+    // ✅ Xóa toàn bộ dữ liệu liên quan đến đăng nhập
     localStorage.removeItem("accessToken");
     localStorage.removeItem("refreshToken");
     localStorage.removeItem("user");

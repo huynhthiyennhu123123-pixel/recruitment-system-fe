@@ -17,48 +17,58 @@ export default function LoginPage() {
     setLoading(true);
     setError("");
     setInfo("");
+
     try {
       const res = await login(form);
-      console.log("Login response:", res);
+      console.log("✅ Login response:", res);
 
+      const user = res?.user;
       if (res?.accessToken) {
-        const user = res.user || {};
+      localStorage.setItem("accessToken", res.accessToken);
+      localStorage.setItem("user", JSON.stringify(res.user));
 
-        if (!user.emailVerified) {
-          setError("Tài khoản chưa xác thực email.");
-          setLoading(false);
-          return;
-        }
+      await new Promise((resolve) => setTimeout(resolve, 50)); // ✅ thêm dòng này
 
-        // ✅ Lưu token và user vào localStorage
-        localStorage.setItem("accessToken", res.accessToken);
-        localStorage.setItem("user", JSON.stringify(user));
+      const role = res.user.role?.toUpperCase();
+      if (role === "APPLICANT") navigate("/", { replace: true });
+      else if (role === "EMPLOYER") navigate("/employer/dashboard", { replace: true });
+    }
 
-        // ✅ Điều hướng theo vai trò
-        const role = user.role?.toUpperCase();
 
-        switch (role) {
-          case "APPLICANT":
-            navigate("/");
-            break;
-          case "EMPLOYER":
-            navigate("/employer/dashboard");
-            break;
-          case "ADMIN":
-            navigate("/admin/dashboard");
-            break;
-          default:
-            navigate("/");
-            break;
-        }
-      } else {
-        setError("Sai thông tin đăng nhập");
+      // ⚠️ Nếu tài khoản chưa xác thực email
+      if (user.emailVerified === false) {
+        setError("Tài khoản của bạn chưa xác thực email.");
+        setLoading(false);
+        return;
+      }
+
+      // ✅ Điều hướng theo vai trò (role từ backend)
+      const role = user.role?.toUpperCase();
+      switch (role) {
+        case "APPLICANT":
+          navigate("/", { replace: true });
+          break;
+        case "EMPLOYER":
+        case "RECRUITER":
+          navigate("/employer/dashboard", { replace: true });
+          break;
+        case "ADMIN":
+          navigate("/admin/dashboard", { replace: true });
+          break;
+        default:
+          navigate("/", { replace: true });
+          break;
       }
     } catch (err) {
-      console.error("Login error:", err);
-      setError(err?.message || "Đăng nhập thất bại. Vui lòng thử lại.");
+      console.error("❌ Login error:", err);
+      const message =
+        err?.response?.data?.message ||
+        err?.message ||
+        "Đăng nhập thất bại. Vui lòng thử lại.";
+      setError(message);
+    } finally {
+      setLoading(false);
     }
-    setLoading(false);
   };
 
   const handleResend = async () => {
@@ -66,8 +76,10 @@ export default function LoginPage() {
       const res = await resendVerification(form.email);
       if (res?.success) {
         setInfo("✅ Đã gửi lại email xác nhận. Vui lòng kiểm tra hộp thư.");
+      } else {
+        setError("Không thể gửi lại email xác nhận.");
       }
-    } catch (err) {
+    } catch {
       setError("❌ Không thể gửi lại email xác nhận.");
     }
   };
@@ -94,6 +106,7 @@ export default function LoginPage() {
           type="email"
           name="email"
           placeholder="Nhập email"
+          value={form.email}
           onChange={handleChange}
           required
           className="w-full rounded-xl border px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-500"
@@ -102,6 +115,7 @@ export default function LoginPage() {
           type="password"
           name="password"
           placeholder="Nhập mật khẩu"
+          value={form.password}
           onChange={handleChange}
           required
           className="w-full rounded-xl border px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-500"
