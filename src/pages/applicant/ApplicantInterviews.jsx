@@ -14,6 +14,23 @@ import "react-toastify/dist/ReactToastify.css";
 export default function ApplicantInterviews() {
   const [interviews, setInterviews] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
+  const [page, setPage] = useState(0);
+  const [totalPages, setTotalPages] = useState(1);
+  const [statusFilter, setStatusFilter] = useState("");
+
+  const token =
+    localStorage.getItem("accessToken") || localStorage.getItem("token");
+
+  const baseUrl = "http://localhost:8081";
+
+  // 🧭 Map song song giữa FE (EN) và BE (VN)
+  const statusMap = {
+    SCHEDULED: "XAC_NHAN",
+    COMPLETED: "HOAN_TAT",
+    CANCELLED: "HUY",
+    RESCHEDULED: "MOI_TAO",
+  };
 
   useEffect(() => {
     const fetchInterviews = async () => {
@@ -46,33 +63,30 @@ export default function ApplicantInterviews() {
       minute: "2-digit",
     });
 
-  const getStatusBadge = (status) => {
-    switch (status) {
-      case "SCHEDULED":
-        return (
-          <span className="bg-yellow-100 text-yellow-700 px-3 py-1 rounded-full text-xs">
-            Đã lên lịch
-          </span>
-        );
-      case "COMPLETED":
-        return (
-          <span className="bg-green-100 text-green-700 px-3 py-1 rounded-full text-xs">
-            Hoàn thành
-          </span>
-        );
-      case "CANCELLED":
-        return (
-          <span className="bg-red-100 text-red-700 px-3 py-1 rounded-full text-xs">
-            Đã huỷ
-          </span>
-        );
-      default:
-        return (
-          <span className="bg-gray-100 text-gray-700 px-3 py-1 rounded-full text-xs">
-            {status}
-          </span>
-        );
-    }
+  // 🟢 Hiển thị tiếng Việt khi render UI
+  const renderStatus = (status) => {
+    const mapToVN = {
+      SCHEDULED: { text: "Đã xác nhận", color: "bg-blue-100 text-blue-700" },
+      COMPLETED: { text: "Hoàn tất", color: "bg-green-100 text-green-700" },
+      CANCELLED: { text: "Đã hủy", color: "bg-red-100 text-red-700" },
+      RESCHEDULED: {
+        text: "Đã đặt lại lịch",
+        color: "bg-yellow-100 text-yellow-700",
+      },
+      MOI_TAO: { text: "Mới tạo", color: "bg-gray-100 text-gray-700" },
+      XAC_NHAN: { text: "Đã xác nhận", color: "bg-blue-100 text-blue-700" },
+      HOAN_TAT: { text: "Hoàn tất", color: "bg-green-100 text-green-700" },
+      HUY: { text: "Đã hủy", color: "bg-red-100 text-red-700" },
+    };
+    return (
+      <span
+        className={`px-3 py-1 rounded-full text-sm font-medium ${
+          mapToVN[status]?.color || "bg-gray-100 text-gray-600"
+        }`}
+      >
+        {mapToVN[status]?.text || status}
+      </span>
+    );
   };
 
   return (
