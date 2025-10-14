@@ -1,157 +1,157 @@
-import { useEffect, useState } from "react";
-import axios from "axios";
+import React, { useEffect, useState } from "react";
+import {
+  FaVideo,
+  FaMapMarkerAlt,
+  FaCalendarAlt,
+  FaClock,
+  FaSpinner,
+  FaLink,
+} from "react-icons/fa";
+import { getMyInterviews } from "../../services/applicantService";
+import { toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 export default function ApplicantInterviews() {
   const [interviews, setInterviews] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState("");
-  const [page, setPage] = useState(0);
-  const [totalPages, setTotalPages] = useState(1);
-  const [statusFilter, setStatusFilter] = useState("");
-
-  const token = localStorage.getItem("token");
-  const baseUrl = "http://localhost:8081";
-
-  // 🧭 Map song song giữa FE (EN) và BE (VN)
-  const statusMap = {
-    SCHEDULED: "XAC_NHAN",
-    COMPLETED: "HOAN_TAT",
-    CANCELLED: "HUY",
-    RESCHEDULED: "MOI_TAO",
-  };
 
   useEffect(() => {
-    fetchInterviews();
-  }, [page, statusFilter]);
-
-  const fetchInterviews = async () => {
-    try {
+    const fetchInterviews = async () => {
       setLoading(true);
-
-      // 👉 Gửi tiếng Anh sang API để backend nhận đúng (giống Postman)
-      const apiStatus = statusFilter || undefined;
-
-      const res = await axios.get(`${baseUrl}/api/interviews/my`, {
-        headers: { Authorization: `Bearer ${token}` },
-        params: {
+      try {
+        const res = await getMyInterviews({
           start: "2025-01-01T00:00:00",
           end: "2099-12-31T23:59:59",
-          status: apiStatus,
-          page,
-          size: 10,
-        },
-      });
+          page: 0,
+          size: 20,
+        });
+        const data = res?.data?.data?.content || [];
+        setInterviews(data);
+      } catch (err) {
+        console.error("❌ Lỗi tải danh sách phỏng vấn:", err);
+        toast.error("Không thể tải lịch phỏng vấn. Vui lòng thử lại sau!");
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchInterviews();
+  }, []);
 
-      const data = res.data?.data;
-      setInterviews(data?.content || []);
-      setTotalPages(data?.totalPages || 1);
-    } catch (err) {
-      console.error(err);
-      setError("Không thể tải danh sách lịch phỏng vấn.");
-    } finally {
-      setLoading(false);
+  const formatDate = (isoString) =>
+    new Date(isoString).toLocaleString("vi-VN", {
+      day: "2-digit",
+      month: "2-digit",
+      year: "numeric",
+      hour: "2-digit",
+      minute: "2-digit",
+    });
+
+  const getStatusBadge = (status) => {
+    switch (status) {
+      case "SCHEDULED":
+        return (
+          <span className="bg-yellow-100 text-yellow-700 px-3 py-1 rounded-full text-xs">
+            Đã lên lịch
+          </span>
+        );
+      case "COMPLETED":
+        return (
+          <span className="bg-green-100 text-green-700 px-3 py-1 rounded-full text-xs">
+            Hoàn thành
+          </span>
+        );
+      case "CANCELLED":
+        return (
+          <span className="bg-red-100 text-red-700 px-3 py-1 rounded-full text-xs">
+            Đã huỷ
+          </span>
+        );
+      default:
+        return (
+          <span className="bg-gray-100 text-gray-700 px-3 py-1 rounded-full text-xs">
+            {status}
+          </span>
+        );
     }
   };
 
-  // 🟢 Hiển thị tiếng Việt khi render UI
-  const renderStatus = (status) => {
-    const mapToVN = {
-      SCHEDULED: { text: "Đã xác nhận", color: "bg-blue-100 text-blue-700" },
-      COMPLETED: { text: "Hoàn tất", color: "bg-green-100 text-green-700" },
-      CANCELLED: { text: "Đã hủy", color: "bg-red-100 text-red-700" },
-      RESCHEDULED: { text: "Đã đặt lại lịch", color: "bg-yellow-100 text-yellow-700" },
-      MOI_TAO: { text: "Mới tạo", color: "bg-gray-100 text-gray-700" },
-      XAC_NHAN: { text: "Đã xác nhận", color: "bg-blue-100 text-blue-700" },
-      HOAN_TAT: { text: "Hoàn tất", color: "bg-green-100 text-green-700" },
-      HUY: { text: "Đã hủy", color: "bg-red-100 text-red-700" },
-    };
-    return (
-      <span
-        className={`px-3 py-1 rounded-full text-sm font-medium ${
-          mapToVN[status]?.color || "bg-gray-100 text-gray-600"
-        }`}
-      >
-        {mapToVN[status]?.text || status}
-      </span>
-    );
-  };
-
   return (
-    <div className="max-w-5xl mx-auto mt-10 p-6 bg-white rounded-2xl shadow">
-      <div className="flex justify-between items-center mb-6">
-        <h1 className="text-2xl font-semibold text-gray-800">
-          📅 Lịch phỏng vấn của bạn
+    <div className="min-h-screen bg-gray-50 py-10 px-4">
+      <ToastContainer position="top-right" autoClose={2000} theme="light" />
+      <div className="max-w-5xl mx-auto">
+        <h1 className="text-2xl font-bold text-[#00b14f] mb-6 flex items-center gap-2">
+          <FaCalendarAlt /> Lịch phỏng vấn của tôi
         </h1>
 
-        {/* 🔽 Bộ lọc trạng thái (FE chọn tiếng Anh để khớp API) */}
-        <select
-          value={statusFilter}
-          onChange={(e) => {
-            setPage(0);
-            setStatusFilter(e.target.value);
-          }}
-          className="border border-gray-300 rounded-lg px-3 py-2 text-gray-700"
-        >
-          <option value="">Tất cả</option>
-          <option value="SCHEDULED">Đã xác nhận</option>
-          <option value="COMPLETED">Hoàn tất</option>
-          <option value="CANCELLED">Đã hủy</option>
-          <option value="RESCHEDULED">Đặt lại lịch</option>
-        </select>
-      </div>
-
-      {loading ? (
-        <p className="text-gray-500">Đang tải dữ liệu...</p>
-      ) : error ? (
-        <p className="text-red-500">{error}</p>
-      ) : interviews.length === 0 ? (
-        <p className="text-gray-500 italic">
-          Hiện bạn chưa có lịch phỏng vấn nào.
-        </p>
-      ) : (
-        <table className="w-full border border-gray-200 rounded-lg">
-          <thead className="bg-gray-50">
-            <tr>
-              <th className="p-3 text-left">Ghi chú</th>
-              <th className="p-3 text-left">Hình thức</th>
-              <th className="p-3 text-left">Thời gian</th>
-              <th className="p-3 text-left">Trạng thái</th>
-            </tr>
-          </thead>
-          <tbody>
+        {loading ? (
+          <div className="flex justify-center items-center h-60 text-gray-500">
+            <FaSpinner className="animate-spin mr-2" /> Đang tải lịch phỏng vấn...
+          </div>
+        ) : interviews.length === 0 ? (
+          <p className="text-center text-gray-500 mt-10">
+            Hiện chưa có buổi phỏng vấn nào được lên lịch.
+          </p>
+        ) : (
+          <div className="space-y-5">
             {interviews.map((item) => (
-              <tr key={item.id} className="border-t hover:bg-gray-50">
-                <td className="p-3">{item.note || "—"}</td>
-                <td className="p-3">{item.method || "—"}</td>
-                <td className="p-3">
-                  {new Date(item.startTime).toLocaleString("vi-VN")} -{" "}
-                  {new Date(item.endTime).toLocaleString("vi-VN")}
-                </td>
-                <td className="p-3">{renderStatus(item.status)}</td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      )}
+              <div
+                key={item.id}
+                className="bg-white p-5 rounded-xl shadow-sm border border-gray-200 hover:shadow-md transition"
+              >
+                <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center mb-3">
+                  <div className="flex items-center gap-2">
+                    <FaClock className="text-[#00b14f]" />
+                    <p className="font-medium text-gray-800">
+                      {formatDate(item.scheduledAt)}
+                    </p>
+                  </div>
+                  {getStatusBadge(item.status)}
+                </div>
 
-      <div className="flex justify-between items-center mt-4">
-        <button
-          disabled={page === 0}
-          onClick={() => setPage((p) => Math.max(0, p - 1))}
-          className="px-4 py-2 bg-gray-200 rounded hover:bg-gray-300 disabled:opacity-50"
-        >
-          Trước
-        </button>
-        <span className="text-gray-600">
-          Trang {page + 1} / {totalPages}
-        </span>
-        <button
-          disabled={page + 1 >= totalPages}
-          onClick={() => setPage((p) => p + 1)}
-          className="px-4 py-2 bg-gray-200 rounded hover:bg-gray-300 disabled:opacity-50"
-        >
-          Sau
-        </button>
+                <div className="text-sm text-gray-700 space-y-1">
+                  <p className="flex items-center gap-2">
+                    <FaVideo className="text-[#00b14f]" />
+                    <span>
+                      Hình thức:{" "}
+                      <strong>
+                        {item.interviewType === "VIDEO"
+                          ? "Phỏng vấn trực tuyến"
+                          : "Phỏng vấn trực tiếp"}
+                      </strong>
+                    </span>
+                  </p>
+
+                  {item.meetingLink && (
+                    <p className="flex items-center gap-2">
+                      <FaLink className="text-[#00b14f]" />
+                      <a
+                        href={item.meetingLink}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-[#00b14f] hover:underline"
+                      >
+                        Tham gia buổi phỏng vấn
+                      </a>
+                    </p>
+                  )}
+
+                  {item.location && (
+                    <p className="flex items-center gap-2">
+                      <FaMapMarkerAlt className="text-[#00b14f]" />
+                      <span>{item.location}</span>
+                    </p>
+                  )}
+
+                  {item.notes && (
+                    <p className="mt-2 text-gray-600 italic">
+                      Ghi chú: {item.notes}
+                    </p>
+                  )}
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
       </div>
     </div>
   );
