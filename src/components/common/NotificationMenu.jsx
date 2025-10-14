@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   Box,
   IconButton,
@@ -15,34 +15,17 @@ import EventBusyIcon from "@mui/icons-material/EventBusy";
 import EventRepeatIcon from "@mui/icons-material/EventRepeat";
 import DoneAllIcon from "@mui/icons-material/DoneAll";
 import NotificationsActiveIcon from "@mui/icons-material/NotificationsActive";
-import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import {
+  getNotifications,
+  markAsRead,
+  markAllAsRead,
+  countUnread,
+} from "../../services/notificationService";
 
 // ======================
-// API setup
-// ======================
-const axiosClient = axios.create({
-  baseURL: "http://localhost:8081/api",
-});
-axiosClient.interceptors.request.use((config) => {
-  const token =
-    localStorage.getItem("accessToken") ||
-    localStorage.getItem("token") ||
-    localStorage.getItem("access_token");
-  if (token) config.headers.Authorization = `Bearer ${token}`;
-  return config;
-});
-
-// API
-export const getNotifications = (params) =>
-  axiosClient.get("/notifications", { params });
-export const markAsRead = (id) =>
-  axiosClient.patch(`/notifications/${id}/read`);
-export const markAllAsRead = () =>
-  axiosClient.patch("/notifications/mark-all-read");
-export const countUnread = () => axiosClient.get("/notifications/count-unread");
-
 // Icon mapping
+// ======================
 const getNotificationIcon = (type) => {
   switch (type) {
     case "APPLICATION_STATUS_CHANGED":
@@ -64,17 +47,19 @@ const getNotificationIcon = (type) => {
   }
 };
 
-export default function NotificationMenu() {
+// ======================
+// Component chính
+// ======================
+export default function NotificationMenu({ iconColor = "#00b14f", size = 22 }) {
   const [anchorEl, setAnchorEl] = useState(null);
   const [notifications, setNotifications] = useState([]);
   const [loading, setLoading] = useState(false);
   const [unreadCount, setUnreadCount] = useState(0);
   const [activeTab, setActiveTab] = useState("all");
   const navigate = useNavigate();
-
   const open = Boolean(anchorEl);
 
-  // Load dữ liệu
+  // --- Fetch dữ liệu ---
   const fetchUnreadCount = async () => {
     try {
       const res = await countUnread();
@@ -109,14 +94,30 @@ export default function NotificationMenu() {
     <>
       {/* 🔔 ICON */}
       <IconButton
-        color="inherit"
         onClick={(e) => {
           setAnchorEl(e.currentTarget);
           fetchNotifications();
         }}
+        sx={{
+          color: iconColor,
+          "&:hover": {
+            backgroundColor: "rgba(0,177,79,0.08)", // nền xanh nhạt khi hover
+          },
+        }}
       >
-        <Badge badgeContent={unreadCount} color="error">
-          <NotificationsIcon />
+        <Badge
+          badgeContent={unreadCount}
+          color="error"
+          overlap="circular"
+          sx={{
+            "& .MuiBadge-badge": {
+              fontSize: 11,
+              height: 18,
+              minWidth: 18,
+            },
+          }}
+        >
+          <NotificationsIcon sx={{ color: iconColor, fontSize: size }} />
         </Badge>
       </IconButton>
 
@@ -130,7 +131,11 @@ export default function NotificationMenu() {
             width: 360,
             borderRadius: 2,
             overflow: "visible",
-            boxShadow: "0 4px 12px rgba(0,0,0,0.15)",
+            border: "1px solid rgba(0,0,0,0.08)",
+            boxShadow:
+              "0px 4px 12px rgba(0,0,0,0.12), 0px 8px 20px rgba(0,0,0,0.10)", // 🌟 bóng kép mềm, sâu
+            backdropFilter: "blur(4px)",
+            backgroundColor: "#fff",
           },
         }}
         transformOrigin={{ vertical: "top", horizontal: "right" }}
