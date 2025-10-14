@@ -6,7 +6,9 @@ export default function RecommendedJobs() {
   const [jobs, setJobs] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
-  const token = localStorage.getItem("token");
+  const token =
+    localStorage.getItem("accessToken") || localStorage.getItem("token");
+
   const navigate = useNavigate();
 
   const baseUrl = "http://localhost:8081";
