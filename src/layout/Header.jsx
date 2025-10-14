@@ -3,6 +3,7 @@ import { Link, useNavigate, useLocation } from "react-router-dom";
 import "../styles/Header.css";
 import RegisterModal from "../pages/auth/RegisterModal";
 import { FaUserCircle, FaSignOutAlt, FaBriefcase } from "react-icons/fa";
+import NotificationMenu from "../components/common/NotificationMenu";
 
 export default function Header() {
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -17,7 +18,7 @@ export default function Header() {
     setUser(storedUser);
   }, []);
 
-  const token = localStorage.getItem("accessToken"); 
+  const token = localStorage.getItem("accessToken");
   const role = user?.role || null;
 
   // ✅ Hàm đăng xuất đồng bộ với authService
@@ -109,20 +110,27 @@ export default function Header() {
             </Link>
           </>
         ) : (
-          <div className="relative">
+          <div className="flex items-center gap-4 relative">
+            {/* Notification */}
+            <div className="relative flex items-center">
+              <NotificationMenu iconColor="#00b14f" size={22} />
+            </div>
+
+            {/* 👤 User button */}
             <button
               onClick={() => setMenuOpen(!menuOpen)}
-              className="flex items-center gap-2 hover:opacity-80 transition"
+              className="flex items-center gap-2 px-2 py-1 rounded-full hover:bg-[#e6f8f0] transition"
             >
               <FaUserCircle className="text-2xl text-[#00b14f]" />
-              <span className="font-medium">
+              <span className="font-medium text-gray-700">
                 {user?.fullName ||
                   `${user?.firstName || "Người"} ${user?.lastName || ""}`}
               </span>
             </button>
 
+            {/* 📋 Dropdown menu */}
             {menuOpen && (
-              <div className="absolute right-0 mt-3 w-48 bg-white shadow-lg rounded-lg overflow-hidden text-gray-700 z-50">
+              <div className="absolute right-0 top-10 w-52 bg-white shadow-lg rounded-xl overflow-hidden text-gray-700 z-50 border border-gray-100">
                 {role === "APPLICANT" && (
                   <>
                     <Link
@@ -217,7 +225,7 @@ export default function Header() {
 
                 <button
                   onClick={handleLogout}
-                  className="w-full text-left px-4 py-2 text-red-600 hover:bg-gray-100 flex items-center gap-2"
+                  className="w-full text-left px-4 py-2 text-red-600 hover:bg-gray-100 flex items-center gap-2 border-t border-gray-100"
                 >
                   <FaSignOutAlt /> Đăng xuất
                 </button>
