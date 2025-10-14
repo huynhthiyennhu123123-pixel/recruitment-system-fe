@@ -9,7 +9,9 @@ export default function ApplicantInterviews() {
   const [totalPages, setTotalPages] = useState(1);
   const [statusFilter, setStatusFilter] = useState("");
 
-  const token = localStorage.getItem("token");
+  const token =
+    localStorage.getItem("accessToken") || localStorage.getItem("token");
+
   const baseUrl = "http://localhost:8081";
 
   // 🧭 Map song song giữa FE (EN) và BE (VN)
@@ -59,7 +61,10 @@ export default function ApplicantInterviews() {
       SCHEDULED: { text: "Đã xác nhận", color: "bg-blue-100 text-blue-700" },
       COMPLETED: { text: "Hoàn tất", color: "bg-green-100 text-green-700" },
       CANCELLED: { text: "Đã hủy", color: "bg-red-100 text-red-700" },
-      RESCHEDULED: { text: "Đã đặt lại lịch", color: "bg-yellow-100 text-yellow-700" },
+      RESCHEDULED: {
+        text: "Đã đặt lại lịch",
+        color: "bg-yellow-100 text-yellow-700",
+      },
       MOI_TAO: { text: "Mới tạo", color: "bg-gray-100 text-gray-700" },
       XAC_NHAN: { text: "Đã xác nhận", color: "bg-blue-100 text-blue-700" },
       HOAN_TAT: { text: "Hoàn tất", color: "bg-green-100 text-green-700" },
