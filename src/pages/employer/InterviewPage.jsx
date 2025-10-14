@@ -19,18 +19,12 @@ export default function InterviewPage() {
   const [openForm, setOpenForm] = useState(false)
   const [openDetail, setOpenDetail] = useState(null)
 
-  // ✅ Lấy danh sách phỏng vấn
+  // ✅ Hàm fetch danh sách phỏng vấn
   const fetchInterviews = async () => {
     setLoading(true)
     try {
-      const res = await getMyInterviews()
-      const data =
-        Array.isArray(res?.data)
-          ? res.data
-          : Array.isArray(res?.data?.data)
-          ? res.data.data
-          : []
-      setInterviews(data)
+      const res = await getMyInterviews({ page: 0, size: 20 })
+      setInterviews(res?.content || res?.data?.content || [])
     } catch (err) {
       console.error("❌ Lỗi khi tải danh sách phỏng vấn:", err)
     } finally {
@@ -38,9 +32,22 @@ export default function InterviewPage() {
     }
   }
 
+  // ✅ Gọi API khi load trang
   useEffect(() => {
     fetchInterviews()
   }, [])
+
+  // ✅ Hủy phỏng vấn
+  const handleCancel = async (id) => {
+    if (window.confirm("Xác nhận hủy lịch phỏng vấn này?")) {
+      try {
+        await cancelInterview(id, "Hủy bởi nhà tuyển dụng")
+        fetchInterviews()
+      } catch (err) {
+        console.error("❌ Lỗi khi hủy phỏng vấn:", err)
+      }
+    }
+  }
 
   // ✅ Hoàn tất phỏng vấn
   const handleComplete = async (id) => {
@@ -49,37 +56,17 @@ export default function InterviewPage() {
         await completeInterview(id, "Phỏng vấn thành công")
         fetchInterviews()
       } catch (err) {
-        console.error("❌ Lỗi khi hoàn tất:", err)
+        console.error("❌ Lỗi khi hoàn tất phỏng vấn:", err)
       }
     }
   }
 
-  // ✅ Hủy phỏng vấn
-  const handleCancel = async (id) => {
-    if (window.confirm("Bạn có chắc muốn hủy phỏng vấn này?")) {
-      try {
-        await cancelInterview(id)
-        fetchInterviews()
-      } catch (err) {
-        console.error("❌ Lỗi khi hủy:", err)
-      }
-    }
-  }
-
-  // ✅ Màu chip trạng thái
-  const getStatusColor = (status) => {
-    switch (status) {
-      case "SCHEDULED":
-        return "info"
-      case "COMPLETED":
-        return "success"
-      case "CANCELLED":
-        return "error"
-      case "RESCHEDULED":
-        return "warning"
-      default:
-        return "default"
-    }
+  // ✅ Màu chip theo trạng thái
+  const colorMap = {
+    SCHEDULED: "info",
+    COMPLETED: "success",
+    CANCELLED: "error",
+    RESCHEDULED: "warning"
   }
 
   return (
@@ -147,7 +134,7 @@ export default function InterviewPage() {
                   <ListItemText
                     primary={
                       <Typography fontWeight="bold">
-                        📞 {i.interviewType} –{" "}
+                        📞 {i.interviewType || "Phỏng vấn"} –{" "}
                         {new Date(i.scheduledAt).toLocaleString("vi-VN")}
                       </Typography>
                     }
@@ -156,23 +143,12 @@ export default function InterviewPage() {
                         <Typography variant="body2" color="text.secondary">
                           Địa điểm: {i.location || "Trực tuyến"}
                         </Typography>
-                        {i.status && (
-                          <Box sx={{ mt: 1 }}>
-                            <Chip
-                              label={
-                                i.status === "SCHEDULED"
-                                  ? "Đã lên lịch"
-                                  : i.status === "COMPLETED"
-                                  ? "Đã hoàn thành"
-                                  : i.status === "CANCELLED"
-                                  ? "Đã hủy"
-                                  : i.status
-                              }
-                              color={getStatusColor(i.status)}
-                              size="small"
-                            />
-                          </Box>
-                        )}
+                        <Chip
+                          label={i.status}
+                          color={colorMap[i.status] || "default"}
+                          size="small"
+                          sx={{ mt: 1 }}
+                        />
                       </>
                     }
                   />

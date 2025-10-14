@@ -32,15 +32,11 @@ export const login = async (data) => {
   const refreshToken = payload?.refreshToken;
   const user = payload?.user;
 
-// ✅ Lưu token và user vào localStorage (đồng bộ với Header.jsx)
-if (accessToken) localStorage.setItem("token", accessToken); // 👈 đổi key
-if (refreshToken) localStorage.setItem("refreshToken", refreshToken);
-if (user) localStorage.setItem("user", JSON.stringify(user));
+  // ✅ Lưu token và user vào localStorage (đồng bộ với axiosClient)
+  if (accessToken) localStorage.setItem("accessToken", accessToken);
+  if (refreshToken) localStorage.setItem("refreshToken", refreshToken);
+  if (user) localStorage.setItem("user", JSON.stringify(user));
 
-
-
-
-  // ✅ Trả về dữ liệu chuẩn hóa
   return {
     accessToken: accessToken || null,
     refreshToken: refreshToken || null,
@@ -52,14 +48,19 @@ if (user) localStorage.setItem("user", JSON.stringify(user));
 // ✅ Lấy thông tin user hiện tại
 export const me = () => axiosClient.get("/auth/me");
 
-// ✅ Đăng xuất
+/// ✅ Đăng xuất
 export const logout = async () => {
   try {
+    // Gọi API logout nếu backend có
     await axiosClient.post("/auth/logout");
+  } catch (err) {
+    console.warn("⚠️ API logout không khả dụng hoặc bị lỗi:", err.message);
   } finally {
+    // ✅ Dọn dẹp toàn bộ dữ liệu đăng nhập
     localStorage.removeItem("accessToken");
     localStorage.removeItem("refreshToken");
     localStorage.removeItem("user");
+    localStorage.removeItem("companyId");
   }
 };
 

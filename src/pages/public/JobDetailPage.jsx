@@ -47,6 +47,8 @@ export default function JobDetailPage() {
     );
 
   const company = job.company;
+  const companyId = company?.id || job.companyId;
+  const companyName = company?.name || "Công ty ẩn danh";
 
   return (
     <div className="min-h-screen bg-gray-50 py-10 px-4">
@@ -69,7 +71,16 @@ export default function JobDetailPage() {
               {company && (
                 <p className="text-gray-600 flex items-center gap-2 text-sm mb-1">
                   <FaBuilding className="text-gray-400" />
-                  {company.name}
+                  {companyId ? (
+                    <Link
+                      to={`/applicant/companies/${companyId}`}
+                      className="text-blue-600 hover:underline"
+                    >
+                      {companyName}
+                    </Link>
+                  ) : (
+                    companyName
+                  )}
                 </p>
               )}
               <p className="text-gray-600 flex items-center gap-2 text-sm">
@@ -183,6 +194,18 @@ export default function JobDetailPage() {
                   {company.website}
                 </a>
               </p>
+            )}
+
+            {/* 🆕 Nút Xem trang công ty */}
+            {companyId && (
+              <div className="mt-5">
+                <Link
+                  to={`/applicant/companies/${companyId}`}
+                  className="inline-block border border-[#00b14f] text-[#00b14f] hover:bg-[#00b14f] hover:text-white px-5 py-2 rounded-lg font-medium transition"
+                >
+                  Xem trang công ty →
+                </Link>
+              </div>
             )}
           </div>
         )}

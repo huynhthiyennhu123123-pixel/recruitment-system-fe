@@ -120,7 +120,7 @@ export async function updateCompanyProfile(data) {
 }
 
 /* ======================
- * ỨNG VIÊN & PHỎNG VẤN
+ *  PHỎNG VẤN
  * ====================== */
 export async function getApplicants() {
   const res = await fetch(`${API_URL}/applications/my-company`, {
@@ -131,5 +131,39 @@ export async function getApplicants() {
 
 export async function getInterviews() {
   const res = await fetch(`${API_URL}/interviews/my`, { headers: getAuthHeaders() })
+  return res.json()
+}
+
+/* ======================
+ *  QUẢN LÝ ỨNG VIÊN
+ * ====================== */
+
+// Lấy danh sách đơn ứng tuyển (phân trang, lọc theo trạng thái / job)
+export async function getManagedApplications(page = 0, size = 10, status, jobPostingId) {
+  const params = new URLSearchParams({ page, size })
+  if (status) params.append("status", status)
+  if (jobPostingId) params.append("jobPostingId", jobPostingId)
+
+  const res = await fetch(`${API_URL}/applications/manage?${params}`, {
+    headers: getAuthHeaders(),
+  })
+  return res.json()
+}
+
+// Lấy chi tiết đơn ứng tuyển
+export async function getApplicationById(id) {
+  const res = await fetch(`${API_URL}/applications/manage/${id}`, {
+    headers: getAuthHeaders(),
+  })
+  return res.json()
+}
+
+// Cập nhật trạng thái đơn ứng tuyển
+export async function updateApplicationStatus(id, status, notes = "") {
+  const res = await fetch(`${API_URL}/applications/manage/${id}/status`, {
+    method: "PATCH",
+    headers: getAuthHeaders(),
+    body: JSON.stringify({ status, notes }),
+  })
   return res.json()
 }

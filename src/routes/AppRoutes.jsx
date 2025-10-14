@@ -13,7 +13,7 @@ import AdminLayout from "../layout/AdminLayout";
 import HomePage from "../pages/public/HomePage";
 import JobListPage from "../pages/public/JobListPage";
 import PublicJobDetailPage from "../pages/public/JobDetailPage"; 
-// import CompanyDetailPage from "../pages/public/CompanyDetailPage";
+import CompanyDetailPage from "../pages/public/CompanyDetailPage";
 import AboutPage from "../pages/public/AboutPage";
 
 
@@ -34,13 +34,13 @@ import ApplyJobPage from "../pages/applicant/ApplyJobPage";
 import ApplicationsPage from "../pages/applicant/ApplicationsPage";
 import ApplicationDetailPage from "../pages/applicant/ApplicationDetailPage";
 import ApplicantInterviews from "../pages/applicant/ApplicantInterviews";
-import CompanyDetailPage from "../pages/applicant/CompanyDetailPage";
+
 
 // Pages Employer
 import EmployerDashboard from "../pages/employer/DashboardPage";
 import JobManagePage from "../pages/employer/JobManagePage";
 import JobCreatePage from "../pages/employer/JobCreatePage";
-import ApplicantsPage from "../pages/employer/ApplicantsPage";
+import ApplicationListPage from "../pages/employer/ApplicationListPage"
 import CompanyProfilePage from "../pages/employer/CompanyProfilePage";
 import InterviewPage from "../pages/employer/InterviewPage";
 import JobPostEdit from "../pages/employer/JobPostEdit";
@@ -119,19 +119,25 @@ function App() {
           <Route path="/employer" element={<EmployerLayout />}>
             <Route index element={<EmployerDashboard />} />
             <Route path="dashboard" element={<EmployerDashboard />} />
+
+            {/* Quản lý tin tuyển dụng */}
             <Route path="jobs" element={<JobManagePage />} />
-            <Route path="jobs/:id" element={<EmployerJobDetail />} />
             <Route path="jobs/new" element={<JobCreatePage />} />
-            <Route path="jobs/:id/edit" element={<JobPostEdit  />} />
-            <Route path="applicants" element={<ApplicantsPage />} />
+            <Route path="jobs/:id" element={<EmployerJobDetail />} />
+            <Route path="jobs/:id/edit" element={<JobPostEdit />} />
+
+            {/* Quản lý ứng viên */}
+            <Route path="applications" element={<ApplicationListPage />} />
+
+            {/* Quản lý phỏng vấn */}
             <Route path="interviews" element={<InterviewPage />} />
+
+            {/* Hồ sơ công ty */}
             <Route path="company/:id" element={<CompanyProfilePage />} />
-            <Route path="CompanyProfileEdit" element={<CompanyProfileEdit />} />
-            {/* <Route path="interviews/:id" element={<InterviewDetailPage />} /> */}
-
-
+            <Route path="company/edit" element={<CompanyProfileEdit />} />
           </Route>
         </Route>
+
 
         {/* Admin */}
         <Route element={<PrivateRoute roles={["ADMIN"]} />}>

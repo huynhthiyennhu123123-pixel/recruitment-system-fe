@@ -1,15 +1,6 @@
 import axiosClient from "../utils/axiosClient"
-export const getCompanyPublicProfile = (id) =>
-  axiosClient.get(`/companies/${id}/public`)
 
-export const getCompanyJobsPublic = (id, params = { page: 0, size: 20 }) =>
-  axiosClient.get(`/companies/${id}/jobs`, { params })
-
+// ✅ Lấy chi tiết công ty public (dành cho ứng viên & khách)
 export const getCompanyById = (id) => {
-  return axiosClient.get(`/api/companies/${id}/public`)
-}
-
-// (Tuỳ chọn) Lấy danh sách công ty public (nếu sau này cần)
-export const getCompanies = (params) => {
-  return axiosClient.get("/api/public/companies", { params })
+  return axiosClient.get(`/companies/${id}/public`)
 }
