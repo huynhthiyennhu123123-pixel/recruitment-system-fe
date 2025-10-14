@@ -37,7 +37,9 @@ export default function JobDetailPage() {
       setIsSaved(jobData.isSaved || false);
     } catch (err) {
       console.warn("⚠️ Lỗi khi gọi /me, fallback sang API thường:", err);
-      toast.warning("Không thể kiểm tra trạng thái lưu, hiển thị công việc bình thường!");
+      toast.warning(
+        "Không thể kiểm tra trạng thái lưu, hiển thị công việc bình thường!"
+      );
       try {
         const res2 = await getJobDetail(id);
         const jobData2 = res2?.data?.data || res2?.data || res2;
@@ -82,7 +84,8 @@ export default function JobDetailPage() {
   if (loading)
     return (
       <div className="flex justify-center items-center h-80 text-gray-500">
-        <FaSpinner className="animate-spin mr-2" /> Đang tải thông tin công việc...
+        <FaSpinner className="animate-spin mr-2" /> Đang tải thông tin công
+        việc...
       </div>
     );
 
@@ -156,15 +159,24 @@ export default function JobDetailPage() {
 
               <button
                 onClick={() => {
-                  const token = localStorage.getItem("token");
-                  const user = JSON.parse(localStorage.getItem("user") || "null");
+                  const token =
+                    localStorage.getItem("accessToken") ||
+                    localStorage.getItem("token");
+
+                  const user = JSON.parse(
+                    localStorage.getItem("user") || "null"
+                  );
 
                   if (!token || !user) {
-                    navigate("/auth/login", { state: { from: location.pathname } });
+                    navigate("/auth/login", {
+                      state: { from: location.pathname },
+                    });
                   } else if (user.role === "APPLICANT") {
                     navigate(`/applicant/jobs/${id}/apply`);
                   } else {
-                    toast.warning("⚠️ Chỉ tài khoản ứng viên mới được ứng tuyển!");
+                    toast.warning(
+                      "⚠️ Chỉ tài khoản ứng viên mới được ứng tuyển!"
+                    );
                   }
                 }}
                 className="bg-[#00b14f] hover:bg-[#009a46] text-white px-6 py-2.5 rounded-lg font-medium transition"
@@ -181,7 +193,9 @@ export default function JobDetailPage() {
               <span>
                 <strong>Mức lương:</strong>{" "}
                 {job.salaryMin || job.salaryMax
-                  ? `${job.salaryMin?.toLocaleString("vi-VN")}₫ - ${job.salaryMax?.toLocaleString("vi-VN")}₫`
+                  ? `${job.salaryMin?.toLocaleString(
+                      "vi-VN"
+                    )}₫ - ${job.salaryMax?.toLocaleString("vi-VN")}₫`
                   : "Thoả thuận"}
               </span>
             </div>
@@ -196,7 +210,9 @@ export default function JobDetailPage() {
               <span>
                 <strong>Hạn nộp:</strong>{" "}
                 {job.applicationDeadline
-                  ? new Date(job.applicationDeadline).toLocaleDateString("vi-VN")
+                  ? new Date(job.applicationDeadline).toLocaleDateString(
+                      "vi-VN"
+                    )
                   : "Không rõ"}
               </span>
             </div>

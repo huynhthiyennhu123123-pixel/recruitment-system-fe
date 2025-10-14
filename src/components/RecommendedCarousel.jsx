@@ -14,7 +14,9 @@ export default function RecommendedCarousel() {
   const [index, setIndex] = useState(0);
   const [loading, setLoading] = useState(true);
 
-  const token = localStorage.getItem("token");
+  const token =
+    localStorage.getItem("accessToken") || localStorage.getItem("token");
+
   const baseUrl = "http://localhost:8081";
 
   // 🔹 Gọi API gợi ý việc làm
@@ -46,7 +48,9 @@ export default function RecommendedCarousel() {
 
   const prevSlide = () => {
     if (jobs.length > 0) {
-      setIndex((prev) => (prev - 3 >= 0 ? prev - 3 : Math.max(jobs.length - 3, 0)));
+      setIndex((prev) =>
+        prev - 3 >= 0 ? prev - 3 : Math.max(jobs.length - 3, 0)
+      );
     }
   };
 
@@ -101,9 +105,7 @@ export default function RecommendedCarousel() {
           <FaSpinner className="animate-spin mr-2" /> Đang tải việc làm gợi ý...
         </p>
       ) : jobs.length === 0 ? (
-        <p className="text-gray-500 italic">
-          Hiện chưa có việc làm gợi ý nào.
-        </p>
+        <p className="text-gray-500 italic">Hiện chưa có việc làm gợi ý nào.</p>
       ) : (
         <div className="relative overflow-hidden">
           <AnimatePresence mode="wait">

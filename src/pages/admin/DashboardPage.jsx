@@ -49,10 +49,11 @@ export default function DashboardPage() {
           "http://localhost:8081/api/admin/dashboard",
           {
             headers: {
-              Authorization: `Bearer ${localStorage.getItem("token")}`,
+              Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
             },
           }
         );
+
         setData(res.data.data);
       } catch (err) {
         console.error(" Lỗi khi tải dashboard:", err);
