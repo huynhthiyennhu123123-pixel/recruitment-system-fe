@@ -117,13 +117,6 @@ export default function Header() {
                 {role === "APPLICANT" && (
                   <>
                     <Link
-                      to="/applicant/dashboard"
-                      className="block px-4 py-2 hover:bg-gray-100"
-                      onClick={() => setMenuOpen(false)}
-                    >
-                      Bảng điều khiển
-                    </Link>
-                    <Link
                       to="/applicant/profile"
                       className="block px-4 py-2 hover:bg-gray-100"
                       onClick={() => setMenuOpen(false)}
@@ -143,6 +136,13 @@ export default function Header() {
                       onClick={() => setMenuOpen(false)}
                     >
                       Lịch phỏng vấn
+                    </Link>
+                    <Link
+                      to="/applicant/saved-jobs"
+                      className="block px-4 py-2 hover:bg-gray-100"
+                      onClick={() => setMenuOpen(false)}
+                    >
+                      Công việc đã lưu
                     </Link>
                   </>
                 )}

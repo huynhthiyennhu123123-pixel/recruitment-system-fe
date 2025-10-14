@@ -34,6 +34,8 @@ import ApplyJobPage from "../pages/applicant/ApplyJobPage";
 import ApplicationsPage from "../pages/applicant/ApplicationsPage";
 import ApplicationDetailPage from "../pages/applicant/ApplicationDetailPage";
 import ApplicantInterviews from "../pages/applicant/ApplicantInterviews";
+import SavedJobsPage from "../pages/applicant/SavedJobsPage";
+
 
 
 // Pages Employer
@@ -111,6 +113,7 @@ function App() {
             <Route path="jobs/:id" element={<JobDetailPage />} />
             <Route path="jobs/:id/apply" element={<ApplyJobPage />} />
             <Route path="companies/:id" element={<CompanyDetailPage />} />
+            <Route path="/applicant/saved-jobs" element={<SavedJobsPage />} />
           </Route>
         </Route>
 

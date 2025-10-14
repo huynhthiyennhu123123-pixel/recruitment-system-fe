@@ -15,7 +15,7 @@ export default function CompanyDetailPage() {
         const res = await getCompanyById(id)
         setCompanyData(res.data) // dữ liệu trả về đúng cấu trúc { company, jobs }
       } catch (err) {
-        console.error("❌ Lỗi khi lấy chi tiết công ty:", err)
+        console.error("Lỗi khi lấy chi tiết công ty:", err)
       } finally {
         setLoading(false)
       }
@@ -68,11 +68,11 @@ export default function CompanyDetailPage() {
           {/* Thông tin nhanh */}
           <Box mt={2}>
             <Typography variant="body2">
-              📍 <b>Địa chỉ:</b> {company.address}
+              <b>Địa chỉ:</b> {company.address}
             </Typography>
             {company.website && (
               <Typography variant="body2">
-                🌐 <b>Website:</b>{" "}
+                <b>Website:</b>{" "}
                 <a href={company.website} target="_blank" rel="noreferrer">
                   {company.website}
                 </a>
@@ -80,12 +80,12 @@ export default function CompanyDetailPage() {
             )}
             {company.phoneNumber && (
               <Typography variant="body2">
-                ☎️ <b>Liên hệ:</b> {company.phoneNumber}
+                <b>Liên hệ:</b> {company.phoneNumber}
               </Typography>
             )}
             {company.contactEmail && (
               <Typography variant="body2">
-                📧 <b>Email:</b> {company.contactEmail}
+                <b>Email:</b> {company.contactEmail}
               </Typography>
             )}
           </Box>
@@ -93,17 +93,17 @@ export default function CompanyDetailPage() {
           {/* Thống kê */}
           <Box mt={2} display="flex" gap={3} flexWrap="wrap">
             <Chip
-              label={`👥 Nhân viên: ${company.employeeCount ?? 0}`}
+              label={`Nhân viên: ${company.employeeCount ?? 0}`}
               color="primary"
               variant="outlined"
             />
             <Chip
-              label={`💼 Việc đang tuyển: ${company.activeJobsCount ?? 0}`}
+              label={`Việc đang tuyển: ${company.activeJobsCount ?? 0}`}
               color="success"
               variant="outlined"
             />
             <Chip
-              label={`🏢 Quy mô: ${company.companySize || "Chưa cập nhật"}`}
+              label={`Quy mô: ${company.companySize || "Chưa cập nhật"}`}
               color="info"
               variant="outlined"
             />
@@ -115,7 +115,7 @@ export default function CompanyDetailPage() {
 
       {/* Mô tả công ty */}
       <Typography variant="h6" mb={1}>
-        🏙️ Giới thiệu công ty
+        Giới thiệu công ty
       </Typography>
       <Typography variant="body1" sx={{ whiteSpace: "pre-line" }}>
         {company.description || "Chưa có mô tả công ty."}
@@ -125,7 +125,7 @@ export default function CompanyDetailPage() {
       {company.companyPhotos && company.companyPhotos.length > 0 && (
         <>
           <Typography variant="h6" mt={3} mb={1}>
-            🖼️ Hình ảnh công ty
+            Hình ảnh công ty
           </Typography>
           <Box display="flex" gap={2} flexWrap="wrap">
             {company.companyPhotos.map((photo, idx) => (
@@ -149,7 +149,7 @@ export default function CompanyDetailPage() {
       {company.benefits && company.benefits.length > 0 && (
         <>
           <Typography variant="h6" mt={3}>
-            🎁 Quyền lợi khi làm việc
+            Quyền lợi khi làm việc
           </Typography>
           <Box display="flex" flexWrap="wrap" gap={1} mt={1}>
             {company.benefits.map((b, idx) => (
@@ -162,14 +162,14 @@ export default function CompanyDetailPage() {
       {/* Giờ làm việc */}
       {company.workingHours && (
         <Typography mt={3}>
-          🕒 <b>Giờ làm việc:</b> {company.workingHours}
+          <b>Giờ làm việc:</b> {company.workingHours}
         </Typography>
       )}
 
       {/* Liên kết mạng xã hội */}
       {company.socialLinks && (
         <Box mt={3}>
-          <Typography variant="h6">🔗 Liên kết mạng xã hội</Typography>
+          <Typography variant="h6">🔗Liên kết mạng xã hội</Typography>
           {company.socialLinks.facebook && (
             <Typography>
               🌐{" "}
@@ -192,7 +192,7 @@ export default function CompanyDetailPage() {
       {/* Danh sách việc làm */}
       <Divider sx={{ my: 3 }} />
       <Typography variant="h5" mb={2}>
-        💼 Các việc làm đang tuyển
+        Các việc làm đang tuyển
       </Typography>
 
       {jobs && jobs.length > 0 ? (
