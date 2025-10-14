@@ -48,19 +48,33 @@ export default function EmployerLayout() {
   const handleMenu = (event) => setAnchorEl(event.currentTarget)
   const handleClose = () => setAnchorEl(null)
 
-  // ✅ Hàm đăng xuất
+  // Hàm đăng xuất
   const handleLogout = async () => {
-    try {
-      await logout()
-      setSnackbar({ open: true, message: "Đăng xuất thành công!", severity: "success" })
-      setTimeout(() => navigate("/"), 1200)
-    } catch (err) {
-      console.error("❌ Lỗi khi đăng xuất:", err)
-      setSnackbar({ open: true, message: "Lỗi khi đăng xuất!", severity: "error" })
-    } finally {
-      setAnchorEl(null)
-    }
+  try {
+    await logout()
+    setSnackbar({
+      open: true,
+      message: "Đăng xuất thành công! 👋 Đang quay về trang chủ...",
+      severity: "success",
+    })
+
+    // ✅ Chuyển hướng về trang public sau 1.2s
+    setTimeout(() => {
+      navigate("/", { replace: true })
+    }, 1200)
+  } catch (err) {
+    console.error("❌ Lỗi khi đăng xuất:", err)
+    setSnackbar({
+      open: true,
+      message: "Lỗi khi đăng xuất. Vui lòng thử lại.",
+      severity: "error",
+    })
+  } finally {
+    setAnchorEl(null)
   }
+}
+
+
 
   const handleCloseSnackbar = () => setSnackbar({ ...snackbar, open: false })
   const user = JSON.parse(localStorage.getItem("user"))
@@ -95,7 +109,7 @@ export default function EmployerLayout() {
           <Button color="inherit" component={Link} to="/employer/jobs" startIcon={<WorkIcon />}>
             Tin tuyển dụng
           </Button>
-          <Button color="inherit" component={Link} to="/employer/applicants" startIcon={<PeopleIcon />}>
+          <Button color="inherit" component={Link} to="/employer/applications" startIcon={<PeopleIcon />}>
             Ứng viên
           </Button>
           <Button color="inherit" component={Link} to="/employer/interviews" startIcon={<EventIcon />}>

@@ -11,7 +11,7 @@ export default function HomePage() {
   useEffect(() => {
     const fetchJobs = async () => {
       try {
-        const res = await latestJobs({ page: 0, size: 8 })
+        const res = await latestJobs({ page: 0, size: 6 })
         setJobs(res.data.data.content || [])
       } catch (err) {
         console.error("Lỗi khi tải việc làm:", err)

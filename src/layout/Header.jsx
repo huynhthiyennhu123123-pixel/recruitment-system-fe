@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import "../styles/Header.css";
 import RegisterModal from "../pages/auth/RegisterModal";
@@ -7,19 +7,29 @@ import { FaUserCircle, FaSignOutAlt, FaBriefcase } from "react-icons/fa";
 export default function Header() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
+  const [user, setUser] = useState(null); // ✅ lưu user để cập nhật UI realtime
   const navigate = useNavigate();
   const location = useLocation();
 
-  const user = JSON.parse(localStorage.getItem("user") || "null");
-  const token = localStorage.getItem("token");
+  // ✅ Lấy user và token từ localStorage mỗi khi reload
+  useEffect(() => {
+    const storedUser = JSON.parse(localStorage.getItem("user") || "null");
+    setUser(storedUser);
+  }, []);
+
+  const token = localStorage.getItem("accessToken"); 
   const role = user?.role || null;
 
+  // ✅ Hàm đăng xuất đồng bộ với authService
   const handleLogout = () => {
-    localStorage.removeItem("token");
+    localStorage.removeItem("accessToken");
     localStorage.removeItem("refreshToken");
     localStorage.removeItem("user");
-    navigate("/auth/login");
-    window.location.reload(); // reload nhẹ để cập nhật UI
+    localStorage.removeItem("companyId");
+
+    setUser(null);
+    setMenuOpen(false);
+    navigate("/", { replace: true }); // ✅ quay về trang public
   };
 
   // ✅ Màu nền phù hợp theo layout
@@ -30,10 +40,10 @@ export default function Header() {
   const bgColor = isEmployer
     ? "#f9fafb"
     : isApplicant
-      ? "#f9fffb"
-      : isAdmin
-        ? "#fff5f5"
-        : "white";
+    ? "#f9fffb"
+    : isAdmin
+    ? "#fff5f5"
+    : "white";
 
   return (
     <header
@@ -67,7 +77,7 @@ export default function Header() {
         <nav className="header-center">
           <Link to="/employer/dashboard">Trang tuyển dụng</Link>
           <Link to="/employer/jobs">Tin tuyển dụng</Link>
-          <Link to="/employer/applicants">Ứng viên</Link>
+          <Link to="/employer/applications">Ứng viên</Link>
         </nav>
       ) : role === "ADMIN" ? (
         <nav className="header-center">
@@ -106,9 +116,8 @@ export default function Header() {
             >
               <FaUserCircle className="text-2xl text-[#00b14f]" />
               <span className="font-medium">
-                {user?.firstName
-                  ? `${user.firstName} ${user.lastName || ""}`
-                  : "Người dùng"}
+                {user?.fullName ||
+                  `${user?.firstName || "Người"} ${user?.lastName || ""}`}
               </span>
             </button>
 
@@ -164,7 +173,7 @@ export default function Header() {
                       Quản lý tin tuyển
                     </Link>
                     <Link
-                      to="/employer/profile"
+                      to="/employer/company"
                       className="block px-4 py-2 hover:bg-gray-100"
                       onClick={() => setMenuOpen(false)}
                     >

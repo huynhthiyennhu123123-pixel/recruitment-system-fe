@@ -23,3 +23,6 @@ export const createJobPosting = async (data) => {
   const res = await axiosClient.post("/jobs/manage", data)
   return res.data
 }
+export const getPublicJobs = (params) => {
+  return axiosClient.get("/api/public/jobs/search", { params })
+}

@@ -1,158 +1,152 @@
-import React, { useState, useEffect } from "react"
-import JobSearchSection from "../../layout/JobSearchSection"
+import React, { useEffect, useState } from "react"
 import { searchJobs } from "../../services/jobService"
+import JobSearchSection from "../../layout/JobSearchSection"
 import JobCard from "../../components/job/JobCard"
-import { Box, Typography, CircularProgress } from "@mui/material"
+import { CircularProgress, Box, Typography, Grid, TextField, MenuItem, Button } from "@mui/material"
 
 export default function JobListPage() {
   const [jobs, setJobs] = useState([])
   const [loading, setLoading] = useState(true)
+  const [filters, setFilters] = useState({
+    location: "",
+    jobType: "",
+    experience: "",
+    salaryRange: "",
+  })
 
-  const fetchJobs = async (filters = {}) => {
+  const fetchJobs = async (params = {}) => {
     setLoading(true)
     try {
-      const res = await searchJobs({ ...filters, page: 0, size: 12 })
-      setJobs(res.data.data.content || [])
+      const res = await searchJobs(params)
+      const content =
+        res?.data?.data?.content ||
+        res?.data?.content ||
+        res?.content ||
+        []
+      setJobs(content)
     } catch (err) {
-      console.error("Lỗi khi tải danh sách việc làm:", err)
+      console.error("❌ Lỗi khi tải việc làm:", err)
     } finally {
       setLoading(false)
     }
   }
 
   useEffect(() => {
-    fetchJobs()
+    fetchJobs(filters)
   }, [])
 
+  const handleFilterChange = (name, value) => {
+    const newFilters = { ...filters, [name]: value }
+    setFilters(newFilters)
+    fetchJobs(newFilters)
+  }
+
+  const resetFilters = () => {
+    const defaultFilters = {
+      location: "",
+      jobType: "",
+      experience: "",
+      salaryRange: "",
+    }
+    setFilters(defaultFilters)
+    fetchJobs(defaultFilters)
+  }
+
   return (
-    <Box>
+    <Box sx={{ p: 3 }}>
+      {/* Thanh tìm kiếm */}
       <JobSearchSection onSearch={fetchJobs} />
-      <Typography variant="h5" mt={3}>
-        Danh sách việc làm
-      </Typography>
-      {loading ? (
-        <Box textAlign="center" py={4}>
-          <CircularProgress color="success" />
-        </Box>
-      ) : (
-        <Box
-          display="grid"
-          gridTemplateColumns="repeat(auto-fit,minmax(280px,1fr))"
-          gap={2}
-          mt={2}
-        >
-          <option value="">Tất cả địa điểm</option>
-          <option value="cantho">Cần Thơ</option>
-          <option value="hcm">Hồ Chí Minh</option>
-          <option value="hanoi">Hà Nội</option>
-          <option value="danang">Đà Nẵng</option>
-        </select>
 
-        {/* Lương */}
-        <select
-          value={filters.salary}
-          onChange={(e) => handleFilterChange("salary", e.target.value)}
-          className="w-full border border-gray-300 rounded-md px-3 py-2 mb-3 text-sm"
+      {/* Bộ lọc */}
+      <Box sx={{ mt: 3, mb: 3, display: "flex", flexWrap: "wrap", gap: 2 }}>
+        <TextField
+          select
+          label="Địa điểm"
+          value={filters.location}
+          onChange={(e) => handleFilterChange("location", e.target.value)}
+          size="small"
+          sx={{ minWidth: 150 }}
         >
-          <option value="">Mức lương</option>
-          <option value="10-15tr">10-15 triệu</option>
-          <option value="15-20tr">15-20 triệu</option>
-          <option value="20-30tr">20-30 triệu</option>
-        </select>
+          <MenuItem value="">Tất cả</MenuItem>
+          <MenuItem value="Cần Thơ">Cần Thơ</MenuItem>
+          <MenuItem value="Hồ Chí Minh">Hồ Chí Minh</MenuItem>
+          <MenuItem value="Hà Nội">Hà Nội</MenuItem>
+          <MenuItem value="Đà Nẵng">Đà Nẵng</MenuItem>
+        </TextField>
 
-        {/* Cấp bậc */}
-        <select
-          value={filters.level}
-          onChange={(e) => handleFilterChange("level", e.target.value)}
-          className="w-full border border-gray-300 rounded-md px-3 py-2 mb-3 text-sm"
-        >
-          <option value="">Cấp bậc</option>
-          <option value="fresher">Fresher</option>
-          <option value="junior">Junior</option>
-          <option value="senior">Senior</option>
-        </select>
-
-        {/* Loại hình */}
-        <select
+        <TextField
+          select
+          label="Hình thức"
           value={filters.jobType}
           onChange={(e) => handleFilterChange("jobType", e.target.value)}
-          className="w-full border border-gray-300 rounded-md px-3 py-2 mb-3 text-sm"
+          size="small"
+          sx={{ minWidth: 150 }}
         >
-          <option value="">Hình thức</option>
-          <option value="FULL_TIME">Full-time</option>
-          <option value="PART_TIME">Part-time</option>
-          <option value="INTERN">Thực tập</option>
-        </select>
+          <MenuItem value="">Tất cả</MenuItem>
+          <MenuItem value="FULL_TIME">Toàn thời gian</MenuItem>
+          <MenuItem value="PART_TIME">Bán thời gian</MenuItem>
+          <MenuItem value="INTERNSHIP">Thực tập</MenuItem>
+        </TextField>
 
-        {/* Kinh nghiệm */}
-        <select
+        <TextField
+          select
+          label="Kinh nghiệm"
           value={filters.experience}
           onChange={(e) => handleFilterChange("experience", e.target.value)}
-          className="w-full border border-gray-300 rounded-md px-3 py-2 mb-5 text-sm"
+          size="small"
+          sx={{ minWidth: 150 }}
         >
-          <option value="">Kinh nghiệm</option>
-          <option value="0-1y">0-1 năm</option>
-          <option value="1-3y">1-3 năm</option>
-          <option value="3-5y">3-5 năm</option>
-        </select>
+          <MenuItem value="">Tất cả</MenuItem>
+          <MenuItem value="0-1y">0-1 năm</MenuItem>
+          <MenuItem value="1-3y">1-3 năm</MenuItem>
+          <MenuItem value="3-5y">3-5 năm</MenuItem>
+        </TextField>
 
-        <button
+        <TextField
+          select
+          label="Mức lương"
+          value={filters.salaryRange}
+          onChange={(e) => handleFilterChange("salaryRange", e.target.value)}
+          size="small"
+          sx={{ minWidth: 150 }}
+        >
+          <MenuItem value="">Tất cả</MenuItem>
+          <MenuItem value="10-15tr">10-15 triệu</MenuItem>
+          <MenuItem value="15-20tr">15-20 triệu</MenuItem>
+          <MenuItem value="20-30tr">20-30 triệu</MenuItem>
+        </TextField>
+
+        <Button
+          variant="outlined"
+          color="success"
           onClick={resetFilters}
-          className="w-full bg-[#00b14f] text-white py-2 rounded-md text-sm font-medium hover:bg-[#009d46]"
         >
-          ⟳ Làm mới bộ lọc
-        </button>
-      </aside>
+          ⟳ Làm mới
+        </Button>
+      </Box>
 
-      {/* Job list */}
-      <section className="lg:col-span-3">
-        <h1 className="text-2xl font-bold text-gray-800 mb-6">
-          Kết quả tìm kiếm
-        </h1>
+      {/* Danh sách việc làm */}
+      <Typography variant="h5" fontWeight="bold" gutterBottom>
+        Danh sách việc làm
+      </Typography>
 
-        {jobs.length === 0 ? (
-          <p className="text-gray-600">
-            Không tìm thấy việc làm phù hợp với bộ lọc hiện tại.
-          </p>
-        ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            {jobs.map((job) => (
-              <JobCard key={job.id} job={job} />
-            ))}
-          </div>
-        )}
-
-        {/* Pagination */}
-        {totalPages > 1 && (
-          <div className="flex justify-center mt-10 gap-4 text-sm">
-            <button
-              disabled={page === 0}
-              onClick={() => setPage((p) => p - 1)}
-              className={`px-4 py-2 rounded-md border ${
-                page === 0
-                  ? "text-gray-400 border-gray-200 cursor-not-allowed"
-                  : "text-[#00b14f] border-[#00b14f]"
-              }`}
-            >
-              ◀ Trang trước
-            </button>
-            <span className="text-gray-700">
-              Trang {page + 1} / {totalPages}
-            </span>
-            <button
-              disabled={page + 1 >= totalPages}
-              onClick={() => setPage((p) => p + 1)}
-              className={`px-4 py-2 rounded-md border ${
-                page + 1 >= totalPages
-                  ? "text-gray-400 border-gray-200 cursor-not-allowed"
-                  : "text-[#00b14f] border-[#00b14f]"
-              }`}
-            >
-              Trang sau ▶
-            </button>
-          </div>
-        )}
-      </section>
-    </div>
-  );
+      {loading ? (
+        <Box textAlign="center" py={5}>
+          <CircularProgress color="success" />
+        </Box>
+      ) : jobs.length === 0 ? (
+        <Typography textAlign="center" color="text.secondary" py={5}>
+          Không tìm thấy việc làm phù hợp.
+        </Typography>
+      ) : (
+        <Grid container spacing={2}>
+          {jobs.map((job) => (
+            <Grid item xs={12} sm={6} md={4} key={job.id}>
+              <JobCard job={job} />
+            </Grid>
+          ))}
+        </Grid>
+      )}
+    </Box>
+  )
 }
