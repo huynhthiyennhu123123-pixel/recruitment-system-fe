@@ -1,6 +1,7 @@
 import { useState } from "react";
 import axiosClient from "../../utils/axiosClient";
 import { Link } from "react-router-dom";
+import { toast } from "react-toastify"; // ✅ Thêm dòng này
 
 export default function CheckEmailPage() {
   const [email, setEmail] = useState("");
@@ -15,25 +16,33 @@ export default function CheckEmailPage() {
 
     try {
       const res = await axiosClient.post("/auth/resend-verification", { email });
+
       if (res.data?.success) {
         setSuccess(true);
-        setMessage(res.data.message || "Email xác thực đã được gửi lại!");
+        const msg = res.data.message || "Email xác thực đã được gửi lại!";
+        setMessage(msg);
+        toast.success(msg); // ✅ Thông báo thành công
       } else {
         setSuccess(false);
-        setMessage(res.data?.message || "Không thể gửi lại email xác thực.");
+        const msg = res.data?.message || "Không thể gửi lại email xác thực.";
+        setMessage(msg);
+        toast.error(msg); // ✅ Thông báo lỗi
       }
     } catch (err) {
       console.error("Resend error:", err);
       setSuccess(false);
-      setMessage("Có lỗi xảy ra khi gửi lại email.");
+      const msg = "Có lỗi xảy ra khi gửi lại email.";
+      setMessage(msg);
+      toast.error(msg); // ✅ Thông báo lỗi
     }
 
     setLoading(false);
   };
 
   return (
-    <div className="text-center">
+    <div className="text-center max-w-md mx-auto bg-white p-6 rounded shadow">
       <h1 className="text-xl font-bold mb-4">Gửi lại email xác nhận</h1>
+
       <form onSubmit={handleResend} className="space-y-4">
         <input
           type="email"
