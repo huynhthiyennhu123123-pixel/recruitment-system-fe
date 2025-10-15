@@ -1,179 +1,224 @@
 import React, { useEffect, useState } from "react"
 import {
-  Box, Typography, Paper, List, ListItem, ListItemText, Avatar, Divider,
-  Button, Chip, CircularProgress, Stack
+  Box,
+  Typography,
+  Button,
+  Chip,
+  IconButton,
+  Tooltip,
+  CircularProgress,
 } from "@mui/material"
-import EventAvailableOutlined from "@mui/icons-material/EventAvailableOutlined"
-import PersonOutline from "@mui/icons-material/PersonOutline"
+import AddIcon from "@mui/icons-material/Add"
+import EditIcon from "@mui/icons-material/Edit"
+import CancelIcon from "@mui/icons-material/Cancel"
+import DoneAllIcon from "@mui/icons-material/DoneAll"
+import { DataGrid } from "@mui/x-data-grid"
+import dayjs from "dayjs"
 import {
   getMyInterviews,
   cancelInterview,
-  completeInterview
+  completeInterview,
 } from "../../services/interviewService"
-import InterviewFormDialog from "./InterviewFormDialog"
-import InterviewDetailDialog from "./InterviewDetailDialog"
+import ScheduleModal from "./ScheduleModal"
+import RescheduleModal from "./RescheduleModal"
+import GroupAddIcon from "@mui/icons-material/GroupAdd"
+import ParticipantModal from "./ParticipantModal"
 
 export default function InterviewPage() {
   const [interviews, setInterviews] = useState([])
   const [loading, setLoading] = useState(true)
-  const [openForm, setOpenForm] = useState(false)
-  const [openDetail, setOpenDetail] = useState(null)
+  const [openSchedule, setOpenSchedule] = useState(false)
+  const [openReschedule, setOpenReschedule] = useState(null)
+  const [openParticipants, setOpenParticipants] = useState(null);
 
-  // ✅ Hàm fetch danh sách phỏng vấn
-  const fetchInterviews = async () => {
+  const fetchData = async () => {
     setLoading(true)
     try {
       const res = await getMyInterviews({ page: 0, size: 20 })
-      setInterviews(res?.content || res?.data?.content || [])
+      if (res.data.success) setInterviews(res.data.data.content)
     } catch (err) {
-      console.error("❌ Lỗi khi tải danh sách phỏng vấn:", err)
+      console.error(err)
     } finally {
       setLoading(false)
     }
   }
 
-  // ✅ Gọi API khi load trang
   useEffect(() => {
-    fetchInterviews()
+    fetchData()
   }, [])
 
-  // ✅ Hủy phỏng vấn
-  const handleCancel = async (id) => {
-    if (window.confirm("Xác nhận hủy lịch phỏng vấn này?")) {
-      try {
-        await cancelInterview(id, "Hủy bởi nhà tuyển dụng")
-        fetchInterviews()
-      } catch (err) {
-        console.error("❌ Lỗi khi hủy phỏng vấn:", err)
-      }
-    }
+  const handleComplete = async (row) => {
+    const notes = prompt("Nhập ghi chú hoàn tất:")
+    if (!notes) return
+    await completeInterview(row.id, { notes })
+    fetchData()
   }
 
-  // ✅ Hoàn tất phỏng vấn
-  const handleComplete = async (id) => {
-    if (window.confirm("Xác nhận hoàn tất phỏng vấn này?")) {
-      try {
-        await completeInterview(id, "Phỏng vấn thành công")
-        fetchInterviews()
-      } catch (err) {
-        console.error("❌ Lỗi khi hoàn tất phỏng vấn:", err)
-      }
-    }
+  const handleCancel = async (row) => {
+    const reason = prompt("Nhập lý do hủy lịch:")
+    if (!reason) return
+    await cancelInterview(row.id, { reason })
+    fetchData()
   }
 
-  // ✅ Màu chip theo trạng thái
-  const colorMap = {
-    SCHEDULED: "info",
-    COMPLETED: "success",
-    CANCELLED: "error",
-    RESCHEDULED: "warning"
-  }
+  const columns = [
+    {
+      field: "stt",
+      headerName: "STT",
+      width: 80,
+      align: "center",
+      headerAlign: "center",
+      renderCell: (params) => params.api ? params.api.getRowIndexRelativeToVisibleRows(params.row.id) + 1 : params.rowIndex + 1,
+    },
+    {
+      field: "scheduledAt",
+      headerName: "Thời gian phỏng vấn",
+      width: 200,
+      renderCell: (p) => dayjs(p.value).format("DD/MM/YYYY HH:mm"),
+    },
+    { field: "location", headerName: "Địa điểm", width: 150 },
+    { field: "meetingLink", headerName: "Link meeting", width: 200 },
+    { field: "interviewType", headerName: "Hình thức", width: 130 },
+    {
+      field: "status",
+      headerName: "Trạng thái",
+      width: 140,
+      renderCell: (params) => (
+        <Chip
+          label={params.value}
+          color={
+            params.value === "SCHEDULED"
+              ? "info"
+              : params.value === "COMPLETED"
+              ? "success"
+              : "error"
+          }
+        />
+      ),
+    },
+    {
+      field: "actions",
+      headerName: "Hành động",
+      width: 260,
+      renderCell: (params) => (
+        <>
+          {/* 👥 Quản lý người phỏng vấn */}
+          <Tooltip title="Thêm / Xóa người phỏng vấn">
+            <IconButton
+              color="secondary"
+              onClick={() => setOpenParticipants(params.row)}
+            >
+              <GroupAddIcon />
+            </IconButton>
+          </Tooltip>
+
+          {/* ✏️ Đổi lịch */}
+          <Tooltip title="Đổi lịch phỏng vấn">
+            <IconButton
+              color="primary"
+              onClick={() => setOpenReschedule(params.row)}
+            >
+              <EditIcon />
+            </IconButton>
+          </Tooltip>
+
+          {/* ✅ Hoàn tất */}
+          <Tooltip title="Đánh dấu hoàn tất">
+            <IconButton
+              color="success"
+              onClick={() => handleComplete(params.row)}
+            >
+              <DoneAllIcon />
+            </IconButton>
+          </Tooltip>
+
+          {/* ❌ Hủy lịch */}
+          <Tooltip title="Hủy phỏng vấn">
+            <IconButton
+              color="error"
+              onClick={() => handleCancel(params.row)}
+            >
+              <CancelIcon />
+            </IconButton>
+          </Tooltip>
+        </>
+      ),
+    },
+
+    {
+      field: "participants",
+      headerName: "Người tham gia",
+      flex: 1.2,
+      renderCell: (params) => {
+        const list = params.row.participants || [];
+        if (list.length === 0)
+          return <Typography variant="body2" color="text.secondary">—</Typography>;
+        return (
+          <Box sx={{ display: "flex", flexWrap: "wrap", gap: 0.5 }}>
+            {list.map((p, idx) => (
+              <Chip key={idx} label={p.name || p.email || p} size="small" />
+            ))}
+          </Box>
+        );
+      },
+    },
+
+  ]
 
   return (
-    <Box sx={{ maxWidth: 1000, mx: "auto", my: 4 }}>
-      {/* Header */}
-      <Stack direction="row" justifyContent="space-between" alignItems="center">
-        <Typography
-          variant="h5"
-          fontWeight="bold"
-          color="#2e7d32"
-          sx={{ display: "flex", gap: 1 }}
-        >
-          <EventAvailableOutlined /> Lịch phỏng vấn
+    <Box p={3}>
+      <Box display="flex" justifyContent="space-between" mb={2}>
+        <Typography variant="h5" fontWeight="bold">
+          Quản lý lịch phỏng vấn
         </Typography>
-        <Button variant="contained" color="success" onClick={() => setOpenForm(true)}>
-          + Tạo lịch
+        <Button
+          variant="contained"
+          startIcon={<AddIcon />}
+          onClick={() => setOpenSchedule(true)}
+        >
+          Tạo lịch
         </Button>
-      </Stack>
+      </Box>
 
-      {/* Danh sách phỏng vấn */}
-      <Paper sx={{ p: 2, mt: 2, borderRadius: 3 }}>
-        {loading ? (
-          <Box textAlign="center" py={5}>
-            <CircularProgress color="success" />
-          </Box>
-        ) : interviews.length === 0 ? (
-          <Typography textAlign="center" color="text.secondary" py={5}>
-            Chưa có lịch phỏng vấn nào.
-          </Typography>
-        ) : (
-          <List>
-            {interviews.map((i, idx) => (
-              <React.Fragment key={i.id}>
-                <ListItem
-                  alignItems="flex-start"
-                  secondaryAction={
-                    <Stack direction="row" spacing={1}>
-                      <Button size="small" variant="outlined" onClick={() => setOpenDetail(i)}>
-                        Chi tiết
-                      </Button>
-                      {i.status === "SCHEDULED" && (
-                        <>
-                          <Button
-                            size="small"
-                            color="success"
-                            onClick={() => handleComplete(i.id)}
-                          >
-                            Hoàn tất
-                          </Button>
-                          <Button
-                            size="small"
-                            color="error"
-                            onClick={() => handleCancel(i.id)}
-                          >
-                            Hủy
-                          </Button>
-                        </>
-                      )}
-                    </Stack>
-                  }
-                >
-                  <Avatar sx={{ bgcolor: "#2e7d32", mr: 2 }}>
-                    <PersonOutline />
-                  </Avatar>
-                  <ListItemText
-                    primary={
-                      <Typography fontWeight="bold">
-                        📞 {i.interviewType || "Phỏng vấn"} –{" "}
-                        {new Date(i.scheduledAt).toLocaleString("vi-VN")}
-                      </Typography>
-                    }
-                    secondary={
-                      <>
-                        <Typography variant="body2" color="text.secondary">
-                          Địa điểm: {i.location || "Trực tuyến"}
-                        </Typography>
-                        <Chip
-                          label={i.status}
-                          color={colorMap[i.status] || "default"}
-                          size="small"
-                          sx={{ mt: 1 }}
-                        />
-                      </>
-                    }
-                  />
-                </ListItem>
-                {idx < interviews.length - 1 && <Divider />}
-              </React.Fragment>
-            ))}
-          </List>
-        )}
-      </Paper>
-
-      {/* Dialogs */}
-      <InterviewFormDialog
-        open={openForm}
-        onClose={() => {
-          setOpenForm(false)
-          fetchInterviews()
-        }}
-      />
-      {openDetail && (
-        <InterviewDetailDialog
-          interview={openDetail}
-          onClose={() => setOpenDetail(null)}
+      {loading ? (
+        <Box textAlign="center" mt={4}>
+          <CircularProgress />
+        </Box>
+      ) : (
+        <DataGrid
+          rows={interviews}
+          columns={columns}
+          getRowId={(r) => r.id}
+          autoHeight
+          disableSelectionOnClick
         />
       )}
+
+      {openSchedule && (
+        <ScheduleModal
+          open={openSchedule}
+          onClose={() => setOpenSchedule(false)}
+          onSuccess={fetchData}
+        />
+      )}
+      {openReschedule && (
+        <RescheduleModal
+          open={!!openReschedule}
+          onClose={() => setOpenReschedule(null)}
+          interview={openReschedule}
+          onSuccess={fetchData}
+        />
+      )}
+      {openParticipants && (
+        <ParticipantModal
+          open={!!openParticipants}
+          onClose={() => setOpenParticipants(null)}
+          interview={openParticipants}
+          existingParticipants={openParticipants.participants || []}
+          onUpdated={fetchData}
+        />
+      )}
+
     </Box>
   )
 }

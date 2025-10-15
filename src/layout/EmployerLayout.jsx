@@ -63,7 +63,7 @@ export default function EmployerLayout() {
         severity: "success",
       });
 
-      // ✅ Chuyển hướng về trang public sau 1.2s
+      //  Chuyển hướng về trang public sau 1.2s
       setTimeout(() => {
         navigate("/", { replace: true });
       }, 1200);
@@ -207,7 +207,7 @@ export default function EmployerLayout() {
             <MenuItem
               onClick={handleClose}
               component={Link}
-              to="/employer/CompanyProfileEdit"
+              to="/employer/company/edit"
             >
               Cập nhật thông tin
             </MenuItem>

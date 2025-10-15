@@ -1,49 +1,58 @@
+// src/services/interviewService.js
 import axios from "axios"
 
-const API_URL = "http://localhost:8081/api/interviews"
-const headers = () => ({
-  Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
-  "Content-Type": "application/json"
+const API = axios.create({
+  baseURL: "http://localhost:8081/api/interviews",
 })
 
-// === GET ===
-export const getMyInterviews = async (params = {}) => {
-  const res = await axios.get(`${API_URL}/my`, { params, headers: headers() })
-  return res.data.data
-}
+// ✅ Thêm Authorization header tự động cho mọi request
+API.interceptors.request.use((config) => {
+  const token =
+    localStorage.getItem("accessToken") ||
+    localStorage.getItem("token") ||
+    localStorage.getItem("access_token")
 
-// === POST ===
-export const createInterview = async (data) => {
-  const res = await axios.post(`${API_URL}/schedule`, data, { headers: headers() })
-  return res.data
-}
+  if (token) config.headers.Authorization = `Bearer ${token}`
+  return config
+})
 
-// === PATCH ===
-export const rescheduleInterview = async (id, data) => {
-  const res = await axios.patch(`${API_URL}/${id}/reschedule`, data, { headers: headers() })
-  return res.data
-}
+// ============================
+//  Lấy danh sách lịch phỏng vấn (phân trang + lọc)
+// ============================
+export const getMyInterviews = (params = {}) => API.get("/my", { params })
 
-export const completeInterview = async (id, notes) => {
-  const res = await axios.patch(`${API_URL}/${id}/complete`, { notes }, { headers: headers() })
-  return res.data
-}
+// ============================
+//  Tạo lịch phỏng vấn mới
+// ============================
+export const scheduleInterview = (data) => API.post("/schedule", data)
 
-export const cancelInterview = async (id, reason) => {
-  const res = await axios.patch(`${API_URL}/${id}/cancel`, { reason }, { headers: headers() })
-  return res.data
-}
+// ============================
+//  Đổi lịch (reschedule)
+// ============================
+export const rescheduleInterview = (id, data) =>
+  API.patch(`/${id}/reschedule`, data)
 
-// === Participants ===
-export const addParticipants = async (id, userIds, role) => {
-  const res = await axios.post(`${API_URL}/${id}/participants`, { userIds, role }, { headers: headers() })
-  return res.data
-}
+// ============================
+// Hoàn tất phỏng vấn
+// ============================
+export const completeInterview = (id, data) =>
+  API.patch(`/${id}/complete`, data)
 
-export const removeParticipants = async (id, userIds, role) => {
-  const res = await axios.delete(`${API_URL}/${id}/participants`, {
-    data: { userIds, role },
-    headers: headers()
-  })
-  return res.data
-}
+// ============================
+//  Hủy lịch phỏng vấn
+// ============================
+export const cancelInterview = (id, data) => API.patch(`/${id}/cancel`, data)
+
+// ============================
+// Quản lý người tham gia
+// ============================
+export const addParticipants = (id, data) =>
+  API.post(`/${id}/participants`, data)
+
+export const removeParticipants = (id, data) =>
+  API.delete(`/${id}/participants`, { data })
+
+// ============================
+// Lấy chi tiết một lịch phỏng vấn
+// ============================
+export const getInterviewById = (id) => API.get(`/${id}`)

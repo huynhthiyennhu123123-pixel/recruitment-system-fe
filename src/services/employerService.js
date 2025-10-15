@@ -137,20 +137,51 @@ export async function getInterviews() {
 /* ======================
  *  QUẢN LÝ ỨNG VIÊN
  * ====================== */
+export async function getManagedApplications(page = 0, size = 50, status, jobPostingId) {
+  try {
+    const params = new URLSearchParams({ page, size })
+    if (status) params.append("status", status)
+    if (jobPostingId) params.append("jobPostingId", jobPostingId)
 
-// Lấy danh sách đơn ứng tuyển (phân trang, lọc theo trạng thái / job)
-export async function getManagedApplications(page = 0, size = 10, status, jobPostingId) {
-  const params = new URLSearchParams({ page, size })
-  if (status) params.append("status", status)
-  if (jobPostingId) params.append("jobPostingId", jobPostingId)
+    const res = await fetch(`${API_URL}/applications/manage?${params}`, {
+      headers: getAuthHeaders(),
+    })
+    const data = await res.json()
 
-  const res = await fetch(`${API_URL}/applications/manage?${params}`, {
-    headers: getAuthHeaders(),
-  })
-  return res.json()
+    if (!data?.success) {
+      console.warn("⚠️ Không thể lấy danh sách ứng viên:", data?.message)
+      return { success: false, data: { content: [] } }
+    }
+
+    const content = data?.data?.content || []
+    return {
+      success: true,
+      data: {
+        content: content.map((item) => ({
+          id: item.id,
+          applicantName:
+            item.applicantFullName ||
+            `${item.applicant?.firstName || ""} ${item.applicant?.lastName || ""}`.trim(),
+          applicantEmail: item.applicant?.email || "",
+          jobTitle: item.jobTitle || item.jobPosting?.title || "Không rõ vị trí",
+          jobId: item.jobPosting?.id,
+          status: item.status,
+          createdAt: item.createdAt,
+          applicant: item.applicant,
+          jobPosting: item.jobPosting,
+        })),
+      },
+    }
+  } catch (err) {
+    console.error("❌ Lỗi khi lấy danh sách ứng viên:", err)
+    return { success: false, data: { content: [] } }
+  }
 }
 
-// Lấy chi tiết đơn ứng tuyển
+
+/**
+ *  Lấy chi tiết đơn ứng tuyển theo ID
+ */
 export async function getApplicationById(id) {
   const res = await fetch(`${API_URL}/applications/manage/${id}`, {
     headers: getAuthHeaders(),
@@ -158,12 +189,34 @@ export async function getApplicationById(id) {
   return res.json()
 }
 
-// Cập nhật trạng thái đơn ứng tuyển
+/**
+ *  Cập nhật trạng thái đơn ứng tuyển
+ */
 export async function updateApplicationStatus(id, status, notes = "") {
   const res = await fetch(`${API_URL}/applications/manage/${id}/status`, {
     method: "PATCH",
     headers: getAuthHeaders(),
     body: JSON.stringify({ status, notes }),
+  })
+  return res.json()
+}
+/* ======================
+ *  NGƯỜI PHỎNG VẤN
+ * ====================== */
+export async function addParticipants(interviewId, body) {
+  const res = await fetch(`${API_URL}/interviews/${interviewId}/participants`, {
+    method: "POST",
+    headers: getAuthHeaders(),
+    body: JSON.stringify(body),
+  })
+  return res.json()
+}
+
+export async function removeParticipants(interviewId, body) {
+  const res = await fetch(`${API_URL}/interviews/${interviewId}/participants`, {
+    method: "DELETE",
+    headers: getAuthHeaders(),
+    body: JSON.stringify(body),
   })
   return res.json()
 }
