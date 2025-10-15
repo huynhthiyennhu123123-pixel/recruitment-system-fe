@@ -1,13 +1,16 @@
+// ==========================
+// 📁 employerService.js
+// ==========================
 const API_URL = "http://localhost:8081/api"
 
-// Helper để thêm token vào header
+// Helper: thêm token vào header
 const getAuthHeaders = () => ({
   Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
   "Content-Type": "application/json",
 })
 
 /* ======================
- * QUẢN LÝ TIN TUYỂN DỤNG
+ * 1️⃣ QUẢN LÝ TIN TUYỂN DỤNG
  * ====================== */
 export async function getMyJobs(page = 0, size = 10, sortBy = "createdAt", sortDir = "DESC") {
   const res = await fetch(
@@ -16,16 +19,6 @@ export async function getMyJobs(page = 0, size = 10, sortBy = "createdAt", sortD
   )
   return res.json()
 }
-
-export async function getPublicJobById(id) {
-  const res = await fetch(`${API_URL}/public/jobs/${id}`, {
-    headers: { "Content-Type": "application/json" },
-  })
-  return res.json()
-}
-
-
-
 
 export async function createJob(data) {
   const res = await fetch(`${API_URL}/jobs/manage`, {
@@ -57,12 +50,11 @@ export async function updateJobStatus(id, status) {
   const res = await fetch(`${API_URL}/jobs/manage/${id}/status`, {
     method: "PATCH",
     headers: getAuthHeaders(),
-    body: JSON.stringify({ status }), // ✅ gửi trong body JSON
+    body: JSON.stringify({ status }),
   })
   return res.json()
 }
 
-// Lấy danh sách job của employer (có phân trang)
 export async function getEmployerJobs(page = 0, size = 10, sortBy = "createdAt", sortDir = "DESC") {
   const res = await fetch(
     `${API_URL}/jobs/manage?page=${page}&size=${size}&sortBy=${sortBy}&sortDir=${sortDir}`,
@@ -71,45 +63,49 @@ export async function getEmployerJobs(page = 0, size = 10, sortBy = "createdAt",
   return res.json()
 }
 
-
 export async function getEmployerJobById(jobId) {
-  const res = await getEmployerJobs(0, 50) 
+  const res = await getEmployerJobs(0, 50)
   if (!res?.data?.content) return null
   const found = res.data.content.find((job) => job.id === Number(jobId))
   return found || null
 }
 
-/* ======================
- * HỒ SƠ CÔNG TY
- * ====================== */
+export async function getPublicJobById(id) {
+  const res = await fetch(`${API_URL}/public/jobs/${id}`, {
+    headers: { "Content-Type": "application/json" },
+  })
+  return res.json()
+}
 
+/* ======================
+ * 2️⃣ HỒ SƠ CÔNG TY
+ * ====================== */
 export async function getPublicCompanyById(id) {
   const res = await fetch(`${API_URL}/companies/${id}/public`, {
     headers: { "Content-Type": "application/json" },
   })
   return res.json()
 }
+
 export async function getEmployerCompanyId() {
   try {
-    // Ưu tiên lấy từ user nếu có
     const user = JSON.parse(localStorage.getItem("user"))
     if (user?.company?.id) return user.company.id
 
-    // Nếu không có, lấy từ job đầu tiên mà employer đã tạo
     const res = await getEmployerJobs(0, 1, "createdAt", "DESC")
     const firstJob = res?.data?.content?.[0]
     if (firstJob?.company?.id) {
-      localStorage.setItem("companyId", firstJob.company.id) // Lưu tạm để tái sử dụng
+      localStorage.setItem("companyId", firstJob.company.id)
       return firstJob.company.id
     }
 
-    // Nếu vẫn không có
     return null
   } catch (err) {
     console.error("❌ Lỗi khi lấy companyId:", err)
     return null
   }
 }
+
 export async function updateCompanyProfile(data) {
   const res = await fetch(`${API_URL}/companies/my`, {
     method: "PUT",
@@ -120,23 +116,10 @@ export async function updateCompanyProfile(data) {
 }
 
 /* ======================
- *  PHỎNG VẤN
+ * 3️⃣ QUẢN LÝ ỨNG VIÊN
  * ====================== */
-export async function getApplicants() {
-  const res = await fetch(`${API_URL}/applications/my-company`, {
-    headers: getAuthHeaders(),
-  })
-  return res.json()
-}
 
-export async function getInterviews() {
-  const res = await fetch(`${API_URL}/interviews/my`, { headers: getAuthHeaders() })
-  return res.json()
-}
-
-/* ======================
- *  QUẢN LÝ ỨNG VIÊN
- * ====================== */
+// Lấy danh sách đơn ứng tuyển (phân trang + lọc theo trạng thái/job)
 export async function getManagedApplications(page = 0, size = 50, status, jobPostingId) {
   try {
     const params = new URLSearchParams({ page, size })
@@ -178,10 +161,7 @@ export async function getManagedApplications(page = 0, size = 50, status, jobPos
   }
 }
 
-
-/**
- *  Lấy chi tiết đơn ứng tuyển theo ID
- */
+// Lấy chi tiết đơn ứng tuyển
 export async function getApplicationById(id) {
   const res = await fetch(`${API_URL}/applications/manage/${id}`, {
     headers: getAuthHeaders(),
@@ -189,9 +169,7 @@ export async function getApplicationById(id) {
   return res.json()
 }
 
-/**
- *  Cập nhật trạng thái đơn ứng tuyển
- */
+// Cập nhật trạng thái đơn ứng tuyển
 export async function updateApplicationStatus(id, status, notes = "") {
   const res = await fetch(`${API_URL}/applications/manage/${id}/status`, {
     method: "PATCH",
@@ -200,23 +178,20 @@ export async function updateApplicationStatus(id, status, notes = "") {
   })
   return res.json()
 }
+
 /* ======================
- *  NGƯỜI PHỎNG VẤN
+ * 4️⃣ QUẢN LÝ PHỎNG VẤN
  * ====================== */
-export async function addParticipants(interviewId, body) {
-  const res = await fetch(`${API_URL}/interviews/${interviewId}/participants`, {
-    method: "POST",
+export async function getApplicants() {
+  const res = await fetch(`${API_URL}/applications/my-company`, {
     headers: getAuthHeaders(),
-    body: JSON.stringify(body),
   })
   return res.json()
 }
 
-export async function removeParticipants(interviewId, body) {
-  const res = await fetch(`${API_URL}/interviews/${interviewId}/participants`, {
-    method: "DELETE",
+export async function getInterviews() {
+  const res = await fetch(`${API_URL}/interviews/my`, {
     headers: getAuthHeaders(),
-    body: JSON.stringify(body),
   })
   return res.json()
 }

@@ -216,7 +216,7 @@ export default function JobPostCreate() {
                 type="number"
                 label={<Label icon={<MonetizationOnOutlined />} text="Lương tối đa" />}
                 fullWidth
-                sx={{marginInlineEnd:-4 }}
+                sx={{marginInlineEnd:-5 }}
                 value={form.salaryMax}
                 onChange={handleChange}
               />
@@ -315,7 +315,7 @@ export default function JobPostCreate() {
               <TextField
                 name="location"
                 fullWidth
-                sx={{marginInlineEnd:64 }}
+                sx={{marginInlineEnd:66 }}
                 label={<Label icon={<LocationOnOutlined />} text="Địa điểm làm việc" />}
                 value={form.location}
                 onChange={handleChange}

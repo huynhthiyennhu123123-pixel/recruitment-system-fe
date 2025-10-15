@@ -59,7 +59,7 @@ export default function EmployerLayout() {
       await logout();
       setSnackbar({
         open: true,
-        message: "Đăng xuất thành công! 👋 Đang quay về trang chủ...",
+        message: "Đăng xuất thành công!",
         severity: "success",
       });
 
