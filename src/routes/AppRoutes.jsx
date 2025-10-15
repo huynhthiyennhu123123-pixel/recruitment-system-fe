@@ -12,7 +12,7 @@ import AdminLayout from "../layout/AdminLayout";
 // 🔹 Pages Public
 import HomePage from "../pages/public/HomePage";
 import JobListPage from "../pages/public/JobListPage";
-import PublicJobDetailPage from "../pages/public/JobDetailPage"; 
+import PublicJobDetailPage from "../pages/public/JobDetailPage";
 import CompanyDetailPage from "../pages/public/CompanyDetailPage";
 import AboutPage from "../pages/public/AboutPage";
 
@@ -20,7 +20,7 @@ import AboutPage from "../pages/public/AboutPage";
 // Pages Auth
 import LoginPage from "../pages/auth/LoginPage";
 import RegisterPage from "../pages/auth/RegisterPage";
-import EmployerRegisterPage from "../pages/auth/EmployerRegisterPage"; 
+import EmployerRegisterPage from "../pages/auth/EmployerRegisterPage";
 import CheckEmailPage from "../pages/auth/CheckEmailPage";
 import VerifyEmailPage from "../pages/auth/VerifyEmailPage";
 import ForgotPasswordPage from "../pages/auth/ForgotPasswordPage";
@@ -35,7 +35,9 @@ import ApplicationsPage from "../pages/applicant/ApplicationsPage";
 import ApplicationDetailPage from "../pages/applicant/ApplicationDetailPage";
 import ApplicantInterviews from "../pages/applicant/ApplicantInterviews";
 import SavedJobsPage from "../pages/applicant/SavedJobsPage";
-
+import DocumentListPage from "../pages/applicant/documents/DocumentListPage";
+import UploadDocumentPage from "../pages/applicant/documents/UploadDocumentPage";
+import UploadResumePage from "../pages/applicant/documents/UploadResumePage";
 
 
 // Pages Employer
@@ -78,7 +80,7 @@ function App() {
     <BrowserRouter>
       <Routes>
         {/* Public */}
-        
+
         <Route element={<PublicLayout />}>
           <Route index element={<HomePage />} />
           <Route path="jobs" element={<JobListPage />} />
@@ -98,7 +100,7 @@ function App() {
           <Route path="reset-password" element={<ResetPasswordPage />} />
         </Route>
 
-        
+
         {/* Redirect khi BE trả link trực tiếp */}
         <Route path="/verify-email" element={<RedirectVerifyEmail />} />
         <Route path="/reset-password" element={<RedirectResetPassword />} />
@@ -116,6 +118,9 @@ function App() {
             <Route path="jobs/:id/apply" element={<ApplyJobPage />} />
             <Route path="companies/:id" element={<CompanyDetailPage />} />
             <Route path="/applicant/saved-jobs" element={<SavedJobsPage />} />
+            <Route path="documents" element={<DocumentListPage />} />
+            <Route path="documents/upload" element={<UploadDocumentPage />} />
+            <Route path="documents/resume" element={<UploadResumePage />} />
           </Route>
         </Route>
 
@@ -135,7 +140,7 @@ function App() {
             <Route path="applications" element={<ApplicationListPage />} />
 
             {/* Quản lý phỏng vấn */}
-            <Route path="interviews" element={<InterviewPage />} />            
+            <Route path="interviews" element={<InterviewPage />} />
             <Route path="interviews" element={<InterviewPage />} />
             <Route path="interviews/:id" element={<InterviewDetailPage />} />
 
