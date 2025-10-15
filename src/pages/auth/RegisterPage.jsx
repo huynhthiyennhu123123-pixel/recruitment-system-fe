@@ -2,6 +2,7 @@ import { useState } from "react"
 import { register } from "../../services/authService"
 import { useNavigate, Link } from "react-router-dom"
 import { FaEye, FaEyeSlash } from "react-icons/fa"
+import { toast } from "react-toastify" // ✅ Thêm dòng này
 
 export default function RegisterPage() {
   const [form, setForm] = useState({
@@ -31,7 +32,9 @@ export default function RegisterPage() {
 
     // ✅ Kiểm tra mật khẩu trùng khớp
     if (form.password !== form.confirmPassword) {
-      setError("⚠️ Mật khẩu xác nhận không khớp!")
+      const msg = "⚠️ Mật khẩu xác nhận không khớp!"
+      setError(msg)
+      toast.warn(msg) // ✅ Thêm toast cảnh báo
       return
     }
 
@@ -39,10 +42,14 @@ export default function RegisterPage() {
     try {
       const res = await register(form)
       if (res?.success || res?.data) {
-        setInfo("✅ Đăng ký thành công! Vui lòng xác thực email trước khi đăng nhập.")
+        const msg = "Đăng ký thành công! Vui lòng xác thực email trước khi đăng nhập."
+        setInfo(msg)
+        toast.success(msg) // ✅ Thêm toast thành công
         navigate("/auth/check-email", { state: { email: form.email } })
       } else {
-        setError(res?.message || "❌ Đăng ký thất bại!")
+        const msg = res?.message || "Đăng ký thất bại!"
+        setError(msg)
+        toast.error(msg) // ✅ Thêm toast lỗi
       }
     } catch (err) {
       console.error("Register error:", err)
@@ -54,6 +61,7 @@ export default function RegisterPage() {
           ? "⚠️ Bạn thao tác quá nhanh, vui lòng thử lại sau."
           : "❌ Đăng ký thất bại. Vui lòng thử lại.")
       setError(msg)
+      toast.error(msg) // ✅ Thêm toast lỗi
     } finally {
       setLoading(false)
     }
@@ -62,18 +70,6 @@ export default function RegisterPage() {
   return (
     <div>
       <h2 className="text-xl font-bold mb-4 text-center">Tạo tài khoản</h2>
-
-      {error && (
-        <div className="mb-4 rounded-lg bg-red-50 text-red-600 p-3 text-sm text-center">
-          {error}
-        </div>
-      )}
-      {info && (
-        <div className="mb-4 rounded-lg bg-green-50 text-green-600 p-3 text-sm text-center">
-          {info}
-        </div>
-      )}
-
       <form onSubmit={handleSubmit} className="space-y-4">
         {/* Họ tên */}
         <div className="grid grid-cols-2 gap-3">

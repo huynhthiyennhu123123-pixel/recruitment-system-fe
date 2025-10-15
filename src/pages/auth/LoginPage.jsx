@@ -1,105 +1,89 @@
-import { useState } from "react"
-import { login, resendVerification } from "../../services/authService"
-import { useNavigate, Link } from "react-router-dom"
-import { FaEye, FaEyeSlash } from "react-icons/fa"
+import { useState } from "react";
+import { login, resendVerification } from "../../services/authService";
+import { useNavigate, Link } from "react-router-dom";
+import { FaEye, FaEyeSlash } from "react-icons/fa";
+import { toast } from "react-toastify"; // ✅ Thêm import
 
 export default function LoginPage() {
-  const [form, setForm] = useState({ email: "", password: "" })
-  const [loading, setLoading] = useState(false)
-  const [error, setError] = useState("")
-  const [info, setInfo] = useState("")
-  const [showPassword, setShowPassword] = useState(false)
-  const navigate = useNavigate()
+  const [form, setForm] = useState({ email: "", password: "" });
+  const [loading, setLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
+  const navigate = useNavigate();
 
   const handleChange = (e) =>
-    setForm({ ...form, [e.target.name]: e.target.value })
+    setForm({ ...form, [e.target.name]: e.target.value });
 
   const handleSubmit = async (e) => {
-    e.preventDefault()
-    setLoading(true)
-    setError("")
-    setInfo("")
+    e.preventDefault();
+    setLoading(true);
 
     try {
-      const res = await login(form)
-      console.log("✅ Login response:", res)
+      const res = await login(form);
+      console.log("✅ Login response:", res);
 
-      const user = res?.user
+      const user = res?.user;
+
+      // ⚠️ Kiểm tra email xác thực trước khi cho vào
+      if (user && user.emailVerified === false) {
+        toast.warn("⚠️ Tài khoản của bạn chưa xác thực email!");
+        setLoading(false);
+        return;
+      }
+
       if (res?.accessToken) {
-        localStorage.setItem("accessToken", res.accessToken)
-        localStorage.setItem("user", JSON.stringify(res.user))
-        await new Promise((resolve) => setTimeout(resolve, 50))
+        localStorage.setItem("accessToken", res.accessToken);
+        localStorage.setItem("user", JSON.stringify(res.user));
 
-        const role = res.user.role?.toUpperCase()
-        if (role === "APPLICANT") navigate("/", { replace: true })
-        else if (role === "EMPLOYER") navigate("/employer/dashboard", { replace: true })
-      }
+        const role = user.role?.toUpperCase();
+        toast.success("🎉 Đăng nhập thành công!");
 
-      // ⚠️ Kiểm tra email xác thực
-      if (user.emailVerified === false) {
-        setError("Tài khoản của bạn chưa xác thực email.")
-        setLoading(false)
-        return
-      }
-
-      // ✅ Điều hướng theo vai trò
-      const role = user.role?.toUpperCase()
-      switch (role) {
-        case "APPLICANT":
-          navigate("/", { replace: true })
-          break
-        case "EMPLOYER":
-        case "RECRUITER":
-          navigate("/employer/dashboard", { replace: true })
-          break
-        case "ADMIN":
-          navigate("/admin/dashboard", { replace: true })
-          break
-        default:
-          navigate("/", { replace: true })
-          break
+        // ✅ Điều hướng theo vai trò
+        switch (role) {
+          case "APPLICANT":
+            navigate("/", { replace: true });
+            break;
+          case "EMPLOYER":
+          case "RECRUITER":
+            navigate("/employer/dashboard", { replace: true });
+            break;
+          case "ADMIN":
+            navigate("/admin/dashboard", { replace: true });
+            break;
+          default:
+            navigate("/", { replace: true });
+            break;
+        }
       }
     } catch (err) {
-      console.error("❌ Login error:", err)
+      console.error("❌ Login error:", err);
       const message =
         err?.response?.data?.message ||
         err?.message ||
-        "Đăng nhập thất bại. Vui lòng thử lại."
-      setError(message)
+        "Đăng nhập thất bại. Vui lòng thử lại.";
+      toast.error(message); // ✅ Hiển thị lỗi bằng toast
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
+  };
 
   const handleResend = async () => {
     try {
-      const res = await resendVerification(form.email)
+      const res = await resendVerification(form.email);
       if (res?.success) {
-        setInfo("✅ Đã gửi lại email xác nhận. Vui lòng kiểm tra hộp thư.")
+        toast.success("Đã gửi lại email xác nhận. Vui lòng kiểm tra hộp thư.");
       } else {
-        setError("Không thể gửi lại email xác nhận.")
+        toast.error("Không thể gửi lại email xác nhận.");
       }
     } catch {
-      setError("❌ Không thể gửi lại email xác nhận.")
+      toast.error("Không thể gửi lại email xác nhận.");
     }
-  }
+  };
 
   return (
     <div className="max-w-md mx-auto bg-white p-6 rounded-2xl shadow">
       <h1 className="text-2xl font-semibold text-center mb-6">
         Đăng nhập vào hệ thống
       </h1>
-
-      {error && (
-        <div className="mb-4 rounded-lg bg-red-50 text-red-600 p-3 text-sm text-center">
-          {error}
-        </div>
-      )}
-      {info && (
-        <div className="mb-4 rounded-lg bg-green-50 text-green-600 p-3 text-sm text-center">
-          {info}
-        </div>
-      )}
 
       <form onSubmit={handleSubmit} className="space-y-4">
         {/* Email */}
@@ -164,5 +148,5 @@ export default function LoginPage() {
         </button>
       </div>
     </div>
-  )
+  );
 }
