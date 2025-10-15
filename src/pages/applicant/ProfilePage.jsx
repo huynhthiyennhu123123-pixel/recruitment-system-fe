@@ -1,15 +1,11 @@
 import { useEffect, useState } from "react"
-import {
-  getProfile,
-  updateProfile,
-  uploadResume,
-} from "../../services/applicantService"
-import { FaUserCircle, FaFileUpload, FaSave, FaCheckCircle } from "react-icons/fa"
+import { getProfile, updateProfile } from "../../services/applicantService"
+import { FaUserCircle, FaSave } from "react-icons/fa"
+import toast, { Toaster } from "react-hot-toast"
 
 export default function ProfilePage() {
   const [profile, setProfile] = useState(null)
   const [loading, setLoading] = useState(false)
-  const [file, setFile] = useState(null)
 
   useEffect(() => {
     fetchProfile()
@@ -20,6 +16,7 @@ export default function ProfilePage() {
       const res = await getProfile()
       const profileData = res.data?.data || res.data
       const user = JSON.parse(localStorage.getItem("user") || "{}")
+
       setProfile({
         ...profileData,
         firstName: user.firstName,
@@ -28,7 +25,8 @@ export default function ProfilePage() {
         phoneNumber: user.phoneNumber,
       })
     } catch (err) {
-      console.error("Get profile error:", err)
+      console.error("❌ Get profile error:", err)
+      toast.error("Không thể tải hồ sơ.")
     }
   }
 
@@ -38,78 +36,85 @@ export default function ProfilePage() {
 
   const handleSubmit = async (e) => {
     e.preventDefault()
-    setLoading(true)
-    try {
-      const {
-        dateOfBirth,
-        gender,
-        address,
-        city,
-        country,
-        summary,
-        experience,
-        education,
-        skills,
-        certifications,
-        languages,
-        linkedinUrl,
-        githubUrl,
-        portfolioUrl,
-        desiredSalaryMin,
-        desiredSalaryMax,
-        desiredJobType,
-        desiredLocation,
-        availability,
-        isPublic,
-      } = profile
+    if (!profile) return
 
-      await updateProfile({
-        dateOfBirth,
-        gender,
-        address,
-        city,
-        country,
-        summary,
-        experience,
-        education,
-        skills,
-        certifications,
-        languages,
-        linkedinUrl,
-        githubUrl,
-        portfolioUrl,
-        desiredSalaryMin,
-        desiredSalaryMax,
-        desiredJobType,
-        desiredLocation,
-        availability,
-        isPublic,
+    setLoading(true)
+
+    const {
+      dateOfBirth,
+      gender,
+      address,
+      city,
+      country,
+      summary,
+      experience,
+      education,
+      skills,
+      certifications,
+      languages,
+      linkedinUrl,
+      githubUrl,
+      portfolioUrl,
+      desiredSalaryMin,
+      desiredSalaryMax,
+      desiredJobType,
+      desiredLocation,
+      availability,
+      isPublic,
+    } = profile
+
+    const formattedData = {
+      dateOfBirth: dateOfBirth ? dateOfBirth.substring(0, 10) : null,
+      gender:
+        gender === "NU" || gender === "NỮ"
+          ? "Nữ"
+          : gender === "NAM"
+          ? "Nam"
+          : gender || null,
+      address,
+      city,
+      country,
+      summary,
+      experience,
+      education,
+      // ✅ Gửi mảng đúng định dạng backend yêu cầu
+      skills: Array.isArray(skills)
+        ? skills
+        : skills
+        ? skills.split(",").map((s) => s.trim())
+        : [],
+      certifications: Array.isArray(certifications)
+        ? certifications
+        : certifications
+        ? certifications.split(",").map((s) => s.trim())
+        : [],
+      languages,
+      linkedinUrl,
+      githubUrl,
+      portfolioUrl,
+      desiredSalaryMin: Number(desiredSalaryMin) || 0,
+      desiredSalaryMax: Number(desiredSalaryMax) || 0,
+      desiredJobType,
+      desiredLocation,
+      availability,
+      isPublic: Boolean(isPublic),
+    }
+
+    const updatePromise = updateProfile(formattedData)
+      .then(() => {
+        fetchProfile()
+      })
+      .catch((err) => {
+        console.error("Update error:", err)
+        throw err
       })
 
-      alert("✅ Cập nhật thành công!")
-      fetchProfile()
-    } catch (err) {
-      console.error("Update error:", err)
-      alert("❌ Cập nhật thất bại")
-    }
-    setLoading(false)
-  }
+    toast.promise(updatePromise, {
+      loading: "Đang lưu thay đổi...",
+      success: "Cập nhật hồ sơ thành công!",
+      error: "Lỗi khi cập nhật hồ sơ.",
+    })
 
-  const handleUpload = async (e) => {
-    e.preventDefault()
-    if (!file) {
-      alert("⚠️ Chọn file trước khi upload!")
-      return
-    }
-    setLoading(true)
-    try {
-      await uploadResume(file)
-      alert("✅ Upload CV thành công")
-      fetchProfile()
-    } catch (err) {
-      console.error("Upload error:", err)
-      alert("❌ Upload CV thất bại")
-    }
     setLoading(false)
   }
 
@@ -122,8 +127,9 @@ export default function ProfilePage() {
 
   return (
     <div className="min-h-screen bg-gray-50 py-8 px-4">
+      <Toaster position="top-right" reverseOrder={false} />
       <div className="max-w-4xl mx-auto space-y-8">
-        {/* Thông tin cá nhân */}
+        {/* 🧍 Thông tin cá nhân */}
         <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 flex items-center gap-5">
           <div className="w-24 h-24 rounded-full bg-gray-200 flex items-center justify-center text-5xl text-gray-400">
             {profile.firstName ? (
@@ -143,7 +149,7 @@ export default function ProfilePage() {
           </div>
         </div>
 
-        {/* Form hồ sơ */}
+        {/* 📝 Form hồ sơ */}
         <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
           <h1 className="text-xl font-bold text-[#00b14f] mb-5">
             Thông tin hồ sơ
@@ -193,11 +199,15 @@ export default function ProfilePage() {
             {/* Kỹ năng */}
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
-                Kỹ năng
+                Kỹ năng (cách nhau bởi dấu phẩy)
               </label>
               <textarea
                 name="skills"
-                value={profile.skills || ""}
+                value={
+                  Array.isArray(profile.skills)
+                    ? profile.skills.join(", ")
+                    : profile.skills || ""
+                }
                 onChange={handleChange}
                 rows={3}
                 className="border border-gray-300 focus:ring-2 focus:ring-[#00b14f] rounded-lg p-2 w-full outline-none"
@@ -244,52 +254,6 @@ export default function ProfilePage() {
             >
               <FaSave />
               {loading ? "Đang lưu..." : "Lưu thay đổi"}
-            </button>
-          </form>
-        </div>
-
-        {/* CV Upload */}
-        <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
-          <h2 className="text-lg font-bold text-[#00b14f] mb-3 flex items-center gap-2">
-            <FaFileUpload /> CV của tôi
-          </h2>
-          {profile.resumeUrl ? (
-            <p className="text-gray-700 mb-2">
-              <FaCheckCircle className="inline text-[#00b14f] mr-1" />
-              <a
-                href={profile.resumeUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-[#00b14f] hover:underline font-medium"
-              >
-                Xem CV hiện tại
-              </a>
-            </p>
-          ) : (
-            <p className="text-gray-500 mb-2">Chưa có CV được tải lên</p>
-          )}
-
-          <form
-            onSubmit={handleUpload}
-            className="flex flex-col sm:flex-row items-center gap-3"
-          >
-            <input
-              type="file"
-              accept="application/pdf"
-              onChange={(e) => setFile(e.target.files[0])}
-              className="border border-gray-300 rounded-lg p-2 w-full sm:flex-1 focus:ring-2 focus:ring-[#00b14f] outline-none"
-            />
-            <button
-              type="submit"
-              disabled={loading}
-              className={`flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg text-white font-medium transition w-full sm:w-auto ${
-                loading
-                  ? "bg-gray-400 cursor-not-allowed"
-                  : "bg-[#00b14f] hover:bg-green-600"
-              }`}
-            >
-              <FaFileUpload />
-              {loading ? "Đang upload..." : "Upload CV"}
             </button>
           </form>
         </div>

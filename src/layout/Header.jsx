@@ -41,10 +41,10 @@ export default function Header() {
   const bgColor = isEmployer
     ? "#f9fafb"
     : isApplicant
-    ? "#f9fffb"
-    : isAdmin
-    ? "#fff5f5"
-    : "white";
+      ? "#f9fffb"
+      : isAdmin
+        ? "#fff5f5"
+        : "white";
 
   return (
     <header
@@ -139,6 +139,13 @@ export default function Header() {
                       onClick={() => setMenuOpen(false)}
                     >
                       Hồ sơ của tôi
+                    </Link>
+                    <Link
+                      to="/applicant/documents"
+                      className="block px-4 py-2 hover:bg-gray-100"
+                      onClick={() => setMenuOpen(false)}
+                    >
+                      Tài liệu của tôi
                     </Link>
                     <Link
                       to="/applicant/applications"
