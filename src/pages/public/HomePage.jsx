@@ -56,7 +56,7 @@ export default function HomePage() {
     fetchTopCompanies();
   }, []);
 
-  // ✅ Thẻ JobCard tái sử dụng
+  //  Thẻ JobCard tái sử dụng
   const JobCard = ({ job }) => (
     <div className="bg-white border border-gray-100 rounded-2xl p-5 hover:shadow-md transition">
       <h3 className="text-lg font-semibold text-gray-800 mb-1">{job.title}</h3>
@@ -64,7 +64,8 @@ export default function HomePage() {
         {job.company?.name || "Công ty chưa xác định"}
       </p>
       <p className="flex items-center gap-1 text-gray-600 text-sm mb-2">
-        <FaMapMarkerAlt className="text-[#00b14f]" /> {job.location || "Không rõ"}
+        <FaMapMarkerAlt className="text-[#00b14f]" />{" "}
+        {job.location || "Không rõ"}
       </p>
       {job.salaryMin && job.salaryMax && (
         <p className="text-[#00b14f] font-medium mb-2">
@@ -125,9 +126,10 @@ export default function HomePage() {
 
         {/* 🆕 Việc làm mới nhất */}
         <section className="mt-14">
-          <h2 className="text-2xl font-bold text-gray-800 mb-5">
+          <h2 className="text-2xl font-bold text-green-600 mb-5">
             Việc làm mới nhất
           </h2>
+
           {latest.length === 0 ? (
             <p className="text-gray-500">Chưa có việc làm mới.</p>
           ) : (
@@ -141,7 +143,7 @@ export default function HomePage() {
 
         {/* 💻 Việc làm Java nổi bật */}
         <section className="mt-14">
-          <h2 className="text-2xl font-bold text-gray-800 mb-5">
+          <h2 className="text-2xl font-bold text-green-600 mb-5">
             Việc làm Java nổi bật
           </h2>
           {javaJobs.length === 0 ? (
@@ -157,7 +159,7 @@ export default function HomePage() {
 
         {/* 🏢 Công ty nổi bật */}
         <section className="mt-14">
-          <h2 className="text-2xl font-bold text-gray-800 mb-5">
+          <h2 className="text-2xl font-bold text-green-600 mb-5">
             Công ty nổi bật
           </h2>
           {companies.length === 0 ? (
