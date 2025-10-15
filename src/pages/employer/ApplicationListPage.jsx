@@ -62,7 +62,14 @@ export default function ApplicationListPage() {
 
   //  Cấu hình bảng
   const columns = [
-    { field: "id", headerName: "Mã đơn", width: 100 },
+    {
+      field: "stt",
+      headerName: "STT",
+      width: 80,
+      align: "center",
+      headerAlign: "center",
+      renderCell: (params) => params.api ? params.api.getRowIndexRelativeToVisibleRows(params.row.id) + 1 : params.rowIndex + 1,
+    },
     {
       field: "applicantName",
       headerName: "Ứng viên",

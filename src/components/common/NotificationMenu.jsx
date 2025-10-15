@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react"
+import React, { useEffect, useState } from "react";
 import {
   Box,
   IconButton,
@@ -6,98 +6,113 @@ import {
   Menu,
   Typography,
   CircularProgress,
-} from "@mui/material"
-import NotificationsIcon from "@mui/icons-material/Notifications"
-import WorkOutlineIcon from "@mui/icons-material/WorkOutline"
-import ScheduleIcon from "@mui/icons-material/Schedule"
-import EventAvailableIcon from "@mui/icons-material/EventAvailable"
-import EventBusyIcon from "@mui/icons-material/EventBusy"
-import EventRepeatIcon from "@mui/icons-material/EventRepeat"
-import DoneAllIcon from "@mui/icons-material/DoneAll"
-import NotificationsActiveIcon from "@mui/icons-material/NotificationsActive"
-import { useNavigate } from "react-router-dom"
-
-// ✅ Import các hàm API tách riêng
-import {
-  getNotifications,
-  markAsRead,
-  markAllAsRead,
-  countUnread,
-} from "../../services/notificationService" // đường dẫn tuỳ cấu trúc dự án
+} from "@mui/material";
+import NotificationsIcon from "@mui/icons-material/Notifications";
+import WorkOutlineIcon from "@mui/icons-material/WorkOutline";
+import ScheduleIcon from "@mui/icons-material/Schedule";
+import EventAvailableIcon from "@mui/icons-material/EventAvailable";
+import EventBusyIcon from "@mui/icons-material/EventBusy";
+import EventRepeatIcon from "@mui/icons-material/EventRepeat";
+import DoneAllIcon from "@mui/icons-material/DoneAll";
+import NotificationsActiveIcon from "@mui/icons-material/NotificationsActive";
+import axios from "axios";
+import { useNavigate } from "react-router-dom";
 
 // ======================
-// ICON MAP
+// API setup
 // ======================
+const axiosClient = axios.create({
+  baseURL: "http://localhost:8081/api",
+});
+axiosClient.interceptors.request.use((config) => {
+  const token =
+    localStorage.getItem("accessToken") ||
+    localStorage.getItem("token") ||
+    localStorage.getItem("access_token");
+  if (token) config.headers.Authorization = `Bearer ${token}`;
+  return config;
+});
+
+// API
+export const getNotifications = (params) =>
+  axiosClient.get("/notifications", { params });
+export const markAsRead = (id) =>
+  axiosClient.patch(`/notifications/${id}/read`);
+export const markAllAsRead = () =>
+  axiosClient.patch("/notifications/mark-all-read");
+export const countUnread = () => axiosClient.get("/notifications/count-unread");
+
+// Icon mapping
 const getNotificationIcon = (type) => {
   switch (type) {
     case "APPLICATION_STATUS_CHANGED":
-      return <WorkOutlineIcon color="primary" />
+      return <WorkOutlineIcon color="primary" />;
     case "NEW_APPLICATION_RECEIVED":
-      return <NotificationsActiveIcon color="secondary" />
+      return <NotificationsActiveIcon color="secondary" />;
     case "JOB_DEADLINE_REMINDER":
-      return <ScheduleIcon color="warning" />
+      return <ScheduleIcon color="warning" />;
     case "INTERVIEW_SCHEDULED":
-      return <EventAvailableIcon color="success" />
+      return <EventAvailableIcon color="success" />;
     case "INTERVIEW_RESCHEDULED":
-      return <EventRepeatIcon color="info" />
+      return <EventRepeatIcon color="info" />;
     case "INTERVIEW_CANCELLED":
-      return <EventBusyIcon color="error" />
+      return <EventBusyIcon color="error" />;
     case "INTERVIEW_COMPLETED":
-      return <DoneAllIcon color="success" />
+      return <DoneAllIcon color="success" />;
     default:
-      return <NotificationsActiveIcon color="disabled" />
+      return <NotificationsActiveIcon color="disabled" />;
   }
-}
+};
 
 export default function NotificationMenu() {
-  const [anchorEl, setAnchorEl] = useState(null)
-  const [notifications, setNotifications] = useState([])
-  const [loading, setLoading] = useState(false)
-  const [unreadCount, setUnreadCount] = useState(0)
-  const [activeTab, setActiveTab] = useState("all")
-  const navigate = useNavigate()
-  const open = Boolean(anchorEl)
+  const [anchorEl, setAnchorEl] = useState(null);
+  const [notifications, setNotifications] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [unreadCount, setUnreadCount] = useState(0);
+  const [activeTab, setActiveTab] = useState("all");
+  const navigate = useNavigate();
 
-  // 📩 Lấy số lượng thông báo chưa đọc
+  const open = Boolean(anchorEl);
+
+  // Load dữ liệu
   const fetchUnreadCount = async () => {
     try {
-      const res = await countUnread()
-      setUnreadCount(res.data.data?.count || 0)
+      const res = await countUnread();
+      setUnreadCount(res.data.data.count);
     } catch (err) {
-      console.error("Lỗi lấy số thông báo chưa đọc:", err)
+      console.error("Lỗi lấy số thông báo chưa đọc:", err);
     }
-  }
+  };
 
-  // 📋 Lấy danh sách thông báo
   const fetchNotifications = async () => {
-    setLoading(true)
+    setLoading(true);
     try {
-      const res = await getNotifications({ page: 0, size: 1000 })
-      setNotifications(res.data?.content || [])
+      const res = await getNotifications({ page: 0, size: 1000 });
+      setNotifications(res.data.content || []);
     } catch (err) {
-      console.error("Lỗi khi tải thông báo:", err)
+      console.error("Lỗi khi tải thông báo:", err);
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
+  };
 
   useEffect(() => {
-    fetchUnreadCount()
-  }, [])
+    fetchUnreadCount();
+  }, []);
 
   const filtered =
     activeTab === "unread"
       ? notifications.filter((n) => !n.read)
-      : notifications
+      : notifications;
 
   return (
     <>
-      {/* ICON BELL */}
+      {/* 🔔 ICON */}
       <IconButton
         color="inherit"
         onClick={(e) => {
-          setAnchorEl(e.currentTarget)
-          fetchNotifications()
+          setAnchorEl(e.currentTarget);
+          fetchNotifications();
         }}
       >
         <Badge badgeContent={unreadCount} color="error">
@@ -122,31 +137,43 @@ export default function NotificationMenu() {
         anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
       >
         {/* Header */}
-        <Box sx={{ p: 1.5, borderBottom: "1px solid #eee" }}>
+        <Box
+          sx={{
+            p: 1.5,
+            borderBottom: "1px solid #eee",
+            bgcolor: "#fff",
+            position: "sticky",
+            top: 0,
+            zIndex: 2,
+          }}
+        >
           <Typography fontWeight="bold" fontSize={15}>
             Thông báo
           </Typography>
 
           <Box sx={{ display: "flex", mt: 1 }}>
-            {["all", "unread"].map((tab) => (
+            {[
+              { key: "all", label: "Tất cả" },
+              { key: "unread", label: "Chưa đọc" },
+            ].map((tab) => (
               <Typography
-                key={tab}
-                onClick={() => setActiveTab(tab)}
+                key={tab.key}
+                onClick={() => setActiveTab(tab.key)}
                 sx={{
                   mr: 2,
-                  fontWeight: activeTab === tab ? 600 : 400,
+                  fontWeight: activeTab === tab.key ? 600 : 400,
                   color:
-                    activeTab === tab ? "primary.main" : "text.secondary",
+                    activeTab === tab.key ? "primary.main" : "text.secondary",
                   cursor: "pointer",
                   borderBottom:
-                    activeTab === tab
+                    activeTab === tab.key
                       ? "2px solid #058551"
                       : "2px solid transparent",
                   pb: 0.5,
                   fontSize: 14,
                 }}
               >
-                {tab === "all" ? "Tất cả" : "Chưa đọc"}
+                {tab.label}
               </Typography>
             ))}
 
@@ -156,9 +183,9 @@ export default function NotificationMenu() {
               color="primary"
               sx={{ cursor: "pointer", fontSize: 13 }}
               onClick={async () => {
-                await markAllAsRead()
-                fetchUnreadCount()
-                setAnchorEl(null)
+                await markAllAsRead();
+                fetchUnreadCount();
+                setAnchorEl(null);
               }}
             >
               Đánh dấu đã đọc
@@ -170,7 +197,11 @@ export default function NotificationMenu() {
         <Box
           sx={{
             maxHeight: 360,
+            minHeight: 360,
             overflowY: "auto",
+            overflowX: "hidden",
+            display: "flex",
+            flexDirection: "column",
             "&::-webkit-scrollbar": { width: "6px" },
             "&::-webkit-scrollbar-thumb": {
               backgroundColor: "#ccc",
@@ -191,10 +222,9 @@ export default function NotificationMenu() {
               <Box
                 key={n.id}
                 onClick={() => {
-                  markAsRead(n.id)
-                  setAnchorEl(null)
-                  if (n.actionUrl)
-                    setTimeout(() => navigate(n.actionUrl), 200)
+                  markAsRead(n.id);
+                  setAnchorEl(null);
+                  if (n.actionUrl) setTimeout(() => navigate(n.actionUrl), 200);
                 }}
                 sx={{
                   display: "flex",
@@ -236,6 +266,5 @@ export default function NotificationMenu() {
         </Box>
       </Menu>
     </>
-  )
+  );
 }
-

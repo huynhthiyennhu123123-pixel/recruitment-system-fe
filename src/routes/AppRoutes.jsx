@@ -48,6 +48,8 @@ import InterviewPage from "../pages/employer/InterviewPage";
 import JobPostEdit from "../pages/employer/JobPostEdit";
 import CompanyProfileEdit from "../pages/employer/CompanyProfileEdit";
 import EmployerJobDetail from "../pages/employer/EmployerJobDetail";
+import InterviewDetailPage from "../pages/employer/InterviewDetailPage";
+
 
 // Pages Admin
 import AdminDashboard from "../pages/admin/DashboardPage";
@@ -133,7 +135,10 @@ function App() {
             <Route path="applications" element={<ApplicationListPage />} />
 
             {/* Quản lý phỏng vấn */}
+            <Route path="interviews" element={<InterviewPage />} />            
             <Route path="interviews" element={<InterviewPage />} />
+            <Route path="interviews/:id" element={<InterviewDetailPage />} />
+
 
             {/* Hồ sơ công ty */}
             <Route path="company/:id" element={<CompanyProfilePage />} />
