@@ -56,3 +56,6 @@ export const removeParticipants = (id, data) =>
 // Lấy chi tiết một lịch phỏng vấn
 // ============================
 export const getInterviewById = (id) => API.get(`/${id}`)
+
+export const getInterviewParticipants = (id) => API.get(`/${id}/participants`)
+

@@ -131,7 +131,7 @@ export default function InterviewPage() {
     {
       field: "actions",
       headerName: "Hành động",
-      width: 260,
+      width: 240,
       renderCell: (params) => (
         <>
           {/* 👥 Quản lý ứng viên phỏng vấn */}
@@ -235,10 +235,17 @@ export default function InterviewPage() {
         <ParticipantModal
           open={!!openParticipants}
           onClose={() => setOpenParticipants(null)}
-          interview={openParticipants}
+          interview={{
+            id: openParticipants.id,
+            jobPostingId:
+              openParticipants.jobPostingId ||
+              openParticipants.jobPosting?.id || // Nếu là object
+              null,
+          }}
           onUpdated={fetchData}
         />
       )}
+
     </Box>
   )
 }
