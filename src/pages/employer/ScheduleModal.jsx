@@ -157,6 +157,7 @@ export default function ScheduleModal({ open, onClose, onSuccess }) {
                   value={form.applicationId}
                   onChange={handleChange}
                   fullWidth
+                  sx={{marginInlineEnd:70 }}
                   required
                   error={!!errors.applicationId}
                   helperText={errors.applicationId}
@@ -210,6 +211,7 @@ export default function ScheduleModal({ open, onClose, onSuccess }) {
                       </InputAdornment>
                     ),
                   }}
+                  sx={{marginInlineEnd:-11 }}
                   error={!!errors.durationMinutes}
                   helperText={errors.durationMinutes}
                 />
@@ -231,6 +233,7 @@ export default function ScheduleModal({ open, onClose, onSuccess }) {
                       </InputAdornment>
                     ),
                   }}
+                  sx={{marginInlineEnd:8 }}
                 >
                   {INTERVIEW_METHODS.map((m) => (
                     <MenuItem key={m.value} value={m.value}>
@@ -256,6 +259,7 @@ export default function ScheduleModal({ open, onClose, onSuccess }) {
                         </InputAdornment>
                       ),
                     }}
+                    sx={{marginInlineEnd:75 }}
                     error={!!errors.location}
                     helperText={errors.location}
                   />
@@ -275,6 +279,7 @@ export default function ScheduleModal({ open, onClose, onSuccess }) {
                     }}
                     error={!!errors.meetingLink}
                     helperText={errors.meetingLink}
+                    sx={{marginInlineEnd:75 }}
                   />
                 )}
               </Grid>
@@ -296,6 +301,7 @@ export default function ScheduleModal({ open, onClose, onSuccess }) {
                       </InputAdornment>
                     ),
                   }}
+                  sx={{marginInlineEnd:75 }}
                 />
               </Grid>
             </Grid>

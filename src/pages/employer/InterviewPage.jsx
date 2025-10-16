@@ -12,8 +12,10 @@ import AddIcon from "@mui/icons-material/Add"
 import EditIcon from "@mui/icons-material/Edit"
 import CancelIcon from "@mui/icons-material/Cancel"
 import DoneAllIcon from "@mui/icons-material/DoneAll"
+import GroupAddIcon from "@mui/icons-material/GroupAdd"
 import { DataGrid } from "@mui/x-data-grid"
 import dayjs from "dayjs"
+
 import {
   getMyInterviews,
   cancelInterview,
@@ -21,7 +23,6 @@ import {
 } from "../../services/interviewService"
 import ScheduleModal from "./ScheduleModal"
 import RescheduleModal from "./RescheduleModal"
-import GroupAddIcon from "@mui/icons-material/GroupAdd"
 import ParticipantModal from "./ParticipantModal"
 
 export default function InterviewPage() {
@@ -29,15 +30,16 @@ export default function InterviewPage() {
   const [loading, setLoading] = useState(true)
   const [openSchedule, setOpenSchedule] = useState(false)
   const [openReschedule, setOpenReschedule] = useState(null)
-  const [openParticipants, setOpenParticipants] = useState(null);
+  const [openParticipants, setOpenParticipants] = useState(null)
 
+  // 🔹 Lấy danh sách phỏng vấn
   const fetchData = async () => {
     setLoading(true)
     try {
-      const res = await getMyInterviews({ page: 0, size: 20 })
-      if (res.data.success) setInterviews(res.data.data.content)
+      const res = await getMyInterviews({ page: 0, size: 10 })
+      if (res?.data?.success) setInterviews(res.data.data.content || [])
     } catch (err) {
-      console.error(err)
+      console.error("❌ Lỗi khi tải danh sách phỏng vấn:", err)
     } finally {
       setLoading(false)
     }
@@ -47,6 +49,7 @@ export default function InterviewPage() {
     fetchData()
   }, [])
 
+  // ✅ Hoàn tất phỏng vấn
   const handleComplete = async (row) => {
     const notes = prompt("Nhập ghi chú hoàn tất:")
     if (!notes) return
@@ -54,12 +57,37 @@ export default function InterviewPage() {
     fetchData()
   }
 
+  // ✅ Hủy phỏng vấn
   const handleCancel = async (row) => {
     const reason = prompt("Nhập lý do hủy lịch:")
     if (!reason) return
     await cancelInterview(row.id, { reason })
     fetchData()
   }
+
+  // ✅ Chuẩn hóa dữ liệu phỏng vấn trước khi mở modal
+  const handleOpenParticipants = (interview) => {
+    
+  const jobPostingId =
+    interview?.jobPostingId ||
+    interview?.jobPosting?.id ||
+    interview?.application?.jobPosting?.id ||
+    null
+
+  const applicationId =
+    interview?.applicationId || interview?.application?.id || null
+
+  const fullInterview = {
+    ...interview,
+    jobPostingId,
+    applicationId,
+    participants: interview?.participants || [],
+  }
+
+  
+  setOpenParticipants(fullInterview)
+}
+
 
   const columns = [
     {
@@ -68,21 +96,25 @@ export default function InterviewPage() {
       width: 80,
       align: "center",
       headerAlign: "center",
-      renderCell: (params) => params.api ? params.api.getRowIndexRelativeToVisibleRows(params.row.id) + 1 : params.rowIndex + 1,
+      renderCell: (params) =>
+        params.api
+          ? params.api.getRowIndexRelativeToVisibleRows(params.row.id) + 1
+          : params.rowIndex + 1,
     },
     {
       field: "scheduledAt",
       headerName: "Thời gian phỏng vấn",
       width: 200,
-      renderCell: (p) => dayjs(p.value).format("DD/MM/YYYY HH:mm"),
+      renderCell: (p) =>
+        p.value ? dayjs(p.value).format("Ngày DD/MM/YYYY vào HH:mm") : "—",
     },
-    { field: "location", headerName: "Địa điểm", width: 150 },
-    { field: "meetingLink", headerName: "Link meeting", width: 200 },
+    { field: "location", headerName: "Địa điểm", width: 200 },
+    { field: "meetingLink", headerName: "Link meeting", width: 240 },
     { field: "interviewType", headerName: "Hình thức", width: 130 },
     {
       field: "status",
       headerName: "Trạng thái",
-      width: 140,
+      width: 150,
       renderCell: (params) => (
         <Chip
           label={params.value}
@@ -102,11 +134,11 @@ export default function InterviewPage() {
       width: 260,
       renderCell: (params) => (
         <>
-          {/* 👥 Quản lý người phỏng vấn */}
-          <Tooltip title="Thêm / Xóa người phỏng vấn">
+          {/* 👥 Quản lý ứng viên phỏng vấn */}
+          <Tooltip title="Thêm / Xóa ứng viên phỏng vấn">
             <IconButton
               color="secondary"
-              onClick={() => setOpenParticipants(params.row)}
+              onClick={() => handleOpenParticipants(params.row)}
             >
               <GroupAddIcon />
             </IconButton>
@@ -144,25 +176,6 @@ export default function InterviewPage() {
         </>
       ),
     },
-
-    {
-      field: "participants",
-      headerName: "Người tham gia",
-      flex: 1.2,
-      renderCell: (params) => {
-        const list = params.row.participants || [];
-        if (list.length === 0)
-          return <Typography variant="body2" color="text.secondary">—</Typography>;
-        return (
-          <Box sx={{ display: "flex", flexWrap: "wrap", gap: 0.5 }}>
-            {list.map((p, idx) => (
-              <Chip key={idx} label={p.name || p.email || p} size="small" />
-            ))}
-          </Box>
-        );
-      },
-    },
-
   ]
 
   return (
@@ -191,9 +204,14 @@ export default function InterviewPage() {
           getRowId={(r) => r.id}
           autoHeight
           disableSelectionOnClick
+          sx={{
+            "& .MuiDataGrid-columnHeaders": { background: "#f1f5f9" },
+            "& .MuiDataGrid-cell": { alignItems: "center" },
+          }}
         />
       )}
 
+      {/* Modal: Tạo lịch */}
       {openSchedule && (
         <ScheduleModal
           open={openSchedule}
@@ -201,6 +219,8 @@ export default function InterviewPage() {
           onSuccess={fetchData}
         />
       )}
+
+      {/* Modal: Đổi lịch */}
       {openReschedule && (
         <RescheduleModal
           open={!!openReschedule}
@@ -209,16 +229,16 @@ export default function InterviewPage() {
           onSuccess={fetchData}
         />
       )}
+
+      {/* Modal: Quản lý ứng viên */}
       {openParticipants && (
         <ParticipantModal
           open={!!openParticipants}
           onClose={() => setOpenParticipants(null)}
           interview={openParticipants}
-          existingParticipants={openParticipants.participants || []}
           onUpdated={fetchData}
         />
       )}
-
     </Box>
   )
 }
