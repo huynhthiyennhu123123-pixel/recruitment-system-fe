@@ -96,7 +96,7 @@ export default function RecommendedCarousel() {
 
   return (
     <section className="mt-10 relative">
-      <h2 className="text-2xl font-bold text-gray-800 mb-5 flex items-center gap-2">
+      <h2 className="text-2xl font-bold text-green-600 mb-5 flex items-center gap-2">
         Gợi ý việc làm nổi bật
       </h2>
 

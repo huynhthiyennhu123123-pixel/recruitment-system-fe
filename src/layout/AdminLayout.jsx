@@ -1,5 +1,6 @@
 import * as React from "react";
-import { Outlet, NavLink, Link } from "react-router-dom";
+import { Outlet, NavLink, Link, useNavigate } from "react-router-dom";
+
 import logo from "../assets/images/logo.png";
 import {
   AppBar,
@@ -33,6 +34,18 @@ import NotificationMenu from "../components/common/NotificationMenu";
 const drawerWidth = 240;
 
 export default function AdminLayout() {
+  const navigate = useNavigate();
+
+  const handleLogout = () => {
+    localStorage.removeItem("accessToken");
+    localStorage.removeItem("refreshToken");
+    localStorage.removeItem("user");
+    localStorage.removeItem("companyId");
+
+    handleCloseUserMenu();
+    navigate("/auth/login");
+  };
+
   const [anchorElUser, setAnchorElUser] = React.useState(null);
   const handleOpenUserMenu = (event) => setAnchorElUser(event.currentTarget);
   const handleCloseUserMenu = () => setAnchorElUser(null);
@@ -65,7 +78,7 @@ export default function AdminLayout() {
           <NotificationMenu />
 
           {/* AVATAR NGƯỜI DÙNG */}
-          <Box sx={{ flexGrow: 0 }}>
+          <Box sx={{ flexGrow: 0, ml: 2 }}>
             <Tooltip title="Tài khoản">
               <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
                 <Avatar
@@ -78,7 +91,7 @@ export default function AdminLayout() {
 
             <Menu
               sx={{
-                mt: "45px",
+                mt: "10px",
                 "& .MuiPaper-root": {
                   bgcolor: "#fff",
                   color: "#000",
@@ -106,7 +119,7 @@ export default function AdminLayout() {
                 <PeopleIcon fontSize="small" sx={{ mr: 1 }} />
                 Đổi mật khẩu
               </ListItemButton>
-              <ListItemButton>
+              <ListItemButton onClick={handleLogout}>
                 <LogoutIcon fontSize="small" sx={{ mr: 1 }} />
                 Đăng xuất
               </ListItemButton>
