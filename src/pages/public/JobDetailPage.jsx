@@ -37,9 +37,13 @@ export default function JobDetailPage() {
       setIsSaved(jobData.isSaved || false);
     } catch (err) {
       console.warn("⚠️ Lỗi khi gọi /me, fallback sang API thường:", err);
+
+      // ✅ Thêm toastId để không hiện lặp
       toast.warning(
-        "Không thể kiểm tra trạng thái lưu, hiển thị công việc bình thường!"
+        "Không thể kiểm tra trạng thái lưu, hiển thị công việc bình thường!",
+        { toastId: "saveWarning" }
       );
+
       try {
         const res2 = await getJobDetail(id);
         const jobData2 = res2?.data?.data || res2?.data || res2;
@@ -49,7 +53,8 @@ export default function JobDetailPage() {
         console.error("❌ Lỗi tải chi tiết công việc:", err2);
         toast.error("Không tải được thông tin công việc!");
       }
-    } finally {
+    }
+    finally {
       setLoading(false);
     }
   };
@@ -146,11 +151,10 @@ export default function JobDetailPage() {
             <div className="flex items-center gap-3 mt-4 sm:mt-0">
               <button
                 onClick={handleToggleSave}
-                className={`flex items-center gap-2 px-4 py-2 rounded-lg border transition font-medium ${
-                  isSaved
+                className={`flex items-center gap-2 px-4 py-2 rounded-lg border transition font-medium ${isSaved
                     ? "bg-red-50 border-red-400 text-red-500 hover:bg-red-100"
                     : "border-gray-300 hover:bg-gray-50 text-gray-600"
-                }`}
+                  }`}
                 disabled={saving}
               >
                 {isSaved ? <FaHeart /> : <FaRegHeart />}
@@ -194,8 +198,8 @@ export default function JobDetailPage() {
                 <strong>Mức lương:</strong>{" "}
                 {job.salaryMin || job.salaryMax
                   ? `${job.salaryMin?.toLocaleString(
-                      "vi-VN"
-                    )}₫ - ${job.salaryMax?.toLocaleString("vi-VN")}₫`
+                    "vi-VN"
+                  )}₫ - ${job.salaryMax?.toLocaleString("vi-VN")}₫`
                   : "Thoả thuận"}
               </span>
             </div>
@@ -211,8 +215,8 @@ export default function JobDetailPage() {
                 <strong>Hạn nộp:</strong>{" "}
                 {job.applicationDeadline
                   ? new Date(job.applicationDeadline).toLocaleDateString(
-                      "vi-VN"
-                    )
+                    "vi-VN"
+                  )
                   : "Không rõ"}
               </span>
             </div>

@@ -119,7 +119,7 @@ export default function ApplicantInterviews() {
                       {formatDate(item.scheduledAt)}
                     </p>
                   </div>
-                  {getStatusBadge(item.status)}
+                  {renderStatus(item.status)}
                 </div>
 
                 <div className="text-sm text-gray-700 space-y-1">

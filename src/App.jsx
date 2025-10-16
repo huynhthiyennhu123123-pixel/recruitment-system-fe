@@ -6,7 +6,7 @@ function App() {
   return (
     <>
       <AppRoutes />
-      {/* ✅ Chỉ cần thêm dòng này 1 lần duy nhất */}
+      {}
       <ToastContainer
         position="top-right"
         autoClose={3000}

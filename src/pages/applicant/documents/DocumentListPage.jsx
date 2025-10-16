@@ -17,7 +17,6 @@ export default function DocumentListPage() {
   const [docs, setDocs] = useState({})
   const [loading, setLoading] = useState(false)
 
-  // 📂 Lấy danh sách tài liệu
   const fetchDocs = async () => {
     setLoading(true)
     try {
@@ -30,8 +29,6 @@ export default function DocumentListPage() {
       setLoading(false)
     }
   }
-
-  // 🗑️ Xoá tài liệu
   const handleDelete = async (id) => {
     if (!window.confirm("Bạn có chắc muốn xóa tài liệu này?")) return
 
@@ -74,7 +71,7 @@ export default function DocumentListPage() {
 
       {/* Header */}
       <div className="flex justify-between items-center mb-6">
-        <h2 className="text-2xl font-bold text-[#00b14f]">📂 Tài liệu của tôi</h2>
+        <h2 className="text-2xl font-bold text-[#00b14f]">Tài liệu của tôi</h2>
         <div className="flex gap-3">
           <Link
             to="/applicant/documents/upload"

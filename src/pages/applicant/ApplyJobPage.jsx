@@ -3,6 +3,8 @@ import { useParams, useNavigate } from "react-router-dom";
 import { applyJob } from "../../services/applicationService";
 import { getProfile } from "../../services/applicantService";
 import { FaFileAlt, FaPaperPlane, FaRegSmile } from "react-icons/fa";
+import { toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 export default function ApplyJobPage() {
   const { id } = useParams(); // jobPostingId
@@ -49,6 +51,7 @@ export default function ApplyJobPage() {
         }
       } catch (err) {
         console.error("Get profile error:", err);
+        toast.error("Không thể tải hồ sơ ứng viên.");
       }
     };
     fetchProfile();
@@ -66,7 +69,7 @@ export default function ApplyJobPage() {
 
     // ⚠️ Nếu chưa có CV
     if (!resumeUrl) {
-      alert("⚠️ Bạn cần upload CV trước khi nộp đơn!");
+      toast.warning("⚠️ Bạn cần upload CV trước khi nộp đơn!");
       navigate("/applicant/profile");
       return;
     }
@@ -92,7 +95,7 @@ export default function ApplyJobPage() {
 
     // ⚠️ Nếu vẫn không hợp lệ
     if (!resumeUrl.startsWith("http")) {
-      alert("⚠️ URL CV không hợp lệ — vui lòng upload lại CV!");
+      toast.error("⚠️ URL CV không hợp lệ — vui lòng upload lại CV!");
       navigate("/applicant/profile");
       return;
     }
@@ -100,6 +103,10 @@ export default function ApplyJobPage() {
     console.log("📤 resumeUrl gửi lên backend:", resumeUrl);
 
     setLoading(true);
+
+    // ✅ Hiển thị toast loading duy nhất
+    const toastId = toast.loading("Đang gửi đơn ứng tuyển...");
+
     try {
       const payload = {
         jobPostingId: Number(id),
@@ -110,14 +117,30 @@ export default function ApplyJobPage() {
       const res = await applyJob(payload);
 
       if (res.success) {
-        alert(res.message || "✅ Nộp đơn thành công!");
-        navigate("/applicant/applications");
+        toast.update(toastId, {
+          render: res.message || "🎉 Nộp đơn thành công!",
+          type: "success",
+          isLoading: false,
+          autoClose: 2000,
+        });
+
+        setTimeout(() => navigate("/applicant/applications"), 1500);
       } else {
-        alert(res.message || "❌ Có lỗi xảy ra khi nộp đơn");
+        toast.update(toastId, {
+          render: res.message || "❌ Có lỗi xảy ra khi nộp đơn!",
+          type: "error",
+          isLoading: false,
+          autoClose: 2000,
+        });
       }
     } catch (err) {
       console.error("Apply job error:", err.response?.data || err.message);
-      alert("❌ Nộp đơn thất bại");
+      toast.update(toastId, {
+        render: "❌ Nộp đơn thất bại!",
+        type: "error",
+        isLoading: false,
+        autoClose: 2000,
+      });
     } finally {
       setLoading(false);
     }
@@ -125,6 +148,9 @@ export default function ApplyJobPage() {
 
   return (
     <div className="min-h-screen bg-gray-50 flex items-center justify-center px-4 py-10">
+      {/* ✅ ToastContainer */}
+      <ToastContainer position="top-right" autoClose={2000} theme="colored" />
+
       <div className="max-w-2xl w-full bg-white rounded-2xl shadow-md border border-gray-100 p-8">
         {/* Tiêu đề */}
         <div className="flex items-center gap-3 mb-6">

@@ -1,21 +1,22 @@
-import { useEffect, useState } from "react"
-import { getProfile, updateProfile } from "../../services/applicantService"
-import { FaUserCircle, FaSave } from "react-icons/fa"
-import toast, { Toaster } from "react-hot-toast"
+import { useEffect, useState } from "react";
+import { getProfile, updateProfile } from "../../services/applicantService";
+import { FaUserCircle, FaSave } from "react-icons/fa";
+import { toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 export default function ProfilePage() {
-  const [profile, setProfile] = useState(null)
-  const [loading, setLoading] = useState(false)
+  const [profile, setProfile] = useState(null);
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    fetchProfile()
-  }, [])
+    fetchProfile();
+  }, []);
 
   const fetchProfile = async () => {
     try {
-      const res = await getProfile()
-      const profileData = res.data?.data || res.data
-      const user = JSON.parse(localStorage.getItem("user") || "{}")
+      const res = await getProfile();
+      const profileData = res.data?.data || res.data;
+      const user = JSON.parse(localStorage.getItem("user") || "{}");
 
       setProfile({
         ...profileData,
@@ -23,22 +24,22 @@ export default function ProfilePage() {
         lastName: user.lastName,
         email: user.email,
         phoneNumber: user.phoneNumber,
-      })
+      });
     } catch (err) {
-      console.error("❌ Get profile error:", err)
-      toast.error("Không thể tải hồ sơ.")
+      console.error("❌ Get profile error:", err);
+      toast.error("Không thể tải hồ sơ.");
     }
-  }
+  };
 
   const handleChange = (e) => {
-    setProfile({ ...profile, [e.target.name]: e.target.value })
-  }
+    setProfile({ ...profile, [e.target.name]: e.target.value });
+  };
 
   const handleSubmit = async (e) => {
-    e.preventDefault()
-    if (!profile) return
+    e.preventDefault();
+    if (!profile) return;
 
-    setLoading(true)
+    setLoading(true);
 
     const {
       dateOfBirth,
@@ -61,7 +62,7 @@ export default function ProfilePage() {
       desiredLocation,
       availability,
       isPublic,
-    } = profile
+    } = profile;
 
     const formattedData = {
       dateOfBirth: dateOfBirth ? dateOfBirth.substring(0, 10) : null,
@@ -77,7 +78,6 @@ export default function ProfilePage() {
       summary,
       experience,
       education,
-      // ✅ Gửi mảng đúng định dạng backend yêu cầu
       skills: Array.isArray(skills)
         ? skills
         : skills
@@ -98,36 +98,50 @@ export default function ProfilePage() {
       desiredLocation,
       availability,
       isPublic: Boolean(isPublic),
+    };
+
+    // ✅ Hiển thị toast loading duy nhất
+    const toastId = toast.loading("Đang lưu thay đổi...");
+
+    try {
+      await updateProfile(formattedData);
+
+      // ✅ Cập nhật toast thành công
+      toast.update(toastId, {
+        render: "🎉 Cập nhật hồ sơ thành công!",
+        type: "success",
+        isLoading: false,
+        autoClose: 2000,
+        closeOnClick: true,
+      });
+
+      fetchProfile();
+    } catch (err) {
+      console.error("❌ Update error:", err);
+
+      // ❌ Cập nhật toast lỗi
+      toast.update(toastId, {
+        render: "Lỗi khi cập nhật hồ sơ!",
+        type: "error",
+        isLoading: false,
+        autoClose: 2000,
+      });
+    } finally {
+      setLoading(false);
     }
-
-    const updatePromise = updateProfile(formattedData)
-      .then(() => {
-        fetchProfile()
-      })
-      .catch((err) => {
-        console.error("Update error:", err)
-        throw err
-      })
-
-    toast.promise(updatePromise, {
-      loading: "Đang lưu thay đổi...",
-      success: "Cập nhật hồ sơ thành công!",
-      error: "Lỗi khi cập nhật hồ sơ.",
-    })
-
-    setLoading(false)
-  }
+  };
 
   if (!profile)
     return (
       <p className="p-6 text-gray-500 italic text-center">
         Đang tải hồ sơ...
       </p>
-    )
+    );
 
   return (
     <div className="min-h-screen bg-gray-50 py-8 px-4">
-      <Toaster position="top-right" reverseOrder={false} />
+      <ToastContainer position="top-right" autoClose={2000} theme="colored" />
+
       <div className="max-w-4xl mx-auto space-y-8">
         {/* 🧍 Thông tin cá nhân */}
         <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 flex items-center gap-5">
@@ -259,5 +273,5 @@ export default function ProfilePage() {
         </div>
       </div>
     </div>
-  )
+  );
 }

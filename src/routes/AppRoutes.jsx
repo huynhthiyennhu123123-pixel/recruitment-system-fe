@@ -12,7 +12,7 @@ import AdminLayout from "../layout/AdminLayout";
 // 🔹 Pages Public
 import HomePage from "../pages/public/HomePage";
 import JobListPage from "../pages/public/JobListPage";
-import PublicJobDetailPage from "../pages/public/JobDetailPage";
+import JobDetailPage from "../pages/public/JobDetailPage";
 import CompanyDetailPage from "../pages/public/CompanyDetailPage";
 import AboutPage from "../pages/public/AboutPage";
 
@@ -27,9 +27,7 @@ import ForgotPasswordPage from "../pages/auth/ForgotPasswordPage";
 import ResetPasswordPage from "../pages/auth/ResetPasswordPage";
 
 // Pages Applicant
-import DashboardPage from "../pages/applicant/DashboardPage";
 import ProfilePage from "../pages/applicant/ProfilePage";
-import JobDetailPage from "../pages/applicant/JobDetailPage";
 import ApplyJobPage from "../pages/applicant/ApplyJobPage";
 import ApplicationsPage from "../pages/applicant/ApplicationsPage";
 import ApplicationDetailPage from "../pages/applicant/ApplicationDetailPage";
@@ -84,7 +82,7 @@ function App() {
         <Route element={<PublicLayout />}>
           <Route index element={<HomePage />} />
           <Route path="jobs" element={<JobListPage />} />
-          <Route path="jobs/:id" element={<PublicJobDetailPage />} />
+          <Route path="jobs/:id" element={<JobDetailPage />} />
           <Route path="companies/:id" element={<CompanyDetailPage />} />
           <Route path="about" element={<AboutPage />} />
         </Route>
@@ -108,13 +106,10 @@ function App() {
         {/* Applicant */}
         <Route element={<PrivateRoute roles={["APPLICANT"]} />}>
           <Route path="/applicant" element={<ApplicantLayout />}>
-            <Route index element={<DashboardPage />} />
-            <Route path="dashboard" element={<DashboardPage />} />
             <Route path="profile" element={<ProfilePage />} />
             <Route path="applications" element={<ApplicationsPage />} />
             <Route path="applications/:id" element={<ApplicationDetailPage />} />
             <Route path="interviews" element={<ApplicantInterviews />} />
-            <Route path="jobs/:id" element={<JobDetailPage />} />
             <Route path="jobs/:id/apply" element={<ApplyJobPage />} />
             <Route path="companies/:id" element={<CompanyDetailPage />} />
             <Route path="/applicant/saved-jobs" element={<SavedJobsPage />} />
