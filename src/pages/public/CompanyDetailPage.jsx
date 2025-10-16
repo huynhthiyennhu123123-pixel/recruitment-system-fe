@@ -169,10 +169,10 @@ export default function CompanyDetailPage() {
       {/* Liên kết mạng xã hội */}
       {company.socialLinks && (
         <Box mt={3}>
-          <Typography variant="h6">🔗Liên kết mạng xã hội</Typography>
+          <Typography variant="h6">Liên kết mạng xã hội</Typography>
           {company.socialLinks.facebook && (
             <Typography>
-              🌐{" "}
+              {" "}
               <a href={company.socialLinks.facebook} target="_blank" rel="noreferrer">
                 Facebook
               </a>
@@ -180,7 +180,7 @@ export default function CompanyDetailPage() {
           )}
           {company.socialLinks.linkedin && (
             <Typography>
-              💼{" "}
+              {" "}
               <a href={company.socialLinks.linkedin} target="_blank" rel="noreferrer">
                 LinkedIn
               </a>

@@ -1,43 +1,57 @@
-import React, { useEffect, useState } from "react"
-import { useNavigate } from "react-router-dom"
-import { getMyApplications } from "../../services/applicationService"
+import React, { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { getMyApplications } from "../../services/applicationService";
 import {
   FaBriefcase,
   FaCalendarAlt,
   FaMapMarkerAlt,
   FaEye,
   FaClock,
-} from "react-icons/fa"
+} from "react-icons/fa";
 
+// 🎨 Màu trạng thái
 const STATUS_COLOR = {
-  RECEIVED: "bg-yellow-100 text-yellow-700 border-yellow-200",
-  REVIEWED: "bg-blue-100 text-blue-700 border-blue-200",
-  INTERVIEW: "bg-purple-100 text-purple-700 border-purple-200",
-  OFFERED: "bg-green-100 text-green-700 border-green-200",
-  REJECTED: "bg-red-100 text-red-700 border-red-200",
-}
+  RECEIVED: "bg-yellow-100 text-yellow-700 border-yellow-200", // Đã tiếp nhận
+  REVIEWED: "bg-blue-100 text-blue-700 border-blue-200",       // Đang xem xét
+  INTERVIEW: "bg-purple-100 text-purple-700 border-purple-200",// Phỏng vấn
+  OFFER: "bg-teal-100 text-teal-700 border-teal-200",          // Đã gửi offer
+  HIRED: "bg-green-100 text-green-700 border-green-200",       // Đã tuyển dụng
+  REJECTED: "bg-red-100 text-red-700 border-red-200",          // Bị từ chối
+  WITHDRAWN: "bg-gray-100 text-gray-700 border-gray-200",      // Đã rút đơn
+};
+
+// 🟢 Text tiếng Việt tương ứng
+const STATUS_TEXT = {
+  RECEIVED: "Đã tiếp nhận",
+  REVIEWED: "Đang xem xét",
+  INTERVIEW: "Phỏng vấn",
+  OFFER: "Đã gửi offer",
+  HIRED: "Đã tuyển dụng",
+  REJECTED: "Bị từ chối",
+  WITHDRAWN: "Đã rút đơn",
+};
 
 export default function ApplicationsPage() {
-  const [applications, setApplications] = useState([])
-  const [loading, setLoading] = useState(false)
-  const navigate = useNavigate()
+  const [applications, setApplications] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const navigate = useNavigate();
 
   const fetchApplications = async () => {
-    setLoading(true)
+    setLoading(true);
     try {
-      const params = { page: 0, size: 20, sortBy: "createdAt", sortDir: "DESC" }
-      const res = await getMyApplications(params)
-      setApplications(res.data.content || [])
+      const params = { page: 0, size: 20, sortBy: "createdAt", sortDir: "DESC" };
+      const res = await getMyApplications(params);
+      setApplications(res.data.content || []);
     } catch (err) {
-      console.error("Lỗi khi tải danh sách đơn:", err)
+      console.error("Lỗi khi tải danh sách đơn:", err);
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
+  };
 
   useEffect(() => {
-    fetchApplications()
-  }, [])
+    fetchApplications();
+  }, []);
 
   return (
     <div className="bg-gray-50 min-h-screen py-8 px-6">
@@ -79,16 +93,21 @@ export default function ApplicationsPage() {
                     </span>
                   </p>
 
+                  {/* 🟩 Hiển thị trạng thái tiếng Việt */}
                   <span
-                    className={`inline-block mt-3 px-3 py-1 text-xs font-semibold border rounded-full ${STATUS_COLOR[app.status]}`}
+                    className={`inline-block mt-3 px-3 py-1 text-xs font-semibold border rounded-full ${
+                      STATUS_COLOR[app.status] || "bg-gray-100 text-gray-700"
+                    }`}
                   >
-                    {app.status || "UNKNOWN"}
+                    {STATUS_TEXT[app.status] || app.status || "Không xác định"}
                   </span>
                 </div>
 
                 <div className="mt-4 flex justify-end">
                   <button
-                    onClick={() => navigate(`/applicant/applications/${app.id}`)}
+                    onClick={() =>
+                      navigate(`/applicant/applications/${app.id}`)
+                    }
                     className="flex items-center gap-2 bg-[#00b14f] hover:bg-green-600 text-white text-sm px-4 py-2 rounded-lg transition"
                   >
                     <FaEye />
@@ -101,5 +120,5 @@ export default function ApplicationsPage() {
         )}
       </div>
     </div>
-  )
+  );
 }
