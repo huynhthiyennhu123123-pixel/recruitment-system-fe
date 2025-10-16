@@ -64,7 +64,7 @@ const getNotificationIcon = (type) => {
   }
 };
 
-export default function NotificationMenu() {
+export default function NotificationMenu({ iconColor = "#000", size = 24 }) {
   const [anchorEl, setAnchorEl] = useState(null);
   const [notifications, setNotifications] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -109,14 +109,13 @@ export default function NotificationMenu() {
     <>
       {/* 🔔 ICON */}
       <IconButton
-        color="inherit"
         onClick={(e) => {
           setAnchorEl(e.currentTarget);
           fetchNotifications();
         }}
       >
         <Badge badgeContent={unreadCount} color="error">
-          <NotificationsIcon />
+          <NotificationsIcon style={{ color: iconColor, fontSize: size }} />
         </Badge>
       </IconButton>
 

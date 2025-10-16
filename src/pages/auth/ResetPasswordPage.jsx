@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useLocation, useNavigate, Link } from "react-router-dom";
 import axiosClient from "../../utils/axiosClient";
+import { toast } from "react-toastify"; // ✅ Thêm dòng này
 
 export default function ResetPasswordPage() {
   const location = useLocation();
@@ -17,8 +18,10 @@ export default function ResetPasswordPage() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!token) {
+      const msg = "Thiếu token reset mật khẩu.";
       setSuccess(false);
-      setMessage("Thiếu token reset mật khẩu.");
+      setMessage(msg);
+      toast.error(msg); // ✅ Thông báo lỗi
       return;
     }
 
@@ -32,17 +35,23 @@ export default function ResetPasswordPage() {
       });
 
       if (res.data?.success) {
+        const msg = res.data.message || "Đặt lại mật khẩu thành công!";
         setSuccess(true);
-        setMessage(res.data.message || "Đặt lại mật khẩu thành công!");
+        setMessage(msg);
+        toast.success(msg); // ✅ Thông báo thành công
         setTimeout(() => navigate("/auth/login"), 2000);
       } else {
+        const msg = res.data?.message || "Không thể đặt lại mật khẩu.";
         setSuccess(false);
-        setMessage(res.data?.message || "Không thể đặt lại mật khẩu.");
+        setMessage(msg);
+        toast.error(msg); // ✅ Thông báo lỗi
       }
     } catch (err) {
       console.error("Reset password error:", err);
+      const msg = "Có lỗi xảy ra khi đặt lại mật khẩu.";
       setSuccess(false);
-      setMessage("Có lỗi xảy ra khi đặt lại mật khẩu.");
+      setMessage(msg);
+      toast.error(msg); // ✅ Thông báo lỗi
     }
 
     setLoading(false);

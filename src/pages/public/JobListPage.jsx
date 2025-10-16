@@ -18,25 +18,44 @@ export default function JobListPage() {
   const [filters, setFilters] = useState({
     keyword: queryParams.get("keyword") || "",
     location: queryParams.get("location") || "",
-    salary: "",
+    salaryMin: "",
+    salaryMax: "",
     jobType: "",
     level: "",
     experience: "",
   });
 
-  // 📦 Hàm fetch job list
+  //  Hàm fetch job list
   const fetchJobs = async () => {
     setLoading(true);
     try {
-      const res = await searchJobs({
-        ...filters,
+      const params = {
+        keyword: filters.keyword || undefined,
+        location: filters.location || undefined,
+        jobType: filters.jobType || undefined,
+        experienceLevel: filters.experience || undefined,
         page,
-        size: 6,
+        size: 50,
         sortBy: "createdAt",
         sortDir: "DESC",
-      });
-      setJobs(res?.data?.content || []);
-      setTotalPages(res?.data?.totalPages || 1);
+      };
+
+      const res = await searchJobs(params);
+      let jobList = res?.data?.content || [];
+
+      const min = Number(filters.salaryMin) || 0;
+      const max = Number(filters.salaryMax) || Infinity;
+
+      if (min > 0 || filters.salaryMax) {
+        jobList = jobList.filter((job) => {
+          const jobMin = Number(job.salaryMin || 0);
+          const jobMax = Number(job.salaryMax || 0);
+          return jobMax >= min && jobMin <= max;
+        });
+      }
+
+      setJobs(jobList);
+      setTotalPages(1);
     } catch (err) {
       console.error("Lỗi tải danh sách việc làm:", err);
     } finally {
@@ -45,22 +64,25 @@ export default function JobListPage() {
   };
 
   useEffect(() => {
-    fetchJobs();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    const handler = setTimeout(() => {
+      fetchJobs();
+    }, 1000);
+    return () => clearTimeout(handler);
   }, [filters, page]);
 
-  // 🧭 Khi thay đổi filter
+  // Khi thay đổi filter
   const handleFilterChange = (key, value) => {
     setPage(0);
     setFilters((prev) => ({ ...prev, [key]: value }));
   };
 
-  // 🧹 Reset toàn bộ bộ lọc
+  //  Reset toàn bộ bộ lọc
   const resetFilters = () => {
     setFilters({
       keyword: "",
       location: "",
-      salary: "",
+      salaryMin: "",
+      salaryMax: "",
       jobType: "",
       level: "",
       experience: "",
@@ -71,7 +93,8 @@ export default function JobListPage() {
   if (loading)
     return (
       <div className="flex justify-center items-center h-80 text-gray-500">
-        <FaSpinner className="animate-spin mr-2" /> Đang tải danh sách việc làm...
+        <FaSpinner className="animate-spin mr-2" /> Đang tải danh sách việc
+        làm...
       </div>
     );
 
@@ -118,29 +141,68 @@ export default function JobListPage() {
         />
 
         {/* Địa điểm */}
-        <select
+        <input
+          type="text"
+          placeholder="Nhập địa điểm..."
           value={filters.location}
           onChange={(e) => handleFilterChange("location", e.target.value)}
-          className="w-full border border-gray-300 rounded-md px-3 py-2 mb-3 text-sm"
-        >
-          <option value="">Tất cả địa điểm</option>
-          <option value="cantho">Cần Thơ</option>
-          <option value="hcm">Hồ Chí Minh</option>
-          <option value="hanoi">Hà Nội</option>
-          <option value="danang">Đà Nẵng</option>
-        </select>
+          className="w-full border border-gray-300 rounded-md px-3 py-2 mb-3 text-sm outline-none focus:border-[#00b14f]"
+        />
 
-        {/* Lương */}
-        <select
-          value={filters.salary}
-          onChange={(e) => handleFilterChange("salary", e.target.value)}
-          className="w-full border border-gray-300 rounded-md px-3 py-2 mb-3 text-sm"
-        >
-          <option value="">Mức lương</option>
-          <option value="10-15tr">10-15 triệu</option>
-          <option value="15-20tr">15-20 triệu</option>
-          <option value="20-30tr">20-30 triệu</option>
-        </select>
+        {/* Lương: nhập min / max */}
+        {/* Lương: nhập min / max */}
+        <div className="mb-4">
+          <label className="block text-sm font-medium text-gray-700 mb-1">
+            Khoảng lương (VNĐ)
+          </label>
+          <div className="flex gap-2">
+            <input
+              type="text"
+              inputMode="numeric"
+              placeholder="Tối thiểu"
+              value={
+                filters.salaryMin
+                  ? Number(filters.salaryMin).toLocaleString("vi-VN")
+                  : ""
+              }
+              onChange={(e) => {
+                // Xóa dấu . và parse lại
+                const raw = e.target.value.replace(/\D/g, "");
+                handleFilterChange("salaryMin", raw);
+              }}
+              className="w-1/2 border border-gray-300 rounded-md px-3 py-2 text-sm outline-none focus:border-[#00b14f]"
+            />
+            <input
+              type="text"
+              inputMode="numeric"
+              placeholder="Tối đa"
+              value={
+                filters.salaryMax
+                  ? Number(filters.salaryMax).toLocaleString("vi-VN")
+                  : ""
+              }
+              onChange={(e) => {
+                const raw = e.target.value.replace(/\D/g, "");
+                handleFilterChange("salaryMax", raw);
+              }}
+              className="w-1/2 border border-gray-300 rounded-md px-3 py-2 text-sm outline-none focus:border-[#00b14f]"
+            />
+          </div>
+
+          {/* Gợi ý mô tả */}
+          {(filters.salaryMin || filters.salaryMax) && (
+            <p className="text-xs text-gray-500 mt-1">
+              {filters.salaryMin
+                ? `Từ ${Number(filters.salaryMin).toLocaleString("vi-VN")}₫ `
+                : ""}
+              {filters.salaryMax
+                ? `đến ${Number(filters.salaryMax).toLocaleString("vi-VN")}₫`
+                : filters.salaryMin
+                ? "trở lên"
+                : ""}
+            </p>
+          )}
+        </div>
 
         {/* Cấp bậc */}
         <select

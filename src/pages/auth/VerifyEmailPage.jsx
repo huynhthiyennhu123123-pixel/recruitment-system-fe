@@ -1,40 +1,54 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useLocation, useNavigate, Link } from "react-router-dom";
 import axiosClient from "../../utils/axiosClient";
+import { toast } from "react-toastify";
 
 export default function VerifyEmailPage() {
   const location = useLocation();
   const navigate = useNavigate();
   const [status, setStatus] = useState("loading"); // loading | success | error
   const [message, setMessage] = useState("");
+  const hasRun = useRef(false); // ✅ Dùng để ngăn chạy 2 lần do Strict Mode
 
   // Lấy token từ query ?token=...
   const searchParams = new URLSearchParams(location.search);
   const token = searchParams.get("token");
 
   useEffect(() => {
+    // ✅ Chặn không cho chạy 2 lần trong React Strict Mode (DEV)
+    if (hasRun.current) return;
+    hasRun.current = true;
+
     const verify = async () => {
       if (!token) {
+        const msg = "Thiếu token xác minh.";
         setStatus("error");
-        setMessage("Thiếu token xác minh.");
+        setMessage(msg);
+        toast.error(msg);
         return;
       }
 
       try {
         const res = await axiosClient.post("/auth/verify-email", { token });
         if (res.data?.success) {
+          const msg = res.data.message || "Xác minh email thành công!";
           setStatus("success");
-          setMessage(res.data.message || "Xác minh email thành công!");
-          // tự động về login sau 2s
+          setMessage(msg);
+          toast.success(msg);
+          // Tự động chuyển hướng sau 2 giây
           setTimeout(() => navigate("/auth/login"), 2000);
         } else {
+          const msg = res.data?.message || "Xác minh thất bại.";
           setStatus("error");
-          setMessage(res.data?.message || "Xác minh thất bại.");
+          setMessage(msg);
+          toast.error(msg);
         }
       } catch (err) {
         console.error("Verify error:", err);
+        const msg = "Có lỗi xảy ra khi xác minh email.";
         setStatus("error");
-        setMessage("Có lỗi xảy ra khi xác minh email.");
+        setMessage(msg);
+        toast.error(msg);
       }
     };
 
@@ -42,7 +56,7 @@ export default function VerifyEmailPage() {
   }, [token, navigate]);
 
   return (
-    <div className="text-center">
+    <div className="text-center mt-10">
       {status === "loading" && (
         <p className="text-gray-600">Đang xác minh email...</p>
       )}

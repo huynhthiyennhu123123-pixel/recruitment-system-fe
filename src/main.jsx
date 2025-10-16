@@ -8,7 +8,7 @@ import theme from "./styles/theme";
 createRoot(document.getElementById("root")).render(
   <StrictMode>
     <ThemeProvider theme={theme}>
-      <CssBaseline /> {/* KÍCH HOẠT typography + reset global theo theme */}
+      <CssBaseline />
       <App />
     </ThemeProvider>
   </StrictMode>
