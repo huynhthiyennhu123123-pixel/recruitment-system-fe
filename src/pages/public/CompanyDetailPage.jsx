@@ -1,213 +1,203 @@
-import React, { useEffect, useState } from "react"
-import { useParams } from "react-router-dom"
-import { getCompanyById } from "../../services/companyService"
-import { Box, Typography, Divider, CircularProgress, Chip, Grid } from "@mui/material"
-import JobCard from "../../components/job/JobCard"
+import React, { useEffect, useState } from "react";
+import { useParams, Link } from "react-router-dom";
+import { getCompanyById } from "../../services/companyService";
+import {
+  FaMapMarkerAlt,
+  FaBuilding,
+  FaGlobe,
+  FaPhone,
+  FaEnvelope,
+} from "react-icons/fa";
+import JobCard from "../../components/job/JobCard";
 
 export default function CompanyDetailPage() {
-  const { id } = useParams()
-  const [companyData, setCompanyData] = useState(null)
-  const [loading, setLoading] = useState(true)
+  const { id } = useParams();
+  const [companyData, setCompanyData] = useState(null);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchCompany = async () => {
       try {
-        const res = await getCompanyById(id)
-        setCompanyData(res.data) // dữ liệu trả về đúng cấu trúc { company, jobs }
+        const res = await getCompanyById(id);
+        setCompanyData(res?.data);
       } catch (err) {
-        console.error("Lỗi khi lấy chi tiết công ty:", err)
+        console.error("❌ Lỗi khi lấy chi tiết công ty:", err);
       } finally {
-        setLoading(false)
+        setLoading(false);
       }
-    }
-    fetchCompany()
-  }, [id])
+    };
+    fetchCompany();
+  }, [id]);
 
   if (loading)
     return (
-      <Box textAlign="center" py={4}>
-        <CircularProgress color="success" />
-      </Box>
-    )
+      <div className="flex justify-center items-center h-[60vh]">
+        <div className="animate-spin border-4 border-[#00b14f] border-t-transparent rounded-full w-10 h-10"></div>
+      </div>
+    );
 
-  if (!companyData)
-    return <Typography color="error">Không tìm thấy công ty</Typography>
+  if (!companyData || !companyData.company)
+    return (
+      <div className="text-center text-gray-600 py-10">
+        Không tìm thấy công ty.
+      </div>
+    );
 
-  const { company, jobs } = companyData
+  const { company, jobs } = companyData;
+
+  const coverImage =
+    company.coverUrl ||
+    "/default-cover.jpg"; // ảnh bìa mặc định
+  const logoImage =
+    company.logoUrl || "/default-company.png"; // ảnh logo mặc định
 
   return (
-    <Box sx={{ backgroundColor: "#fff", borderRadius: 2, p: 3 }}>
-      {/* Header thông tin công ty */}
-      <Grid container spacing={3}>
-        {/* Logo công ty */}
-        <Grid item xs={12} md={3} textAlign="center">
-          <img
-            src={
-              company.logoUrl ||
-              "https://cdn-icons-png.flaticon.com/512/3135/3135715.png"
-            }
-            alt={company.name}
-            style={{
-              width: "100%",
-              maxWidth: "180px",
-              borderRadius: "8px",
-              objectFit: "cover",
-            }}
-          />
-        </Grid>
-
-        {/* Thông tin chính */}
-        <Grid item xs={12} md={9}>
-          <Typography variant="h4" fontWeight="bold">
+    <div className="bg-gray-50 min-h-screen">
+      {/* 🔹 Cover Header */}
+      <div
+        className="relative w-full h-60 bg-center bg-cover"
+        style={{
+          backgroundImage: `url('${coverImage}')`,
+          backgroundSize: "cover",
+          backgroundPosition: "center",
+        }}
+      >
+        <div className="absolute inset-0 bg-black/25" />
+        <div className="absolute bottom-0 left-1/2 transform -translate-x-1/2 translate-y-1/2 flex flex-col items-center">
+          <div className="w-28 h-28 rounded-xl overflow-hidden shadow-lg bg-white flex items-center justify-center">
+            <img
+              src={logoImage}
+              alt={company.name}
+              className="w-full h-full object-cover"
+            />
+          </div>
+          <h1 className="mt-4 text-2xl font-bold text-gray-900 text-center">
             {company.name}
-          </Typography>
-          <Typography color="text.secondary" mt={0.5}>
-            {company.industry} • {company.city}, {company.country}
-          </Typography>
+          </h1>
+        </div>
+      </div>
 
-          {/* Thông tin nhanh */}
-          <Box mt={2}>
-            <Typography variant="body2">
-              <b>Địa chỉ:</b> {company.address}
-            </Typography>
-            {company.website && (
-              <Typography variant="body2">
-                <b>Website:</b>{" "}
-                <a href={company.website} target="_blank" rel="noreferrer">
-                  {company.website}
-                </a>
-              </Typography>
-            )}
-            {company.phoneNumber && (
-              <Typography variant="body2">
-                <b>Liên hệ:</b> {company.phoneNumber}
-              </Typography>
-            )}
-            {company.contactEmail && (
-              <Typography variant="body2">
-                <b>Email:</b> {company.contactEmail}
-              </Typography>
-            )}
-          </Box>
+      {/* 🔹 Nội dung chính */}
+      <div className="max-w-6xl mx-auto px-4 pt-20 pb-10">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          {/* Giới thiệu công ty */}
+          <div className="lg:col-span-2 bg-white p-6 rounded-xl shadow-sm border border-gray-100">
+            <h2 className="text-lg font-semibold text-gray-800 mb-3 border-b border-gray-200 pb-2">
+              Giới thiệu công ty
+            </h2>
+            <p className="text-gray-700 whitespace-pre-line leading-relaxed">
+              {company.description || "Chưa có mô tả công ty."}
+            </p>
+          </div>
 
-          {/* Thống kê */}
-          <Box mt={2} display="flex" gap={3} flexWrap="wrap">
-            <Chip
-              label={`Nhân viên: ${company.employeeCount ?? 0}`}
-              color="primary"
-              variant="outlined"
-            />
-            <Chip
-              label={`Việc đang tuyển: ${company.activeJobsCount ?? 0}`}
-              color="success"
-              variant="outlined"
-            />
-            <Chip
-              label={`Quy mô: ${company.companySize || "Chưa cập nhật"}`}
-              color="info"
-              variant="outlined"
-            />
-          </Box>
-        </Grid>
-      </Grid>
+          {/* Thông tin chung */}
+          <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
+            <h2 className="text-lg font-semibold text-gray-800 mb-3 border-b border-gray-200 pb-2">
+              Thông tin chung
+            </h2>
+            <ul className="space-y-2 text-gray-700 text-sm">
+              {company.address && (
+                <li className="flex items-start gap-2">
+                  <FaMapMarkerAlt className="mt-1 text-[#00b14f]" />
+                  <span>{company.address}</span>
+                </li>
+              )}
+              {company.city && (
+                <li>
+                  <strong>Thành phố:</strong> {company.city}
+                </li>
+              )}
+              {company.country && (
+                <li>
+                  <strong>Quốc gia:</strong> {company.country}
+                </li>
+              )}
+              {company.industry && (
+                <li>
+                  <strong>Lĩnh vực:</strong> {company.industry}
+                </li>
+              )}
+              {company.companySize && (
+                <li>
+                  <strong>Quy mô:</strong> {company.companySize}
+                </li>
+              )}
+              {company.employeeCount !== undefined && (
+                <li>
+                  <strong>Số nhân viên:</strong> {company.employeeCount}
+                </li>
+              )}
+              {company.activeJobsCount !== undefined && (
+                <li>
+                  <strong>Đang tuyển:</strong> {company.activeJobsCount} việc làm
+                </li>
+              )}
+              {company.phoneNumber && (
+                <li className="flex items-center gap-2">
+                  <FaPhone className="text-[#00b14f]" /> {company.phoneNumber}
+                </li>
+              )}
+              {company.contactEmail && (
+                <li className="flex items-center gap-2">
+                  <FaEnvelope className="text-[#00b14f]" />{" "}
+                  {company.contactEmail}
+                </li>
+              )}
+              {company.website && (
+                <li className="flex items-center gap-2">
+                  <FaGlobe className="text-[#00b14f]" />
+                  <a
+                    href={company.website}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-[#00b14f] hover:underline"
+                  >
+                    {company.website}
+                  </a>
+                </li>
+              )}
+            </ul>
+          </div>
+        </div>
 
-      <Divider sx={{ my: 3 }} />
+        {/* Hình ảnh công ty */}
+        {company.companyPhotos && company.companyPhotos.length > 0 && (
+          <div className="mt-10 bg-white p-6 rounded-xl shadow-sm border border-gray-100">
+            <h2 className="text-lg font-semibold text-gray-800 mb-3 border-b border-gray-200 pb-2">
+              Hình ảnh công ty
+            </h2>
+            <div className="flex flex-wrap gap-3">
+              {company.companyPhotos.map((photo, i) => (
+                <img
+                  key={i}
+                  src={photo}
+                  alt={`photo-${i}`}
+                  className="w-60 h-40 rounded-lg object-cover border border-gray-200"
+                />
+              ))}
+            </div>
+          </div>
+        )}
 
-      {/* Mô tả công ty */}
-      <Typography variant="h6" mb={1}>
-        Giới thiệu công ty
-      </Typography>
-      <Typography variant="body1" sx={{ whiteSpace: "pre-line" }}>
-        {company.description || "Chưa có mô tả công ty."}
-      </Typography>
+        {/* Việc làm đang tuyển */}
+        <div className="mt-10 bg-white p-6 rounded-xl shadow-sm border border-gray-100">
+          <h2 className="text-lg font-semibold text-gray-800 mb-4 border-b border-gray-200 pb-2">
+            Việc làm đang tuyển
+          </h2>
 
-      {/* Ảnh công ty */}
-      {company.companyPhotos && company.companyPhotos.length > 0 && (
-        <>
-          <Typography variant="h6" mt={3} mb={1}>
-            Hình ảnh công ty
-          </Typography>
-          <Box display="flex" gap={2} flexWrap="wrap">
-            {company.companyPhotos.map((photo, idx) => (
-              <img
-                key={idx}
-                src={photo}
-                alt={`company-${idx}`}
-                style={{
-                  width: "240px",
-                  height: "160px",
-                  borderRadius: "8px",
-                  objectFit: "cover",
-                }}
-              />
-            ))}
-          </Box>
-        </>
-      )}
-
-      {/* Quyền lợi công ty */}
-      {company.benefits && company.benefits.length > 0 && (
-        <>
-          <Typography variant="h6" mt={3}>
-            Quyền lợi khi làm việc
-          </Typography>
-          <Box display="flex" flexWrap="wrap" gap={1} mt={1}>
-            {company.benefits.map((b, idx) => (
-              <Chip key={idx} label={b} color="success" variant="outlined" />
-            ))}
-          </Box>
-        </>
-      )}
-
-      {/* Giờ làm việc */}
-      {company.workingHours && (
-        <Typography mt={3}>
-          <b>Giờ làm việc:</b> {company.workingHours}
-        </Typography>
-      )}
-
-      {/* Liên kết mạng xã hội */}
-      {company.socialLinks && (
-        <Box mt={3}>
-          <Typography variant="h6">Liên kết mạng xã hội</Typography>
-          {company.socialLinks.facebook && (
-            <Typography>
-              {" "}
-              <a href={company.socialLinks.facebook} target="_blank" rel="noreferrer">
-                Facebook
-              </a>
-            </Typography>
+          {jobs && jobs.length > 0 ? (
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+              {jobs.map((job) => (
+                <JobCard key={job.id} job={job} />
+              ))}
+            </div>
+          ) : (
+            <p className="text-gray-600">
+              Doanh nghiệp hiện không có tin tuyển dụng nào.
+            </p>
           )}
-          {company.socialLinks.linkedin && (
-            <Typography>
-              {" "}
-              <a href={company.socialLinks.linkedin} target="_blank" rel="noreferrer">
-                LinkedIn
-              </a>
-            </Typography>
-          )}
-        </Box>
-      )}
-
-      {/* Danh sách việc làm */}
-      <Divider sx={{ my: 3 }} />
-      <Typography variant="h5" mb={2}>
-        Các việc làm đang tuyển
-      </Typography>
-
-      {jobs && jobs.length > 0 ? (
-        <Box
-          display="grid"
-          gridTemplateColumns="repeat(auto-fit,minmax(280px,1fr))"
-          gap={2}
-        >
-          {jobs.map((job) => (
-            <JobCard key={job.id} job={job} />
-          ))}
-        </Box>
-      ) : (
-        <Typography>Hiện công ty chưa có việc làm nào đang tuyển.</Typography>
-      )}
-    </Box>
-  )
+        </div>
+      </div>
+    </div>
+  );
 }
