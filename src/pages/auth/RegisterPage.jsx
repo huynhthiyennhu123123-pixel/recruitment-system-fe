@@ -1,8 +1,8 @@
-import { useState } from "react"
-import { register } from "../../services/authService"
-import { useNavigate, Link } from "react-router-dom"
-import { FaEye, FaEyeSlash } from "react-icons/fa"
-import { toast } from "react-toastify" // ✅ Thêm dòng này
+import { useState } from "react";
+import { register } from "../../services/authService";
+import { useNavigate, Link } from "react-router-dom";
+import { FaEye, FaEyeSlash } from "react-icons/fa";
+import { toast } from "react-toastify";
 
 export default function RegisterPage() {
   const [form, setForm] = useState({
@@ -13,59 +13,60 @@ export default function RegisterPage() {
     lastName: "",
     phoneNumber: "",
     role: "APPLICANT",
-  })
-  const [loading, setLoading] = useState(false)
-  const [error, setError] = useState("")
-  const [info, setInfo] = useState("")
-  const [showPassword, setShowPassword] = useState(false)
-  const [showConfirmPassword, setShowConfirmPassword] = useState(false)
-  const navigate = useNavigate()
+  });
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
+  const [info, setInfo] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const navigate = useNavigate();
 
   const handleChange = (e) => {
-    setForm({ ...form, [e.target.name]: e.target.value })
-  }
+    setForm({ ...form, [e.target.name]: e.target.value });
+  };
 
   const handleSubmit = async (e) => {
-    e.preventDefault()
-    setError("")
-    setInfo("")
+    e.preventDefault();
+    setError("");
+    setInfo("");
 
-    // ✅ Kiểm tra mật khẩu trùng khớp
+    //  Kiểm tra mật khẩu trùng khớp
     if (form.password !== form.confirmPassword) {
-      const msg = "⚠️ Mật khẩu xác nhận không khớp!"
-      setError(msg)
-      toast.warn(msg) // ✅ Thêm toast cảnh báo
-      return
+      const msg = " Mật khẩu xác nhận không khớp!";
+      setError(msg);
+      toast.warn(msg);
+      return;
     }
 
-    setLoading(true)
+    setLoading(true);
     try {
-      const res = await register(form)
+      const res = await register(form);
       if (res?.success || res?.data) {
-        const msg = "Đăng ký thành công! Vui lòng xác thực email trước khi đăng nhập."
-        setInfo(msg)
-        toast.success(msg) // ✅ Thêm toast thành công
-        navigate("/auth/check-email", { state: { email: form.email } })
+        const msg =
+          "Đăng ký thành công! Vui lòng xác thực email trước khi đăng nhập.";
+        setInfo(msg);
+        toast.success(msg);
+        navigate("/auth/check-email", { state: { email: form.email } });
       } else {
-        const msg = res?.message || "Đăng ký thất bại!"
-        setError(msg)
-        toast.error(msg) // ✅ Thêm toast lỗi
+        const msg = res?.message || "Đăng ký thất bại!";
+        setError(msg);
+        toast.error(msg);
       }
     } catch (err) {
-      console.error("Register error:", err)
+      console.error("Register error:", err);
       const msg =
         err.response?.data?.message ||
         (err.response?.status === 409
-          ? "⚠️ Email đã tồn tại trong hệ thống."
+          ? "Email đã tồn tại trong hệ thống."
           : err.response?.status === 429
-          ? "⚠️ Bạn thao tác quá nhanh, vui lòng thử lại sau."
-          : "❌ Đăng ký thất bại. Vui lòng thử lại.")
-      setError(msg)
-      toast.error(msg) // ✅ Thêm toast lỗi
+          ? "Bạn thao tác quá nhanh, vui lòng thử lại sau."
+          : "Đăng ký thất bại. Vui lòng thử lại.");
+      setError(msg);
+      toast.error(msg);
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
+  };
 
   return (
     <div>
@@ -173,5 +174,5 @@ export default function RegisterPage() {
         </Link>
       </p>
     </div>
-  )
+  );
 }

@@ -26,7 +26,7 @@ export default function ProfilePage() {
         phoneNumber: user.phoneNumber,
       });
     } catch (err) {
-      console.error("❌ Get profile error:", err);
+      console.error(" Get profile error:", err);
       toast.error("Không thể tải hồ sơ.");
     }
   };
@@ -100,15 +100,15 @@ export default function ProfilePage() {
       isPublic: Boolean(isPublic),
     };
 
-    // ✅ Hiển thị toast loading duy nhất
+    // Hiển thị toast loading duy nhất
     const toastId = toast.loading("Đang lưu thay đổi...");
 
     try {
       await updateProfile(formattedData);
 
-      // ✅ Cập nhật toast thành công
+      // Cập nhật toast thành công
       toast.update(toastId, {
-        render: "🎉 Cập nhật hồ sơ thành công!",
+        render: " Cập nhật hồ sơ thành công!",
         type: "success",
         isLoading: false,
         autoClose: 2000,
@@ -117,9 +117,9 @@ export default function ProfilePage() {
 
       fetchProfile();
     } catch (err) {
-      console.error("❌ Update error:", err);
+      console.error(" Update error:", err);
 
-      // ❌ Cập nhật toast lỗi
+      // Cập nhật toast lỗi
       toast.update(toastId, {
         render: "Lỗi khi cập nhật hồ sơ!",
         type: "error",
@@ -133,9 +133,7 @@ export default function ProfilePage() {
 
   if (!profile)
     return (
-      <p className="p-6 text-gray-500 italic text-center">
-        Đang tải hồ sơ...
-      </p>
+      <p className="p-6 text-gray-500 italic text-center">Đang tải hồ sơ...</p>
     );
 
   return (

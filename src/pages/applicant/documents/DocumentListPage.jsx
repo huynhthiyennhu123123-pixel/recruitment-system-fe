@@ -1,69 +1,69 @@
-import React, { useEffect, useState } from "react"
+import React, { useEffect, useState } from "react";
 import {
   getMyDocuments,
   deleteDocument,
-} from "../../../services/documentService"
-import { Link } from "react-router-dom"
+} from "../../../services/documentService";
+import { Link } from "react-router-dom";
 import {
   FaTrash,
   FaDownload,
   FaFileAlt,
   FaPlus,
   FaFileUpload,
-} from "react-icons/fa"
-import toast, { Toaster } from "react-hot-toast"
+} from "react-icons/fa";
+import toast, { Toaster } from "react-hot-toast";
 
 export default function DocumentListPage() {
-  const [docs, setDocs] = useState({})
-  const [loading, setLoading] = useState(false)
+  const [docs, setDocs] = useState({});
+  const [loading, setLoading] = useState(false);
 
   const fetchDocs = async () => {
-    setLoading(true)
+    setLoading(true);
     try {
-      const res = await getMyDocuments()
-      setDocs(res?.data?.data || {})
+      const res = await getMyDocuments();
+      setDocs(res?.data?.data || {});
     } catch (err) {
-      console.error("Lỗi khi tải danh sách tài liệu:", err)
-      toast.error("Không thể tải danh sách tài liệu.")
+      console.error("Lỗi khi tải danh sách tài liệu:", err);
+      toast.error("Không thể tải danh sách tài liệu.");
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
+  };
   const handleDelete = async (id) => {
-    if (!window.confirm("Bạn có chắc muốn xóa tài liệu này?")) return
+    if (!window.confirm("Bạn có chắc muốn xóa tài liệu này?")) return;
 
     const deletePromise = deleteDocument(id)
       .then(() => {
-        fetchDocs()
+        fetchDocs();
       })
       .catch((err) => {
-        console.error("Lỗi khi xóa tài liệu:", err)
-        throw err
-      })
+        console.error("Lỗi khi xóa tài liệu:", err);
+        throw err;
+      });
 
     toast.promise(deletePromise, {
       loading: "Đang xóa tài liệu...",
       success: "Xóa tài liệu thành công!",
       error: "Không thể xóa tài liệu.",
-    })
-  }
+    });
+  };
 
   useEffect(() => {
-    fetchDocs()
-  }, [])
+    fetchDocs();
+  }, []);
 
   if (loading)
     return (
       <p className="text-center mt-10 text-gray-500">Đang tải tài liệu...</p>
-    )
+    );
 
-  // 🗂️ Ánh xạ tên loại tài liệu sang tiếng Việt
+  // Ánh xạ tên loại tài liệu sang tiếng Việt
   const typeLabel = {
     RESUME: "CV",
     COVER_LETTER: "Thư xin việc",
     PORTFOLIO: "Hồ sơ năng lực",
     CERTIFICATE: "Chứng chỉ",
-  }
+  };
 
   return (
     <div className="max-w-4xl mx-auto mt-10 px-4">
@@ -140,5 +140,5 @@ export default function DocumentListPage() {
         </div>
       ))}
     </div>
-  )
+  );
 }

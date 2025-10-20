@@ -8,24 +8,24 @@ export default function JobListPage() {
   const navigate = useNavigate();
   const queryParams = new URLSearchParams(location.search);
 
-  // 📊 State
+  //  State
   const [jobs, setJobs] = useState([]);
-  const [page, setPage] = useState(0);
+  const [page, setPage] = useState(Number(queryParams.get("page")) || 0);
   const [totalPages, setTotalPages] = useState(1);
   const [loading, setLoading] = useState(true);
 
-  // 🎯 Bộ lọc (filter)
+  //  Bộ lọc (filter)
   const [filters, setFilters] = useState({
     keyword: queryParams.get("keyword") || "",
     location: queryParams.get("location") || "",
-    salaryMin: "",
-    salaryMax: "",
-    jobType: "",
-    level: "",
-    experience: "",
+    jobType: queryParams.get("jobType") || "",
+    salaryMin: queryParams.get("salaryMin") || "",
+    salaryMax: queryParams.get("salaryMax") || "",
   });
 
-  //  Hàm fetch job list
+  // =============================
+  //  Gọi API lấy danh sách việc làm
+  // =============================
   const fetchJobs = async () => {
     setLoading(true);
     try {
@@ -33,29 +33,31 @@ export default function JobListPage() {
         keyword: filters.keyword || undefined,
         location: filters.location || undefined,
         jobType: filters.jobType || undefined,
-        experienceLevel: filters.experience || undefined,
+        minSalary: filters.salaryMin || undefined,
         page,
-        size: 50,
+        size: 10,
         sortBy: "createdAt",
         sortDir: "DESC",
       };
 
       const res = await searchJobs(params);
-      let jobList = res?.data?.content || [];
+      const jobList = res?.content || res?.data?.content || [];
 
+      // Lọc thêm theo khoảng lương nếu người dùng nhập cả hai
       const min = Number(filters.salaryMin) || 0;
       const max = Number(filters.salaryMax) || Infinity;
 
-      if (min > 0 || filters.salaryMax) {
-        jobList = jobList.filter((job) => {
+      let filteredList = jobList;
+      if (filters.salaryMin || filters.salaryMax) {
+        filteredList = jobList.filter((job) => {
           const jobMin = Number(job.salaryMin || 0);
           const jobMax = Number(job.salaryMax || 0);
           return jobMax >= min && jobMin <= max;
         });
       }
 
-      setJobs(jobList);
-      setTotalPages(1);
+      setJobs(filteredList);
+      setTotalPages(res?.totalPages || 1);
     } catch (err) {
       console.error("Lỗi tải danh sách việc làm:", err);
     } finally {
@@ -63,29 +65,45 @@ export default function JobListPage() {
     }
   };
 
+  // =============================
+  // Cập nhật URL & fetch khi thay đổi filters
+  // =============================
   useEffect(() => {
     const handler = setTimeout(() => {
+      const params = new URLSearchParams();
+      if (filters.keyword) params.append("keyword", filters.keyword);
+      if (filters.location) params.append("location", filters.location);
+      if (filters.jobType) params.append("jobType", filters.jobType);
+      if (filters.salaryMin) params.append("salaryMin", filters.salaryMin);
+      if (filters.salaryMax) params.append("salaryMax", filters.salaryMax);
+      params.append("page", page);
+
+      navigate(`/jobs?${params.toString()}`, { replace: true });
       fetchJobs();
-    }, 1000);
+    }, 500);
     return () => clearTimeout(handler);
   }, [filters, page]);
 
-  // Khi thay đổi filter
+  // Khi load lại trang (refresh / paste URL)
+  useEffect(() => {
+    fetchJobs();
+  }, [location.search]);
+
+  // =============================
+  //  Các hàm tiện ích
+  // =============================
   const handleFilterChange = (key, value) => {
     setPage(0);
     setFilters((prev) => ({ ...prev, [key]: value }));
   };
 
-  //  Reset toàn bộ bộ lọc
   const resetFilters = () => {
     setFilters({
       keyword: "",
       location: "",
+      jobType: "",
       salaryMin: "",
       salaryMax: "",
-      jobType: "",
-      level: "",
-      experience: "",
     });
     setPage(0);
   };
@@ -131,7 +149,7 @@ export default function JobListPage() {
           Bộ lọc tìm kiếm
         </h2>
 
-        {/* Từ khóa */}
+        {/*  Từ khóa */}
         <input
           type="text"
           placeholder="Từ khóa..."
@@ -140,7 +158,7 @@ export default function JobListPage() {
           className="w-full border border-gray-300 rounded-md px-3 py-2 mb-3 text-sm outline-none focus:border-[#00b14f]"
         />
 
-        {/* Địa điểm */}
+        {/*  Địa điểm */}
         <input
           type="text"
           placeholder="Nhập địa điểm..."
@@ -149,8 +167,21 @@ export default function JobListPage() {
           className="w-full border border-gray-300 rounded-md px-3 py-2 mb-3 text-sm outline-none focus:border-[#00b14f]"
         />
 
-        {/* Lương: nhập min / max */}
-        {/* Lương: nhập min / max */}
+        {/* Loại công việc */}
+        <select
+          value={filters.jobType}
+          onChange={(e) => handleFilterChange("jobType", e.target.value)}
+          className="w-full border border-gray-300 rounded-md px-3 py-2 mb-3 text-sm"
+        >
+          <option value="">Loại công việc</option>
+          <option value="FULL_TIME">Full-time</option>
+          <option value="PART_TIME">Part-time</option>
+          <option value="CONTRACT">Hợp đồng</option>
+          <option value="INTERNSHIP">Thực tập</option>
+          <option value="FREELANCE">Freelance</option>
+        </select>
+
+        {/*  Khoảng lương */}
         <div className="mb-4">
           <label className="block text-sm font-medium text-gray-700 mb-1">
             Khoảng lương (VNĐ)
@@ -166,7 +197,6 @@ export default function JobListPage() {
                   : ""
               }
               onChange={(e) => {
-                // Xóa dấu . và parse lại
                 const raw = e.target.value.replace(/\D/g, "");
                 handleFilterChange("salaryMin", raw);
               }}
@@ -189,7 +219,6 @@ export default function JobListPage() {
             />
           </div>
 
-          {/* Gợi ý mô tả */}
           {(filters.salaryMin || filters.salaryMax) && (
             <p className="text-xs text-gray-500 mt-1">
               {filters.salaryMin
@@ -204,42 +233,7 @@ export default function JobListPage() {
           )}
         </div>
 
-        {/* Cấp bậc */}
-        <select
-          value={filters.level}
-          onChange={(e) => handleFilterChange("level", e.target.value)}
-          className="w-full border border-gray-300 rounded-md px-3 py-2 mb-3 text-sm"
-        >
-          <option value="">Cấp bậc</option>
-          <option value="fresher">Fresher</option>
-          <option value="junior">Junior</option>
-          <option value="senior">Senior</option>
-        </select>
-
-        {/* Loại hình */}
-        <select
-          value={filters.jobType}
-          onChange={(e) => handleFilterChange("jobType", e.target.value)}
-          className="w-full border border-gray-300 rounded-md px-3 py-2 mb-3 text-sm"
-        >
-          <option value="">Hình thức</option>
-          <option value="FULL_TIME">Full-time</option>
-          <option value="PART_TIME">Part-time</option>
-          <option value="INTERN">Thực tập</option>
-        </select>
-
-        {/* Kinh nghiệm */}
-        <select
-          value={filters.experience}
-          onChange={(e) => handleFilterChange("experience", e.target.value)}
-          className="w-full border border-gray-300 rounded-md px-3 py-2 mb-5 text-sm"
-        >
-          <option value="">Kinh nghiệm</option>
-          <option value="0-1y">0-1 năm</option>
-          <option value="1-3y">1-3 năm</option>
-          <option value="3-5y">3-5 năm</option>
-        </select>
-
+        {/*  Làm mới */}
         <button
           onClick={resetFilters}
           className="w-full bg-[#00b14f] text-white py-2 rounded-md text-sm font-medium hover:bg-[#009d46]"
@@ -263,37 +257,6 @@ export default function JobListPage() {
             {jobs.map((job) => (
               <JobCard key={job.id} job={job} />
             ))}
-          </div>
-        )}
-
-        {/* Pagination */}
-        {totalPages > 1 && (
-          <div className="flex justify-center mt-10 gap-4 text-sm">
-            <button
-              disabled={page === 0}
-              onClick={() => setPage((p) => p - 1)}
-              className={`px-4 py-2 rounded-md border ${
-                page === 0
-                  ? "text-gray-400 border-gray-200 cursor-not-allowed"
-                  : "text-[#00b14f] border-[#00b14f]"
-              }`}
-            >
-              ◀ Trang trước
-            </button>
-            <span className="text-gray-700">
-              Trang {page + 1} / {totalPages}
-            </span>
-            <button
-              disabled={page + 1 >= totalPages}
-              onClick={() => setPage((p) => p + 1)}
-              className={`px-4 py-2 rounded-md border ${
-                page + 1 >= totalPages
-                  ? "text-gray-400 border-gray-200 cursor-not-allowed"
-                  : "text-[#00b14f] border-[#00b14f]"
-              }`}
-            >
-              Trang sau ▶
-            </button>
           </div>
         )}
       </section>

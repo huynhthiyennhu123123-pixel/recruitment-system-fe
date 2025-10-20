@@ -27,7 +27,7 @@ export default function JobDetailPage() {
   const [isSaved, setIsSaved] = useState(false);
   const [saving, setSaving] = useState(false);
 
-  // ✅ Tự fallback khi /me lỗi
+  //  Tự fallback khi /me lỗi
   const fetchJobDetail = async () => {
     setLoading(true);
     try {
@@ -36,9 +36,9 @@ export default function JobDetailPage() {
       setJob(jobData);
       setIsSaved(jobData.isSaved || false);
     } catch (err) {
-      console.warn("⚠️ Lỗi khi gọi /me, fallback sang API thường:", err);
+      console.warn("  Lỗi khi gọi /me, fallback sang API thường:", err);
 
-      // ✅ Thêm toastId để không hiện lặp
+      //   Thêm toastId để không hiện lặp
       toast.warning(
         "Không thể kiểm tra trạng thái lưu, hiển thị công việc bình thường!",
         { toastId: "saveWarning" }
@@ -50,11 +50,10 @@ export default function JobDetailPage() {
         setJob(jobData2);
         setIsSaved(false);
       } catch (err2) {
-        console.error("❌ Lỗi tải chi tiết công việc:", err2);
+        console.error(" Lỗi tải chi tiết công việc:", err2);
         toast.error("Không tải được thông tin công việc!");
       }
-    }
-    finally {
+    } finally {
       setLoading(false);
     }
   };
@@ -63,7 +62,7 @@ export default function JobDetailPage() {
     fetchJobDetail();
   }, [id]);
 
-  // ✅ Lưu / Bỏ lưu công việc
+  //   Lưu / Bỏ lưu công việc
   const handleToggleSave = async () => {
     if (saving) return;
     setSaving(true);
@@ -71,11 +70,11 @@ export default function JobDetailPage() {
       if (isSaved) {
         await unsaveJob(id);
         setIsSaved(false);
-        toast.info("❌ Đã bỏ lưu công việc");
+        toast.info("  Đã bỏ lưu công việc");
       } else {
         await saveJob(id);
         setIsSaved(true);
-        toast.success("💚 Đã lưu công việc thành công");
+        toast.success(" Đã lưu công việc thành công");
       }
     } catch (err) {
       console.error("Lỗi khi lưu/bỏ lưu job:", err);
@@ -151,10 +150,11 @@ export default function JobDetailPage() {
             <div className="flex items-center gap-3 mt-4 sm:mt-0">
               <button
                 onClick={handleToggleSave}
-                className={`flex items-center gap-2 px-4 py-2 rounded-lg border transition font-medium ${isSaved
+                className={`flex items-center gap-2 px-4 py-2 rounded-lg border transition font-medium ${
+                  isSaved
                     ? "bg-red-50 border-red-400 text-red-500 hover:bg-red-100"
                     : "border-gray-300 hover:bg-gray-50 text-gray-600"
-                  }`}
+                }`}
                 disabled={saving}
               >
                 {isSaved ? <FaHeart /> : <FaRegHeart />}
@@ -179,7 +179,7 @@ export default function JobDetailPage() {
                     navigate(`/applicant/jobs/${id}/apply`);
                   } else {
                     toast.warning(
-                      "⚠️ Chỉ tài khoản ứng viên mới được ứng tuyển!"
+                      " Chỉ tài khoản ứng viên mới được ứng tuyển!"
                     );
                   }
                 }}
@@ -198,8 +198,8 @@ export default function JobDetailPage() {
                 <strong>Mức lương:</strong>{" "}
                 {job.salaryMin || job.salaryMax
                   ? `${job.salaryMin?.toLocaleString(
-                    "vi-VN"
-                  )}₫ - ${job.salaryMax?.toLocaleString("vi-VN")}₫`
+                      "vi-VN"
+                    )}₫ - ${job.salaryMax?.toLocaleString("vi-VN")}₫`
                   : "Thoả thuận"}
               </span>
             </div>
@@ -215,8 +215,8 @@ export default function JobDetailPage() {
                 <strong>Hạn nộp:</strong>{" "}
                 {job.applicationDeadline
                   ? new Date(job.applicationDeadline).toLocaleDateString(
-                    "vi-VN"
-                  )
+                      "vi-VN"
+                    )
                   : "Không rõ"}
               </span>
             </div>

@@ -1,5 +1,5 @@
-import React, { useState } from "react"
-import { useNavigate } from "react-router-dom"
+import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import {
   Box,
   Grid,
@@ -10,7 +10,7 @@ import {
   Paper,
   Alert,
   CircularProgress,
-} from "@mui/material"
+} from "@mui/material";
 import {
   WorkOutline,
   DescriptionOutlined,
@@ -20,10 +20,10 @@ import {
   CalendarMonthOutlined,
   SchoolOutlined,
   GroupsOutlined,
-  BuildCircleOutlined, 
+  BuildCircleOutlined,
 } from "@mui/icons-material";
 
-import { createJob } from "../../services/employerService"
+import { createJob } from "../../services/employerService";
 
 export default function JobPostCreate() {
   const [form, setForm] = useState({
@@ -42,22 +42,22 @@ export default function JobPostCreate() {
     location: "",
     applicationDeadline: "",
     status: "DRAFT",
-  })
-  const navigate = useNavigate()
-  const [loading, setLoading] = useState(false)
-  const [successMsg, setSuccessMsg] = useState("")
-  const [errorMsg, setErrorMsg] = useState("")
+  });
+  const navigate = useNavigate();
+  const [loading, setLoading] = useState(false);
+  const [successMsg, setSuccessMsg] = useState("");
+  const [errorMsg, setErrorMsg] = useState("");
 
   const handleChange = (e) => {
-    const { name, value } = e.target
-    setForm({ ...form, [name]: value })
-  }
+    const { name, value } = e.target;
+    setForm({ ...form, [name]: value });
+  };
 
   const handleSubmit = async (e) => {
-    e.preventDefault()
-    setLoading(true)
-    setSuccessMsg("")
-    setErrorMsg("")
+    e.preventDefault();
+    setLoading(true);
+    setSuccessMsg("");
+    setErrorMsg("");
 
     try {
       const payload = {
@@ -76,20 +76,20 @@ export default function JobPostCreate() {
         location: form.location,
         applicationDeadline: `${form.applicationDeadline}T00:00:00`,
         status: form.status,
-      }
+      };
 
-      const res = await createJob(payload)
+      const res = await createJob(payload);
       if (res?.success) {
-        setSuccessMsg("✅ Tạo tin tuyển dụng thành công!")
-        setTimeout(() => navigate("/employer/jobs"), 1500)
-      } else setErrorMsg(res?.message || "Không thể tạo tin tuyển dụng.")
+        setSuccessMsg("✅ Tạo tin tuyển dụng thành công!");
+        setTimeout(() => navigate("/employer/jobs"), 1500);
+      } else setErrorMsg(res?.message || "Không thể tạo tin tuyển dụng.");
     } catch (err) {
-      console.error("Error creating job:", err)
-      setErrorMsg(err.response?.data?.message || "Lỗi kết nối đến server.")
+      console.error("Error creating job:", err);
+      setErrorMsg(err.response?.data?.message || "Lỗi kết nối đến server.");
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
+  };
 
   return (
     <Box
@@ -103,7 +103,10 @@ export default function JobPostCreate() {
       }}
     >
       {/* ---------------- FORM ---------------- */}
-      <Paper elevation={3} sx={{ flex: 2, p: 4, borderRadius: 3, bgcolor: "#fff" }}>
+      <Paper
+        elevation={3}
+        sx={{ flex: 2, p: 4, borderRadius: 3, bgcolor: "#fff" }}
+      >
         <Typography
           variant="h5"
           sx={{
@@ -118,8 +121,16 @@ export default function JobPostCreate() {
           Đăng tin tuyển dụng mới
         </Typography>
 
-        {successMsg && <Alert severity="success" sx={{ mb: 2 }}>{successMsg}</Alert>}
-        {errorMsg && <Alert severity="error" sx={{ mb: 2 }}>{errorMsg}</Alert>}
+        {successMsg && (
+          <Alert severity="success" sx={{ mb: 2 }}>
+            {successMsg}
+          </Alert>
+        )}
+        {errorMsg && (
+          <Alert severity="error" sx={{ mb: 2 }}>
+            {errorMsg}
+          </Alert>
+        )}
 
         <form onSubmit={handleSubmit}>
           <Grid container spacing={2}>
@@ -128,48 +139,59 @@ export default function JobPostCreate() {
               <TextField
                 name="title"
                 fullWidth
-                label={<Label icon={<WorkOutline />} text="Tiêu đề công việc *" />}
+                label={
+                  <Label icon={<WorkOutline />} text="Tiêu đề công việc *" />
+                }
                 value={form.title}
                 onChange={handleChange}
-                sx={{marginInlineEnd:20 }}
+                sx={{ marginInlineEnd: 20 }}
               />
             </Grid>
             <Grid item xs={12} md={3}>
               <TextField
                 select
                 name="jobType"
-                label={<Label icon={<CheckCircleOutline />} text="Loại hình công việc" />}
+                label={
+                  <Label
+                    icon={<CheckCircleOutline />}
+                    text="Loại hình công việc"
+                  />
+                }
                 value={form.jobType}
                 onChange={handleChange}
                 fullWidth
               >
                 <MenuItem value="FULL_TIME">Toàn thời gian</MenuItem>
                 <MenuItem value="PART_TIME">Bán thời gian</MenuItem>
+                <MenuItem value="CONTRACT">Hợp đồng</MenuItem>
                 <MenuItem value="INTERNSHIP">Thực tập</MenuItem>
+                <MenuItem value="FREELANCE">Freelance</MenuItem>
               </TextField>
             </Grid>
             <Grid item xs={12} md={3}>
               <TextField
                 name="numberOfPositions"
                 type="number"
-                label={<Label icon={<GroupsOutlined />} text="Số lượng tuyển" />}
+                label={
+                  <Label icon={<GroupsOutlined />} text="Số lượng tuyển" />
+                }
                 fullWidth
-                sx={{marginInlineEnd:-4 }}
+                sx={{ marginInlineEnd: -4 }}
                 value={form.numberOfPositions}
                 onChange={handleChange}
               />
             </Grid>
             {/* Loại tiền */}
 
-
-
             {/* Hàng 2 */}
             <Grid item xs={12} md={4}>
               <TextField
                 name="experienceRequired"
                 fullWidth
-                sx={{marginInlineEnd:20 }}
-                label={<Label icon={<SchoolOutlined />} text="Kinh nghiệm yêu cầu" />}
+                sx={{ marginInlineEnd: 20 }}
+                label={
+                  <Label icon={<SchoolOutlined />} text="Kinh nghiệm yêu cầu" />
+                }
                 value={form.experienceRequired}
                 onChange={handleChange}
               />
@@ -178,9 +200,14 @@ export default function JobPostCreate() {
               <TextField
                 type="date"
                 name="applicationDeadline"
-                label={<Label icon={<CalendarMonthOutlined />} text="Hạn nộp hồ sơ" />}
+                label={
+                  <Label
+                    icon={<CalendarMonthOutlined />}
+                    text="Hạn nộp hồ sơ"
+                  />
+                }
                 fullWidth
-                sx={{marginInlineEnd:-2 }}
+                sx={{ marginInlineEnd: -2 }}
                 InputLabelProps={{ shrink: true }}
                 value={form.applicationDeadline}
                 onChange={handleChange}
@@ -190,22 +217,29 @@ export default function JobPostCreate() {
               <TextField
                 name="educationRequired"
                 fullWidth
-                sx={{marginInlineEnd:-4 }}
-                label={<Label icon={<SchoolOutlined />} text="Trình độ học vấn" />}
+                sx={{ marginInlineEnd: -4 }}
+                label={
+                  <Label icon={<SchoolOutlined />} text="Trình độ học vấn" />
+                }
                 value={form.educationRequired}
                 onChange={handleChange}
               />
             </Grid>
 
             {/* Hàng 3 */}
-            
+
             <Grid item xs={12} md={4}>
               <TextField
                 name="salaryMin"
                 type="number"
-                label={<Label icon={<MonetizationOnOutlined />} text="Lương tối thiểu" />}
+                label={
+                  <Label
+                    icon={<MonetizationOnOutlined />}
+                    text="Lương tối thiểu"
+                  />
+                }
                 fullWidth
-                sx={{marginInlineEnd:-4 }}
+                sx={{ marginInlineEnd: -4 }}
                 value={form.salaryMin}
                 onChange={handleChange}
               />
@@ -214,34 +248,41 @@ export default function JobPostCreate() {
               <TextField
                 name="salaryMax"
                 type="number"
-                label={<Label icon={<MonetizationOnOutlined />} text="Lương tối đa" />}
+                label={
+                  <Label
+                    icon={<MonetizationOnOutlined />}
+                    text="Lương tối đa"
+                  />
+                }
                 fullWidth
-                sx={{marginInlineEnd:-4 }}
+                sx={{ marginInlineEnd: -4 }}
                 value={form.salaryMax}
                 onChange={handleChange}
               />
             </Grid>
-<Grid item xs={12} md={3}>
-  <TextField
-    select
-    required
-    label={
-      <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-        <MonetizationOnOutlined sx={{ color: "#2e7d32", fontSize: 20 }} />
-        Loại tiền
-      </Box>
-    }
-    name="salaryCurrency"
-    value={form.salaryCurrency}
-    onChange={handleChange}
-    fullWidth
-    sx={{marginInlineEnd:9 }}
-  >
-    <MenuItem value="VND">VND</MenuItem>
-    <MenuItem value="USD">USD</MenuItem>
-    <MenuItem value="EUR">EUR</MenuItem>
-  </TextField>
-</Grid>
+            <Grid item xs={12} md={3}>
+              <TextField
+                select
+                required
+                label={
+                  <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+                    <MonetizationOnOutlined
+                      sx={{ color: "#2e7d32", fontSize: 20 }}
+                    />
+                    Loại tiền
+                  </Box>
+                }
+                name="salaryCurrency"
+                value={form.salaryCurrency}
+                onChange={handleChange}
+                fullWidth
+                sx={{ marginInlineEnd: 9 }}
+              >
+                <MenuItem value="VND">VND</MenuItem>
+                <MenuItem value="USD">USD</MenuItem>
+                <MenuItem value="EUR">EUR</MenuItem>
+              </TextField>
+            </Grid>
             <Grid item xs={12} md={4}>
               <TextField
                 select
@@ -250,8 +291,7 @@ export default function JobPostCreate() {
                 value={form.status}
                 onChange={handleChange}
                 fullWidth
-                sx={{marginInlineEnd:4 }}
-                
+                sx={{ marginInlineEnd: 4 }}
               >
                 <MenuItem value="DRAFT">Bản nháp</MenuItem>
                 <MenuItem value="ACTIVE">Đang hiển thị</MenuItem>
@@ -263,38 +303,48 @@ export default function JobPostCreate() {
                 name="skillsRequired"
                 fullWidth
                 multiline
-                sx={{marginInlineEnd:22 }}
+                sx={{ marginInlineEnd: 22 }}
                 rows={2}
-                label={<Label icon={<BuildCircleOutlined />} text="Kỹ năng yêu cầu" />}
+                label={
+                  <Label
+                    icon={<BuildCircleOutlined />}
+                    text="Kỹ năng yêu cầu"
+                  />
+                }
                 value={form.skillsRequired}
                 onChange={handleChange}
               />
             </Grid>
-             <Grid item xs={12} md={4}>
+            <Grid item xs={12} md={4}>
               <TextField
                 name="requirements"
                 fullWidth
                 multiline
-                sx={{marginInlineEnd:19 }}
+                sx={{ marginInlineEnd: 19 }}
                 rows={2}
-                label={<Label icon={<CheckCircleOutline />} text="Yêu cầu ứng viên" />}
+                label={
+                  <Label
+                    icon={<CheckCircleOutline />}
+                    text="Yêu cầu ứng viên"
+                  />
+                }
                 value={form.requirements}
                 onChange={handleChange}
               />
             </Grid>
-            
-            
 
             {/* Hàng 5 */}
-           
+
             <Grid item xs={12} md={4}>
               <TextField
                 name="benefits"
                 fullWidth
                 multiline
-                sx={{marginInlineEnd:22 }}
+                sx={{ marginInlineEnd: 22 }}
                 rows={2}
-                label={<Label icon={<MonetizationOnOutlined />} text="Phúc lợi" />}
+                label={
+                  <Label icon={<MonetizationOnOutlined />} text="Phúc lợi" />
+                }
                 value={form.benefits}
                 onChange={handleChange}
               />
@@ -304,9 +354,14 @@ export default function JobPostCreate() {
                 name="jobDescription"
                 fullWidth
                 multiline
-                sx={{marginInlineEnd:19 }}
+                sx={{ marginInlineEnd: 19 }}
                 rows={2}
-                label={<Label icon={<DescriptionOutlined />} text="Mô tả công việc" />}
+                label={
+                  <Label
+                    icon={<DescriptionOutlined />}
+                    text="Mô tả công việc"
+                  />
+                }
                 value={form.jobDescription}
                 onChange={handleChange}
               />
@@ -315,8 +370,13 @@ export default function JobPostCreate() {
               <TextField
                 name="location"
                 fullWidth
-                sx={{marginInlineEnd:64 }}
-                label={<Label icon={<LocationOnOutlined />} text="Địa điểm làm việc" />}
+                sx={{ marginInlineEnd: 64 }}
+                label={
+                  <Label
+                    icon={<LocationOnOutlined />}
+                    text="Địa điểm làm việc"
+                  />
+                }
                 value={form.location}
                 onChange={handleChange}
               />
@@ -359,7 +419,15 @@ export default function JobPostCreate() {
           border: "1px solid #a5d6a7",
         }}
       >
-        <Typography variant="h6" sx={{ mb: 2, fontWeight: "bold", color: "#2e7d32", textAlign: "center" }}>
+        <Typography
+          variant="h6"
+          sx={{
+            mb: 2,
+            fontWeight: "bold",
+            color: "#2e7d32",
+            textAlign: "center",
+          }}
+        >
           Xem trước tin tuyển dụng
         </Typography>
 
@@ -371,7 +439,8 @@ export default function JobPostCreate() {
         </Typography>
 
         <Typography variant="subtitle2" sx={{ mt: 1, fontWeight: "bold" }}>
-          Lương: {form.salaryMin || "?"} - {form.salaryMax || "?"} {form.salaryCurrency}
+          Lương: {form.salaryMin || "?"} - {form.salaryMax || "?"}{" "}
+          {form.salaryCurrency}
         </Typography>
         <Typography variant="body2" sx={{ mt: 1 }}>
           <strong>Hạn nộp:</strong> {form.applicationDeadline || "Chưa đặt"}
@@ -382,16 +451,24 @@ export default function JobPostCreate() {
             ? "Toàn thời gian"
             : form.jobType === "PART_TIME"
             ? "Bán thời gian"
-            : "Thực tập"}
+            : form.jobType === "CONTRACT"
+            ? "Hợp đồng"
+            : form.jobType === "INTERNSHIP"
+            ? "Thực tập"
+            : form.jobType === "FREELANCE"
+            ? "Freelance"
+            : "Không xác định"}
         </Typography>
         <Typography variant="body2" sx={{ mt: 1 }}>
-          <strong>Trạng thái:</strong> {form.status === "ACTIVE" ? "Đang hiển thị" : "Bản nháp"}
+          <strong>Trạng thái:</strong>{" "}
+          {form.status === "ACTIVE" ? "Đang hiển thị" : "Bản nháp"}
         </Typography>
         <Typography variant="body2" sx={{ mt: 1 }}>
           <strong>Số lượng tuyển:</strong> {form.numberOfPositions || 1}
         </Typography>
         <Typography variant="body2" sx={{ mt: 2 }}>
-          <strong>Kinh nghiệm:</strong> {form.experienceRequired || "Không yêu cầu"}
+          <strong>Kinh nghiệm:</strong>{" "}
+          {form.experienceRequired || "Không yêu cầu"}
         </Typography>
         <Typography variant="body2" sx={{ mt: 1 }}>
           <strong>Trình độ:</strong> {form.educationRequired || "Không yêu cầu"}
@@ -401,13 +478,17 @@ export default function JobPostCreate() {
           <Typography variant="subtitle2" fontWeight="bold" color="#2e7d32">
             Kỹ năng yêu cầu
           </Typography>
-          <Typography variant="body2">{form.skillsRequired || "Chưa có kỹ năng cụ thể"}</Typography>
+          <Typography variant="body2">
+            {form.skillsRequired || "Chưa có kỹ năng cụ thể"}
+          </Typography>
         </Box>
         <Box sx={{ mt: 2 }}>
           <Typography variant="subtitle2" fontWeight="bold" color="#2e7d32">
             Mô tả công việc
           </Typography>
-          <Typography variant="body2">{form.jobDescription || "..."}</Typography>
+          <Typography variant="body2">
+            {form.jobDescription || "..."}
+          </Typography>
         </Box>
         <Box sx={{ mt: 2 }}>
           <Typography variant="subtitle2" fontWeight="bold" color="#2e7d32">
@@ -423,7 +504,7 @@ export default function JobPostCreate() {
         </Box>
       </Paper>
     </Box>
-  )
+  );
 }
 
 /** Component nhỏ cho label có icon */
@@ -433,5 +514,5 @@ function Label({ icon, text }) {
       {React.cloneElement(icon, { color: "success", fontSize: "small" })}
       {text}
     </Box>
-  )
+  );
 }

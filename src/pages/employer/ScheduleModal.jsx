@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react"
+import React, { useState, useEffect } from "react";
 import {
   Dialog,
   DialogTitle,
@@ -13,28 +13,32 @@ import {
   Divider,
   Snackbar,
   Alert,
-} from "@mui/material"
-import CalendarMonthIcon from "@mui/icons-material/CalendarMonth"
-import AccessTimeIcon from "@mui/icons-material/AccessTime"
-import VideoCameraFrontIcon from "@mui/icons-material/VideoCameraFront"
-import LocationOnIcon from "@mui/icons-material/LocationOn"
-import LinkIcon from "@mui/icons-material/Link"
-import NotesIcon from "@mui/icons-material/Notes"
-import { getManagedApplications } from "../../services/employerService"
-import { scheduleInterview } from "../../services/interviewService"
-import dayjs from "dayjs"
+} from "@mui/material";
+import CalendarMonthIcon from "@mui/icons-material/CalendarMonth";
+import AccessTimeIcon from "@mui/icons-material/AccessTime";
+import VideoCameraFrontIcon from "@mui/icons-material/VideoCameraFront";
+import LocationOnIcon from "@mui/icons-material/LocationOn";
+import LinkIcon from "@mui/icons-material/Link";
+import NotesIcon from "@mui/icons-material/Notes";
+import { getManagedApplications } from "../../services/employerService";
+import { scheduleInterview } from "../../services/interviewService";
+import dayjs from "dayjs";
 
 const INTERVIEW_METHODS = [
   { value: "VIDEO", label: "Phỏng vấn trực tuyến (Video)" },
   { value: "ONSITE", label: "Phỏng vấn trực tiếp tại công ty" },
   { value: "PHONE", label: "Phỏng vấn qua điện thoại" },
-]
+];
 
 export default function ScheduleModal({ open, onClose, onSuccess }) {
-  const [applications, setApplications] = useState([])
-  const [loading, setLoading] = useState(false)
-  const [errors, setErrors] = useState({})
-  const [snackbar, setSnackbar] = useState({ open: false, message: "", severity: "info" })
+  const [applications, setApplications] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [errors, setErrors] = useState({});
+  const [snackbar, setSnackbar] = useState({
+    open: false,
+    message: "",
+    severity: "info",
+  });
 
   const [form, setForm] = useState({
     applicationId: "",
@@ -44,53 +48,55 @@ export default function ScheduleModal({ open, onClose, onSuccess }) {
     location: "",
     meetingLink: "",
     notes: "",
-  })
+  });
 
   const handleChange = (e) => {
-    const { name, value } = e.target
-    setForm((prev) => ({ ...prev, [name]: value }))
-    setErrors((prev) => ({ ...prev, [name]: "" })) // clear lỗi khi nhập lại
-  }
+    const { name, value } = e.target;
+    setForm((prev) => ({ ...prev, [name]: value }));
+    setErrors((prev) => ({ ...prev, [name]: "" })); // clear lỗi khi nhập lại
+  };
 
   // ======== Lấy danh sách ứng viên ở trạng thái INTERVIEW ========
   useEffect(() => {
     if (open) {
       getManagedApplications(0, 100, "INTERVIEW")
         .then((data) => setApplications(data?.data?.content || []))
-        .catch((err) => console.error("❌ Lỗi lấy ứng viên:", err))
+        .catch((err) => console.error("  Lỗi lấy ứng viên:", err));
     }
-  }, [open])
+  }, [open]);
 
   // ======== Kiểm tra hợp lệ ========
   const validateForm = () => {
-    const newErrors = {}
+    const newErrors = {};
 
-    if (!form.applicationId) newErrors.applicationId = "Vui lòng chọn ứng viên!"
-    if (!form.scheduledAt) newErrors.scheduledAt = "Vui lòng chọn thời gian phỏng vấn!"
+    if (!form.applicationId)
+      newErrors.applicationId = "Vui lòng chọn ứng viên!";
+    if (!form.scheduledAt)
+      newErrors.scheduledAt = "Vui lòng chọn thời gian phỏng vấn!";
     if (!form.durationMinutes || form.durationMinutes <= 0)
-      newErrors.durationMinutes = "Thời lượng phải lớn hơn 0!"
+      newErrors.durationMinutes = "Thời lượng phải lớn hơn 0!";
     if (form.interviewType === "VIDEO" && !form.meetingLink.trim())
-      newErrors.meetingLink = "Vui lòng nhập link họp!"
+      newErrors.meetingLink = "Vui lòng nhập link họp!";
     if (form.interviewType === "ONSITE" && !form.location.trim())
-      newErrors.location = "Vui lòng nhập địa điểm phỏng vấn!"
+      newErrors.location = "Vui lòng nhập địa điểm phỏng vấn!";
 
-    setErrors(newErrors)
-    return Object.keys(newErrors).length === 0
-  }
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
 
   // ======== Gửi API ========
   const handleSubmit = async () => {
     if (!validateForm()) {
       setSnackbar({
         open: true,
-        message: "⚠️ Vui lòng kiểm tra lại thông tin trước khi tạo lịch!",
+        message: " Vui lòng kiểm tra lại thông tin trước khi tạo lịch!",
         severity: "warning",
-      })
-      return
+      });
+      return;
     }
 
     try {
-      setLoading(true)
+      setLoading(true);
       const res = await scheduleInterview({
         applicationId: Number(form.applicationId),
         scheduledAt: form.scheduledAt,
@@ -99,44 +105,46 @@ export default function ScheduleModal({ open, onClose, onSuccess }) {
         location: form.location,
         meetingLink: form.meetingLink,
         notes: form.notes,
-      })
+      });
 
-      const ok = res?.success || res?.data?.success
+      const ok = res?.success || res?.data?.success;
       const message =
         res?.message ||
         res?.data?.message ||
-        (ok ? "Tạo lịch phỏng vấn thành công!" : "Không thể tạo lịch phỏng vấn.")
+        (ok
+          ? "Tạo lịch phỏng vấn thành công!"
+          : "Không thể tạo lịch phỏng vấn.");
 
       if (ok) {
         setSnackbar({
           open: true,
           message: `🎉 ${message}`,
           severity: "success",
-        })
-        onSuccess?.()
-        setTimeout(() => onClose(), 1200)
+        });
+        onSuccess?.();
+        setTimeout(() => onClose(), 1200);
       } else {
         setSnackbar({
           open: true,
-          message: `❌ ${message}`,
+          message: ` ${message}`,
           severity: "error",
-        })
+        });
       }
     } catch (err) {
-      console.error("❌ Lỗi khi tạo lịch:", err)
+      console.error(" Lỗi khi tạo lịch:", err);
       setSnackbar({
         open: true,
         message: "Lỗi hệ thống, vui lòng thử lại.",
         severity: "error",
-      })
+      });
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
+  };
 
   const handleCloseSnackbar = () => {
-    setSnackbar((prev) => ({ ...prev, open: false }))
-  }
+    setSnackbar((prev) => ({ ...prev, open: false }));
+  };
 
   return (
     <>
@@ -146,7 +154,10 @@ export default function ScheduleModal({ open, onClose, onSuccess }) {
         </DialogTitle>
 
         <DialogContent>
-          <Paper elevation={0} sx={{ p: 2, borderRadius: 2, bgcolor: "#fafafa" }}>
+          <Paper
+            elevation={0}
+            sx={{ p: 2, borderRadius: 2, bgcolor: "#fafafa" }}
+          >
             <Grid container spacing={2}>
               {/* Ứng viên */}
               <Grid item xs={12}>
@@ -157,13 +168,15 @@ export default function ScheduleModal({ open, onClose, onSuccess }) {
                   value={form.applicationId}
                   onChange={handleChange}
                   fullWidth
-                  sx={{marginInlineEnd:70 }}
+                  sx={{ marginInlineEnd: 70 }}
                   required
                   error={!!errors.applicationId}
                   helperText={errors.applicationId}
                 >
                   {applications.length === 0 && (
-                    <MenuItem disabled>Không có ứng viên nào ở trạng thái INTERVIEW</MenuItem>
+                    <MenuItem disabled>
+                      Không có ứng viên nào ở trạng thái INTERVIEW
+                    </MenuItem>
                   )}
                   {applications.map((app) => (
                     <MenuItem key={app.id} value={app.id}>
@@ -211,7 +224,7 @@ export default function ScheduleModal({ open, onClose, onSuccess }) {
                       </InputAdornment>
                     ),
                   }}
-                  sx={{marginInlineEnd:-11 }}
+                  sx={{ marginInlineEnd: -11 }}
                   error={!!errors.durationMinutes}
                   helperText={errors.durationMinutes}
                 />
@@ -233,7 +246,7 @@ export default function ScheduleModal({ open, onClose, onSuccess }) {
                       </InputAdornment>
                     ),
                   }}
-                  sx={{marginInlineEnd:8 }}
+                  sx={{ marginInlineEnd: 8 }}
                 >
                   {INTERVIEW_METHODS.map((m) => (
                     <MenuItem key={m.value} value={m.value}>
@@ -259,7 +272,7 @@ export default function ScheduleModal({ open, onClose, onSuccess }) {
                         </InputAdornment>
                       ),
                     }}
-                    sx={{marginInlineEnd:75 }}
+                    sx={{ marginInlineEnd: 75 }}
                     error={!!errors.location}
                     helperText={errors.location}
                   />
@@ -279,7 +292,7 @@ export default function ScheduleModal({ open, onClose, onSuccess }) {
                     }}
                     error={!!errors.meetingLink}
                     helperText={errors.meetingLink}
-                    sx={{marginInlineEnd:75 }}
+                    sx={{ marginInlineEnd: 75 }}
                   />
                 )}
               </Grid>
@@ -301,7 +314,7 @@ export default function ScheduleModal({ open, onClose, onSuccess }) {
                       </InputAdornment>
                     ),
                   }}
-                  sx={{marginInlineEnd:75 }}
+                  sx={{ marginInlineEnd: 75 }}
                 />
               </Grid>
             </Grid>
@@ -341,5 +354,5 @@ export default function ScheduleModal({ open, onClose, onSuccess }) {
         </Alert>
       </Snackbar>
     </>
-  )
+  );
 }

@@ -8,11 +8,13 @@ export default function JobSearchSection() {
   const [category, setCategory] = useState("");
   const [location, setLocation] = useState("");
 
-  const categoryOptions = [
-    "Bán hàng / Kinh doanh",
-    "Dịch vụ khách hàng / CSKH",
-    "Kế toán / Kiểm toán",
-    "Khách sạn / Nhà hàng",
+  // 🔹 Danh sách loại công việc (enum)
+  const jobTypeOptions = [
+    { label: "Full-time", value: "FULL_TIME" },
+    { label: "Part-time", value: "PART_TIME" },
+    { label: "Hợp đồng", value: "CONTRACT" },
+    { label: "Thực tập", value: "INTERNSHIP" },
+    { label: "Freelance", value: "FREELANCE" },
   ];
 
   const handleSearch = () => {
@@ -76,7 +78,29 @@ export default function JobSearchSection() {
             className="rounded-full border border-gray-300 px-4 py-2.5 text-gray-700 min-w-[180px] focus:outline-none focus:ring-2 focus:ring-[#00B14F] transition"
           />
 
-          {/* Nút tìm kiếm */}
+          {/* 🔽 Loại công việc */}
+          <select
+            value={jobType}
+            onChange={(e) => setJobType(e.target.value)}
+            style={{
+              height: "42px",
+              padding: "0 12px",
+              borderRadius: "6px",
+              border: "1px solid #ccc",
+              minWidth: "200px",
+              color: "black",
+              backgroundColor: "white",
+            }}
+          >
+            <option value="">Loại công việc</option>
+            {jobTypeOptions.map((opt) => (
+              <option key={opt.value} value={opt.value}>
+                {opt.label}
+              </option>
+            ))}
+          </select>
+
+          {/* 🔍 Nút tìm kiếm */}
           <button
             onClick={handleSearch}
             className="bg-[#006B4E] hover:bg-[#004F38] text-white font-semibold px-8 py-2.5 rounded-full transition-all shadow-md"

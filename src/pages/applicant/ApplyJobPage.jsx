@@ -17,7 +17,7 @@ export default function ApplyJobPage() {
   const [loading, setLoading] = useState(false);
   const [profile, setProfile] = useState(null);
 
-  // 📂 Lấy CV mặc định từ hồ sơ ứng viên
+  // Lấy CV mặc định từ hồ sơ ứng viên
   useEffect(() => {
     const fetchProfile = async () => {
       try {
@@ -28,7 +28,7 @@ export default function ApplyJobPage() {
         if (profileData?.resumeUrl) {
           let resumeUrl = profileData.resumeUrl.trim();
 
-          // 🔁 Nếu là link localhost → chuyển sang domain hợp lệ
+          // Nếu là link localhost → chuyển sang domain hợp lệ
           if (resumeUrl.includes("localhost:5173")) {
             resumeUrl = resumeUrl.replace(
               "http://localhost:5173",
@@ -61,20 +61,20 @@ export default function ApplyJobPage() {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
 
-  // 📨 Xử lý nộp đơn
+  //  Xử lý nộp đơn
   const handleSubmit = async (e) => {
     e.preventDefault();
 
     let resumeUrl = form.resumeUrl?.trim() || "";
 
-    // ⚠️ Nếu chưa có CV
+    //  Nếu chưa có CV
     if (!resumeUrl) {
-      toast.warning("⚠️ Bạn cần upload CV trước khi nộp đơn!");
+      toast.warning(" Bạn cần upload CV trước khi nộp đơn!");
       navigate("/applicant/profile");
       return;
     }
 
-    // ✅ Chuyển localhost → domain hợp lệ để backend chấp nhận
+    // Chuyển localhost → domain hợp lệ để backend chấp nhận
     if (resumeUrl.includes("localhost:5173")) {
       resumeUrl = resumeUrl.replace(
         "http://localhost:5173",
@@ -88,14 +88,14 @@ export default function ApplyJobPage() {
       );
     }
 
-    // ✅ Nếu chỉ có /uploads → thêm domain
+    //  Nếu chỉ có /uploads → thêm domain
     if (resumeUrl.startsWith("/uploads")) {
       resumeUrl = `https://example.com${resumeUrl}`;
     }
 
-    // ⚠️ Nếu vẫn không hợp lệ
+    // Nếu vẫn không hợp lệ
     if (!resumeUrl.startsWith("http")) {
-      toast.error("⚠️ URL CV không hợp lệ — vui lòng upload lại CV!");
+      toast.error("URL CV không hợp lệ — vui lòng upload lại CV!");
       navigate("/applicant/profile");
       return;
     }
@@ -104,14 +104,14 @@ export default function ApplyJobPage() {
 
     setLoading(true);
 
-    // ✅ Hiển thị toast loading duy nhất
+    // Hiển thị toast loading duy nhất
     const toastId = toast.loading("Đang gửi đơn ứng tuyển...");
 
     try {
       const payload = {
         jobPostingId: Number(id),
         coverLetter: form.coverLetter,
-        resumeUrl: resumeUrl, // ✅ URL hợp lệ
+        resumeUrl: resumeUrl,
       };
 
       const res = await applyJob(payload);
@@ -127,7 +127,7 @@ export default function ApplyJobPage() {
         setTimeout(() => navigate("/applicant/applications"), 1500);
       } else {
         toast.update(toastId, {
-          render: res.message || "❌ Có lỗi xảy ra khi nộp đơn!",
+          render: res.message || " Có lỗi xảy ra khi nộp đơn!",
           type: "error",
           isLoading: false,
           autoClose: 2000,
@@ -136,7 +136,7 @@ export default function ApplyJobPage() {
     } catch (err) {
       console.error("Apply job error:", err.response?.data || err.message);
       toast.update(toastId, {
-        render: "❌ Nộp đơn thất bại!",
+        render: " Nộp đơn thất bại!",
         type: "error",
         isLoading: false,
         autoClose: 2000,
@@ -148,7 +148,7 @@ export default function ApplyJobPage() {
 
   return (
     <div className="min-h-screen bg-gray-50 flex items-center justify-center px-4 py-10">
-      {/* ✅ ToastContainer */}
+      {/*  ToastContainer */}
       <ToastContainer position="top-right" autoClose={2000} theme="colored" />
 
       <div className="max-w-2xl w-full bg-white rounded-2xl shadow-md border border-gray-100 p-8">
@@ -193,7 +193,7 @@ export default function ApplyJobPage() {
             </p>
           ) : (
             <p className="text-sm text-red-500">
-              ⚠️ Bạn chưa có CV — vui lòng upload trong hồ sơ!
+              Bạn chưa có CV — vui lòng upload trong hồ sơ!
             </p>
           )}
 

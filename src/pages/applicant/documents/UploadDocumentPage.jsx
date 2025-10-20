@@ -1,48 +1,48 @@
-import React, { useState } from "react"
-import { uploadDocument } from "../../../services/documentService"
-import { useNavigate } from "react-router-dom"
-import { FaFileUpload } from "react-icons/fa"
-import toast, { Toaster } from "react-hot-toast"
+import React, { useState } from "react";
+import { uploadDocument } from "../../../services/documentService";
+import { useNavigate } from "react-router-dom";
+import { FaFileUpload } from "react-icons/fa";
+import toast, { Toaster } from "react-hot-toast";
 
 export default function UploadDocumentPage() {
-  const [file, setFile] = useState(null)
-  const [documentType, setDocumentType] = useState("RESUME")
-  const [loading, setLoading] = useState(false)
-  const navigate = useNavigate()
+  const [file, setFile] = useState(null);
+  const [documentType, setDocumentType] = useState("RESUME");
+  const [loading, setLoading] = useState(false);
+  const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
-    e.preventDefault()
+    e.preventDefault();
     if (!file) {
-      toast.error("Vui lòng chọn tệp.")
-      return
+      toast.error("Vui lòng chọn tệp.");
+      return;
     }
 
-    const allowed = ["pdf", "doc", "docx"]
-    const ext = file.name.split(".").pop().toLowerCase()
+    const allowed = ["pdf", "doc", "docx"];
+    const ext = file.name.split(".").pop().toLowerCase();
     if (!allowed.includes(ext)) {
-      toast.error("Chỉ hỗ trợ tệp PDF, DOC hoặc DOCX.")
-      return
+      toast.error("Chỉ hỗ trợ tệp PDF, DOC hoặc DOCX.");
+      return;
     }
 
-    setLoading(true)
+    setLoading(true);
 
     const uploadPromise = uploadDocument(file, documentType)
       .then(() => {
-        navigate("/applicant/documents")
+        navigate("/applicant/documents");
       })
       .catch((err) => {
-        console.error("Upload error:", err)
-        throw err
-      })
+        console.error("Upload error:", err);
+        throw err;
+      });
 
     toast.promise(uploadPromise, {
       loading: "Đang tải lên...",
       success: "Tải lên thành công!",
       error: "Tải lên thất bại, vui lòng thử lại.",
-    })
+    });
 
-    uploadPromise.finally(() => setLoading(false))
-  }
+    uploadPromise.finally(() => setLoading(false));
+  };
 
   return (
     <div className="min-h-screen bg-gray-50 py-10 px-4">
@@ -105,5 +105,5 @@ export default function UploadDocumentPage() {
         </form>
       </div>
     </div>
-  )
+  );
 }
