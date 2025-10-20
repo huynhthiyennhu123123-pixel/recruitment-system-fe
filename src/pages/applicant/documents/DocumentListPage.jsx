@@ -12,6 +12,7 @@ import {
   FaFileUpload,
 } from "react-icons/fa";
 import toast, { Toaster } from "react-hot-toast";
+import { motion } from "framer-motion";
 
 export default function DocumentListPage() {
   const [docs, setDocs] = useState({});
@@ -29,13 +30,12 @@ export default function DocumentListPage() {
       setLoading(false);
     }
   };
+
   const handleDelete = async (id) => {
     if (!window.confirm("Bạn có chắc muốn xóa tài liệu này?")) return;
 
     const deletePromise = deleteDocument(id)
-      .then(() => {
-        fetchDocs();
-      })
+      .then(() => fetchDocs())
       .catch((err) => {
         console.error("Lỗi khi xóa tài liệu:", err);
         throw err;
@@ -54,10 +54,11 @@ export default function DocumentListPage() {
 
   if (loading)
     return (
-      <p className="text-center mt-10 text-gray-500">Đang tải tài liệu...</p>
+      <p className="text-center mt-10 text-gray-500 animate-pulse">
+        Đang tải tài liệu...
+      </p>
     );
 
-  // Ánh xạ tên loại tài liệu sang tiếng Việt
   const typeLabel = {
     RESUME: "CV",
     COVER_LETTER: "Thư xin việc",
@@ -66,79 +67,101 @@ export default function DocumentListPage() {
   };
 
   return (
-    <div className="max-w-4xl mx-auto mt-10 px-4">
+    <div className="min-h-screen bg-gray-50 py-10 px-4">
       <Toaster position="top-right" reverseOrder={false} />
 
-      {/* Header */}
-      <div className="flex justify-between items-center mb-6">
-        <h2 className="text-2xl font-bold text-[#00b14f]">Tài liệu của tôi</h2>
-        <div className="flex gap-3">
-          <Link
-            to="/applicant/documents/upload"
-            className="flex items-center gap-2 bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700"
-          >
-            <FaPlus /> Tải lên tài liệu
-          </Link>
-          <Link
-            to="/applicant/documents/resume"
-            className="flex items-center gap-2 bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700"
-          >
-            <FaFileUpload /> Upload CV (PDF)
-          </Link>
+      <motion.div
+        className="max-w-5xl mx-auto"
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5 }}
+      >
+        {/* Header */}
+        <div className="flex flex-col sm:flex-row justify-between items-center mb-10 gap-4">
+          <h2 className="text-3xl font-bold text-gray-800 flex items-center gap-2">
+            <FaFileAlt className="text-green-500" /> Tài liệu của tôi
+          </h2>
+          <div className="flex gap-3">
+            <Link
+              to="/applicant/documents/upload"
+              className="flex items-center gap-2 bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition-all"
+            >
+              <FaPlus /> Tải lên tài liệu
+            </Link>
+            <Link
+              to="/applicant/documents/resume"
+              className="flex items-center gap-2 bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-all"
+            >
+              <FaFileUpload /> Upload CV (PDF)
+            </Link>
+          </div>
         </div>
-      </div>
 
-      {/* Danh sách tài liệu */}
-      {Object.keys(docs).map((type) => (
-        <div key={type} className="mb-8">
-          <h3 className="text-lg font-semibold mb-3 uppercase">
-            {typeLabel[type] || type}
-          </h3>
+        {/* Danh sách tài liệu */}
+        {Object.keys(docs).length === 0 && (
+          <p className="text-gray-500 text-center italic mt-10">
+            Chưa có tài liệu nào. Hãy tải lên để hoàn thiện hồ sơ của bạn!
+          </p>
+        )}
 
-          {docs[type]?.length ? (
-            docs[type].map((file) => (
-              <div
-                key={file.id}
-                className="flex items-center justify-between border p-3 rounded-lg mb-2 shadow-sm hover:bg-gray-50 transition"
-              >
-                <div className="flex items-center gap-3">
-                  <FaFileAlt className="text-[#00b14f] text-xl" />
-                  <div>
-                    <p className="font-medium text-gray-800">{file.filename}</p>
-                    <p className="text-gray-500 text-sm">
-                      {(file.size / 1024).toFixed(1)} KB —{" "}
-                      {new Date(file.uploadedAt).toLocaleString("vi-VN")}
-                    </p>
-                  </div>
-                </div>
-                <div className="flex gap-3">
-                  <a
-                    href={`http://localhost:8081${file.downloadUrl}`}
-                    target="_blank"
-                    rel="noreferrer"
-                    className="text-blue-600 hover:text-blue-800"
-                    title="Tải xuống"
+        {Object.keys(docs).map((type) => (
+          <div key={type} className="mb-10">
+            <h3 className="text-lg font-semibold mb-4 uppercase text-gray-700">
+              {typeLabel[type] || type}
+            </h3>
+
+            {docs[type]?.length ? (
+              <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                {docs[type].map((file) => (
+                  <motion.div
+                    key={file.id}
+                    className="bg-white border border-gray-200 rounded-xl shadow-sm p-5 hover:shadow-md transition-all flex flex-col justify-between"
+                    whileHover={{ y: -3 }}
+                    transition={{ duration: 0.2 }}
                   >
-                    <FaDownload />
-                  </a>
-                  <button
-                    onClick={() => handleDelete(file.id)}
-                    className="text-red-500 hover:text-red-700"
-                    title="Xóa"
-                  >
-                    <FaTrash />
-                  </button>
-                </div>
+                    <div className="flex items-center gap-3 mb-3">
+                      <FaFileAlt className="text-green-500 text-2xl" />
+                      <div>
+                        <p className="font-semibold text-gray-800 truncate">
+                          {file.filename}
+                        </p>
+                        <p className="text-gray-500 text-sm">
+                          {(file.size / 1024).toFixed(1)} KB •{" "}
+                          {new Date(file.uploadedAt).toLocaleString("vi-VN")}
+                        </p>
+                      </div>
+                    </div>
+
+                    <div className="flex justify-between items-center mt-3">
+                      <a
+                        href={`http://localhost:8081${file.downloadUrl}`}
+                        target="_blank"
+                        rel="noreferrer"
+                        className="flex items-center gap-2 text-green-600 hover:text-green-700 font-medium transition"
+                        title="Tải xuống"
+                      >
+                        <FaDownload /> Tải xuống
+                      </a>
+                      <button
+                        onClick={() => handleDelete(file.id)}
+                        className="text-red-500 hover:text-red-700 transition"
+                        title="Xóa"
+                      >
+                        <FaTrash />
+                      </button>
+                    </div>
+                  </motion.div>
+                ))}
               </div>
-            ))
-          ) : (
-            <p className="text-gray-500 text-sm italic">
-              Chưa có tài liệu{" "}
-              {typeLabel[type]?.toLowerCase() || type.toLowerCase()} nào.
-            </p>
-          )}
-        </div>
-      ))}
+            ) : (
+              <p className="text-gray-500 text-sm italic">
+                Chưa có tài liệu{" "}
+                {typeLabel[type]?.toLowerCase() || type.toLowerCase()} nào.
+              </p>
+            )}
+          </div>
+        ))}
+      </motion.div>
     </div>
   );
 }

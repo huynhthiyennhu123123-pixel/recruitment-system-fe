@@ -1,20 +1,19 @@
 import React, { useEffect, useState } from "react";
 import { useLocation, Link, useNavigate } from "react-router-dom";
 import { searchJobs } from "../../services/jobService";
-import { FaMapMarkerAlt, FaSpinner } from "react-icons/fa";
+import { FaMapMarkerAlt, FaSpinner, FaArrowRight } from "react-icons/fa";
+import { motion } from "framer-motion";
 
 export default function JobListPage() {
   const location = useLocation();
   const navigate = useNavigate();
   const queryParams = new URLSearchParams(location.search);
 
-  //  State
   const [jobs, setJobs] = useState([]);
   const [page, setPage] = useState(Number(queryParams.get("page")) || 0);
   const [totalPages, setTotalPages] = useState(1);
   const [loading, setLoading] = useState(true);
 
-  //  Bộ lọc (filter)
   const [filters, setFilters] = useState({
     keyword: queryParams.get("keyword") || "",
     location: queryParams.get("location") || "",
@@ -24,7 +23,7 @@ export default function JobListPage() {
   });
 
   // =============================
-  //  Gọi API lấy danh sách việc làm
+  // Gọi API
   // =============================
   const fetchJobs = async () => {
     setLoading(true);
@@ -35,39 +34,22 @@ export default function JobListPage() {
         jobType: filters.jobType || undefined,
         minSalary: filters.salaryMin || undefined,
         page,
-        size: 10,
+        size: 12,
         sortBy: "createdAt",
         sortDir: "DESC",
       };
-
       const res = await searchJobs(params);
-      const jobList = res?.content || res?.data?.content || [];
-
-      // Lọc thêm theo khoảng lương nếu người dùng nhập cả hai
-      const min = Number(filters.salaryMin) || 0;
-      const max = Number(filters.salaryMax) || Infinity;
-
-      let filteredList = jobList;
-      if (filters.salaryMin || filters.salaryMax) {
-        filteredList = jobList.filter((job) => {
-          const jobMin = Number(job.salaryMin || 0);
-          const jobMax = Number(job.salaryMax || 0);
-          return jobMax >= min && jobMin <= max;
-        });
-      }
-
-      setJobs(filteredList);
-      setTotalPages(res?.totalPages || 1);
+      const list = res?.data?.content || res?.content || [];
+      setJobs(list);
+      setTotalPages(res?.data?.totalPages || res?.totalPages || 1);
     } catch (err) {
-      console.error("Lỗi tải danh sách việc làm:", err);
+      console.error("❌ Lỗi tải việc làm:", err);
     } finally {
       setLoading(false);
     }
   };
 
-  // =============================
-  // Cập nhật URL & fetch khi thay đổi filters
-  // =============================
+  // Cập nhật URL & gọi lại
   useEffect(() => {
     const handler = setTimeout(() => {
       const params = new URLSearchParams();
@@ -80,18 +62,14 @@ export default function JobListPage() {
 
       navigate(`/jobs?${params.toString()}`, { replace: true });
       fetchJobs();
-    }, 500);
+    }, 400);
     return () => clearTimeout(handler);
   }, [filters, page]);
 
-  // Khi load lại trang (refresh / paste URL)
   useEffect(() => {
     fetchJobs();
   }, [location.search]);
 
-  // =============================
-  //  Các hàm tiện ích
-  // =============================
   const handleFilterChange = (key, value) => {
     setPage(0);
     setFilters((prev) => ({ ...prev, [key]: value }));
@@ -108,158 +86,184 @@ export default function JobListPage() {
     setPage(0);
   };
 
-  if (loading)
+  // =============================
+  // JobCard (đồng bộ JobDetailPage & HomePage)
+  // =============================
+  const JobCard = ({ job }) => {
+    const [hovered, setHovered] = useState(false);
+
     return (
-      <div className="flex justify-center items-center h-80 text-gray-500">
-        <FaSpinner className="animate-spin mr-2" /> Đang tải danh sách việc
-        làm...
-      </div>
-    );
-
-  const JobCard = ({ job }) => (
-    <div className="bg-white border border-gray-200 rounded-2xl p-5 hover:shadow-md transition">
-      <h3 className="text-lg font-semibold text-gray-800 mb-1">{job.title}</h3>
-      <p className="text-sm text-gray-500 mb-1 font-medium">
-        {job.company?.name || "Công ty chưa xác định"}
-      </p>
-      <p className="flex items-center gap-1 text-gray-600 text-sm mb-2">
-        <FaMapMarkerAlt className="text-[#00b14f]" />{" "}
-        {job.location || "Không rõ"}
-      </p>
-      {job.salaryMin && job.salaryMax && (
-        <p className="text-[#00b14f] font-medium mb-2">
-          {job.salaryMin.toLocaleString("vi-VN")}₫ -{" "}
-          {job.salaryMax.toLocaleString("vi-VN")}₫
-        </p>
-      )}
-      <Link
-        to={`/jobs/${job.id}`}
-        className="inline-block text-sm text-[#00b14f] font-medium hover:underline"
+      <motion.div
+        whileHover={{ scale: 1.03 }}
+        transition={{ type: "spring", stiffness: 160, damping: 15 }}
+        onMouseEnter={() => setHovered(true)}
+        onMouseLeave={() => setHovered(false)}
+        className="relative bg-white border border-gray-100 rounded-2xl p-5 shadow-sm hover:shadow-lg transition-all duration-300 overflow-hidden group"
       >
-        Xem chi tiết
-      </Link>
-    </div>
-  );
+        {/* Logo + tiêu đề */}
+        <div className="flex items-center gap-4 mb-4">
+          <img
+            src={job.company?.logoUrl || "/default-company.png"}
+            alt={job.company?.name || "Công ty"}
+            className="w-14 h-14 rounded-xl border object-cover bg-gray-50 transition-transform duration-300 group-hover:scale-110"
+          />
+          <div className="flex-1">
+            <h3 className="text-lg font-semibold text-gray-800 group-hover:text-[#00b14f] transition line-clamp-1">
+              {job.title}
+            </h3>
+            <p className="text-sm text-gray-500 line-clamp-1">
+              {job.company?.name || "Công ty chưa xác định"}
+            </p>
+          </div>
+        </div>
 
-  return (
-    <div className="max-w-7xl mx-auto py-10 px-4 grid grid-cols-1 lg:grid-cols-4 gap-8">
-      {/* Sidebar filter */}
-      <aside className="bg-white rounded-2xl border border-gray-200 p-5 h-fit">
-        <h2 className="text-lg font-bold mb-4 text-[#00b14f]">
-          Bộ lọc tìm kiếm
-        </h2>
-
-        {/*  Từ khóa */}
-        <input
-          type="text"
-          placeholder="Từ khóa..."
-          value={filters.keyword}
-          onChange={(e) => handleFilterChange("keyword", e.target.value)}
-          className="w-full border border-gray-300 rounded-md px-3 py-2 mb-3 text-sm outline-none focus:border-[#00b14f]"
-        />
-
-        {/*  Địa điểm */}
-        <input
-          type="text"
-          placeholder="Nhập địa điểm..."
-          value={filters.location}
-          onChange={(e) => handleFilterChange("location", e.target.value)}
-          className="w-full border border-gray-300 rounded-md px-3 py-2 mb-3 text-sm outline-none focus:border-[#00b14f]"
-        />
-
-        {/* Loại công việc */}
-        <select
-          value={filters.jobType}
-          onChange={(e) => handleFilterChange("jobType", e.target.value)}
-          className="w-full border border-gray-300 rounded-md px-3 py-2 mb-3 text-sm"
-        >
-          <option value="">Loại công việc</option>
-          <option value="FULL_TIME">Full-time</option>
-          <option value="PART_TIME">Part-time</option>
-          <option value="CONTRACT">Hợp đồng</option>
-          <option value="INTERNSHIP">Thực tập</option>
-          <option value="FREELANCE">Freelance</option>
-        </select>
-
-        {/*  Khoảng lương */}
-        <div className="mb-4">
-          <label className="block text-sm font-medium text-gray-700 mb-1">
-            Khoảng lương (VNĐ)
-          </label>
-          <div className="flex gap-2">
-            <input
-              type="text"
-              inputMode="numeric"
-              placeholder="Tối thiểu"
-              value={
-                filters.salaryMin
-                  ? Number(filters.salaryMin).toLocaleString("vi-VN")
-                  : ""
-              }
-              onChange={(e) => {
-                const raw = e.target.value.replace(/\D/g, "");
-                handleFilterChange("salaryMin", raw);
-              }}
-              className="w-1/2 border border-gray-300 rounded-md px-3 py-2 text-sm outline-none focus:border-[#00b14f]"
-            />
-            <input
-              type="text"
-              inputMode="numeric"
-              placeholder="Tối đa"
-              value={
-                filters.salaryMax
-                  ? Number(filters.salaryMax).toLocaleString("vi-VN")
-                  : ""
-              }
-              onChange={(e) => {
-                const raw = e.target.value.replace(/\D/g, "");
-                handleFilterChange("salaryMax", raw);
-              }}
-              className="w-1/2 border border-gray-300 rounded-md px-3 py-2 text-sm outline-none focus:border-[#00b14f]"
-            />
+        {/* Thông tin việc làm */}
+        <div className="flex flex-col gap-2 text-sm text-gray-600">
+          <div className="flex items-center gap-1">
+            <FaMapMarkerAlt className="text-[#00b14f]" />
+            <span>{job.location || "Không rõ địa điểm"}</span>
           </div>
 
-          {(filters.salaryMin || filters.salaryMax) && (
-            <p className="text-xs text-gray-500 mt-1">
-              {filters.salaryMin
-                ? `Từ ${Number(filters.salaryMin).toLocaleString("vi-VN")}₫ `
-                : ""}
-              {filters.salaryMax
-                ? `đến ${Number(filters.salaryMax).toLocaleString("vi-VN")}₫`
-                : filters.salaryMin
-                ? "trở lên"
-                : ""}
+          {job.salaryMin && job.salaryMax ? (
+            <p className="text-[#00b14f] font-semibold">
+              💰 {job.salaryMin.toLocaleString("vi-VN")}₫ –{" "}
+              {job.salaryMax.toLocaleString("vi-VN")}₫
             </p>
+          ) : (
+            <p className="text-gray-500 italic">Mức lương thỏa thuận</p>
           )}
         </div>
 
-        {/*  Làm mới */}
-        <button
-          onClick={resetFilters}
-          className="w-full bg-[#00b14f] text-white py-2 rounded-md text-sm font-medium hover:bg-[#009d46]"
+        {/* Footer */}
+        <div className="flex justify-between items-center mt-5 text-xs text-gray-400">
+          <span>
+            Cập nhật:{" "}
+            {new Date(job.createdAt || Date.now()).toLocaleDateString("vi-VN")}
+          </span>
+          <Link
+            to={`/jobs/${job.id}`}
+            className="text-sm font-medium text-[#00b14f] hover:text-[#009944] flex items-center gap-1"
+          >
+            Xem chi tiết <FaArrowRight size={12} />
+          </Link>
+        </div>
+
+        {/* Overlay + Nút Ứng tuyển */}
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: hovered ? 1 : 0 }}
+          transition={{ duration: 0.3 }}
+          className="absolute inset-0 bg-gradient-to-t from-[#00b14f]/90 via-[#00b14f]/60 to-transparent flex items-end justify-center p-5"
         >
-          ⟳ Làm mới bộ lọc
-        </button>
-      </aside>
+          <Link
+            to={`/jobs/${job.id}`}
+            className="bg-white text-[#00b14f] font-semibold px-6 py-2 rounded-full shadow-lg hover:bg-[#00b14f] hover:text-white transition-all duration-300 hover:scale-[1.05]"
+          >
+            Ứng tuyển ngay
+          </Link>
+        </motion.div>
+      </motion.div>
+    );
+  };
 
-      {/* Job list */}
-      <section className="lg:col-span-3">
-        <h1 className="text-2xl font-bold text-gray-800 mb-6">
-          Kết quả tìm kiếm
-        </h1>
+  if (loading)
+    return (
+      <div className="flex justify-center items-center h-80 text-gray-500">
+        <FaSpinner className="animate-spin mr-2" /> Đang tải danh sách việc làm...
+      </div>
+    );
 
-        {jobs.length === 0 ? (
-          <p className="text-gray-600">
-            Không tìm thấy việc làm phù hợp với bộ lọc hiện tại.
-          </p>
-        ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            {jobs.map((job) => (
-              <JobCard key={job.id} job={job} />
-            ))}
+  return (
+    <div className="bg-[#f9fafb] min-h-screen py-10">
+      <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-4 gap-8 px-4">
+        {/* Sidebar filter */}
+        <aside className="bg-white rounded-2xl border border-gray-200 p-6 h-fit shadow-sm hover:shadow-md transition-all duration-300">
+          <h2 className="text-lg font-bold mb-4 text-[#00b14f]">
+            Bộ lọc tìm kiếm
+          </h2>
+
+          <input
+            type="text"
+            placeholder="Từ khóa..."
+            value={filters.keyword}
+            onChange={(e) => handleFilterChange("keyword", e.target.value)}
+            className="w-full border border-gray-300 rounded-md px-3 py-2 mb-3 text-sm outline-none focus:border-[#00b14f]"
+          />
+
+          <input
+            type="text"
+            placeholder="Địa điểm..."
+            value={filters.location}
+            onChange={(e) => handleFilterChange("location", e.target.value)}
+            className="w-full border border-gray-300 rounded-md px-3 py-2 mb-3 text-sm outline-none focus:border-[#00b14f]"
+          />
+
+          <select
+            value={filters.jobType}
+            onChange={(e) => handleFilterChange("jobType", e.target.value)}
+            className="w-full border border-gray-300 rounded-md px-3 py-2 mb-3 text-sm outline-none focus:border-[#00b14f]"
+          >
+            <option value="">Loại công việc</option>
+            <option value="FULL_TIME">Full-time</option>
+            <option value="PART_TIME">Part-time</option>
+            <option value="CONTRACT">Hợp đồng</option>
+            <option value="INTERNSHIP">Thực tập</option>
+            <option value="FREELANCE">Freelance</option>
+          </select>
+
+          <div className="mb-4">
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Khoảng lương (VNĐ)
+            </label>
+            <div className="flex gap-2">
+              <input
+                type="number"
+                placeholder="Tối thiểu"
+                value={filters.salaryMin}
+                onChange={(e) =>
+                  handleFilterChange("salaryMin", e.target.value)
+                }
+                className="w-1/2 border border-gray-300 rounded-md px-3 py-2 text-sm outline-none focus:border-[#00b14f]"
+              />
+              <input
+                type="number"
+                placeholder="Tối đa"
+                value={filters.salaryMax}
+                onChange={(e) =>
+                  handleFilterChange("salaryMax", e.target.value)
+                }
+                className="w-1/2 border border-gray-300 rounded-md px-3 py-2 text-sm outline-none focus:border-[#00b14f]"
+              />
+            </div>
           </div>
-        )}
-      </section>
+
+          <button
+            onClick={resetFilters}
+            className="w-full bg-gradient-to-r from-[#00b14f] to-[#00d85b] text-white py-2 rounded-md text-sm font-medium shadow hover:opacity-90 transition-all duration-300"
+          >
+            ⟳ Làm mới bộ lọc
+          </button>
+        </aside>
+
+        {/* Danh sách việc làm */}
+        <section className="lg:col-span-3">
+          <h1 className="text-2xl font-bold text-gray-800 mb-6">
+            Kết quả tìm kiếm
+          </h1>
+
+          {jobs.length === 0 ? (
+            <p className="text-gray-600">
+              Không tìm thấy việc làm phù hợp với bộ lọc hiện tại.
+            </p>
+          ) : (
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+              {jobs.map((job) => (
+                <JobCard key={job.id} job={job} />
+              ))}
+            </div>
+          )}
+        </section>
+      </div>
     </div>
   );
 }
