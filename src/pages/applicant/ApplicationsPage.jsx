@@ -9,18 +9,18 @@ import {
   FaClock,
 } from "react-icons/fa";
 
-// 🎨 Màu trạng thái
+// Màu trạng thái
 const STATUS_COLOR = {
   RECEIVED: "bg-yellow-100 text-yellow-700 border-yellow-200", // Đã tiếp nhận
-  REVIEWED: "bg-blue-100 text-blue-700 border-blue-200",       // Đang xem xét
-  INTERVIEW: "bg-purple-100 text-purple-700 border-purple-200",// Phỏng vấn
-  OFFER: "bg-teal-100 text-teal-700 border-teal-200",          // Đã gửi offer
-  HIRED: "bg-green-100 text-green-700 border-green-200",       // Đã tuyển dụng
-  REJECTED: "bg-red-100 text-red-700 border-red-200",          // Bị từ chối
-  WITHDRAWN: "bg-gray-100 text-gray-700 border-gray-200",      // Đã rút đơn
+  REVIEWED: "bg-blue-100 text-blue-700 border-blue-200", // Đang xem xét
+  INTERVIEW: "bg-purple-100 text-purple-700 border-purple-200", // Phỏng vấn
+  OFFER: "bg-teal-100 text-teal-700 border-teal-200", // Đã gửi offer
+  HIRED: "bg-green-100 text-green-700 border-green-200", // Đã tuyển dụng
+  REJECTED: "bg-red-100 text-red-700 border-red-200", // Bị từ chối
+  WITHDRAWN: "bg-gray-100 text-gray-700 border-gray-200", // Đã rút đơn
 };
 
-// 🟢 Text tiếng Việt tương ứng
+// Text tiếng Việt tương ứng
 const STATUS_TEXT = {
   RECEIVED: "Đã tiếp nhận",
   REVIEWED: "Đang xem xét",
@@ -39,7 +39,12 @@ export default function ApplicationsPage() {
   const fetchApplications = async () => {
     setLoading(true);
     try {
-      const params = { page: 0, size: 20, sortBy: "createdAt", sortDir: "DESC" };
+      const params = {
+        page: 0,
+        size: 20,
+        sortBy: "createdAt",
+        sortDir: "DESC",
+      };
       const res = await getMyApplications(params);
       setApplications(res.data.content || []);
     } catch (err) {
@@ -93,7 +98,7 @@ export default function ApplicationsPage() {
                     </span>
                   </p>
 
-                  {/* 🟩 Hiển thị trạng thái tiếng Việt */}
+                  {/* Hiển thị trạng thái tiếng Việt */}
                   <span
                     className={`inline-block mt-3 px-3 py-1 text-xs font-semibold border rounded-full ${
                       STATUS_COLOR[app.status] || "bg-gray-100 text-gray-700"

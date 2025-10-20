@@ -8,13 +8,13 @@ export default function JobListPage() {
   const navigate = useNavigate();
   const queryParams = new URLSearchParams(location.search);
 
-  // 📊 State
+  //  State
   const [jobs, setJobs] = useState([]);
   const [page, setPage] = useState(Number(queryParams.get("page")) || 0);
   const [totalPages, setTotalPages] = useState(1);
   const [loading, setLoading] = useState(true);
 
-  // 🎯 Bộ lọc (filter)
+  //  Bộ lọc (filter)
   const [filters, setFilters] = useState({
     keyword: queryParams.get("keyword") || "",
     location: queryParams.get("location") || "",
@@ -24,7 +24,7 @@ export default function JobListPage() {
   });
 
   // =============================
-  // 🔍 Gọi API lấy danh sách việc làm
+  //  Gọi API lấy danh sách việc làm
   // =============================
   const fetchJobs = async () => {
     setLoading(true);
@@ -66,7 +66,7 @@ export default function JobListPage() {
   };
 
   // =============================
-  // 🔄 Cập nhật URL & fetch khi thay đổi filters
+  // Cập nhật URL & fetch khi thay đổi filters
   // =============================
   useEffect(() => {
     const handler = setTimeout(() => {
@@ -90,7 +90,7 @@ export default function JobListPage() {
   }, [location.search]);
 
   // =============================
-  // 🧩 Các hàm tiện ích
+  //  Các hàm tiện ích
   // =============================
   const handleFilterChange = (key, value) => {
     setPage(0);
@@ -108,9 +108,6 @@ export default function JobListPage() {
     setPage(0);
   };
 
-  // =============================
-  // 💡 UI hiển thị
-  // =============================
   if (loading)
     return (
       <div className="flex justify-center items-center h-80 text-gray-500">
@@ -152,7 +149,7 @@ export default function JobListPage() {
           Bộ lọc tìm kiếm
         </h2>
 
-        {/* 🔍 Từ khóa */}
+        {/*  Từ khóa */}
         <input
           type="text"
           placeholder="Từ khóa..."
@@ -161,7 +158,7 @@ export default function JobListPage() {
           className="w-full border border-gray-300 rounded-md px-3 py-2 mb-3 text-sm outline-none focus:border-[#00b14f]"
         />
 
-        {/* 📍 Địa điểm */}
+        {/*  Địa điểm */}
         <input
           type="text"
           placeholder="Nhập địa điểm..."
@@ -170,7 +167,7 @@ export default function JobListPage() {
           className="w-full border border-gray-300 rounded-md px-3 py-2 mb-3 text-sm outline-none focus:border-[#00b14f]"
         />
 
-        {/* 🧱 Loại công việc */}
+        {/* Loại công việc */}
         <select
           value={filters.jobType}
           onChange={(e) => handleFilterChange("jobType", e.target.value)}
@@ -184,7 +181,7 @@ export default function JobListPage() {
           <option value="FREELANCE">Freelance</option>
         </select>
 
-        {/* 💰 Khoảng lương */}
+        {/*  Khoảng lương */}
         <div className="mb-4">
           <label className="block text-sm font-medium text-gray-700 mb-1">
             Khoảng lương (VNĐ)
@@ -236,7 +233,7 @@ export default function JobListPage() {
           )}
         </div>
 
-        {/* 🔁 Làm mới */}
+        {/*  Làm mới */}
         <button
           onClick={resetFilters}
           className="w-full bg-[#00b14f] text-white py-2 rounded-md text-sm font-medium hover:bg-[#009d46]"

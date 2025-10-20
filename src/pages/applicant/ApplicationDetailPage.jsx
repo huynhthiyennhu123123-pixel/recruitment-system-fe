@@ -51,7 +51,7 @@ const ApplicationDetailPage = () => {
       setTimeout(() => navigate("/applicant/applications"), 1500);
     } catch (err) {
       console.error("Rút đơn thất bại:", err);
-      toast.error("❌ Rút đơn thất bại, vui lòng thử lại!");
+      toast.error("Rút đơn thất bại, vui lòng thử lại!");
     } finally {
       setWithdrawing(false);
     }
@@ -77,7 +77,7 @@ const ApplicationDetailPage = () => {
 
   const job = application.jobPosting;
 
-  // 🟢 Mapping trạng thái tiếng Việt
+  // Mapping trạng thái tiếng Việt
   const statusMap = {
     RECEIVED: "Đã tiếp nhận",
     UNDER_REVIEW: "Đang xem xét",

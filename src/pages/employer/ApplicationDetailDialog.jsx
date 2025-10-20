@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react"
+import React, { useEffect, useState } from "react";
 import {
   Dialog,
   DialogTitle,
@@ -11,40 +11,40 @@ import {
   MenuItem,
   Divider,
   CircularProgress,
-} from "@mui/material"
+} from "@mui/material";
 import {
   getApplicationById,
   updateApplicationStatus,
-} from "../../services/employerService"
+} from "../../services/employerService";
 
 export default function ApplicationDetailDialog({ open, id, onClose }) {
-  const [app, setApp] = useState(null)
-  const [loading, setLoading] = useState(true)
-  const [newStatus, setNewStatus] = useState("")
-  const [notes, setNotes] = useState("")
-  const [updating, setUpdating] = useState(false)
+  const [app, setApp] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [newStatus, setNewStatus] = useState("");
+  const [notes, setNotes] = useState("");
+  const [updating, setUpdating] = useState(false);
 
   useEffect(() => {
-    if (!id) return
+    if (!id) return;
     const fetchDetail = async () => {
-      setLoading(true)
-      const res = await getApplicationById(id)
-      setApp(res?.data)
-      setLoading(false)
-    }
-    fetchDetail()
-  }, [id])
+      setLoading(true);
+      const res = await getApplicationById(id);
+      setApp(res?.data);
+      setLoading(false);
+    };
+    fetchDetail();
+  }, [id]);
 
   const handleUpdate = async () => {
-    if (!newStatus) return alert("Vui lòng chọn trạng thái mới.")
-    setUpdating(true)
-    const res = await updateApplicationStatus(id, newStatus, notes)
+    if (!newStatus) return alert("Vui lòng chọn trạng thái mới.");
+    setUpdating(true);
+    const res = await updateApplicationStatus(id, newStatus, notes);
     if (res.success) {
-      alert("✅ Cập nhật trạng thái thành công!")
-      setApp(res.data)
-    } else alert("❌ " + (res.message || "Cập nhật thất bại."))
-    setUpdating(false)
-  }
+      alert("Cập nhật trạng thái thành công!");
+      setApp(res.data);
+    } else alert(res.message || "Cập nhật thất bại.");
+    setUpdating(false);
+  };
 
   return (
     <Dialog open={open} fullWidth maxWidth="md" onClose={onClose}>
@@ -139,5 +139,5 @@ export default function ApplicationDetailDialog({ open, id, onClose }) {
         <Button onClick={onClose}>Đóng</Button>
       </DialogActions>
     </Dialog>
-  )
+  );
 }

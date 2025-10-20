@@ -15,7 +15,7 @@ export default function HomePage() {
   const token = localStorage.getItem("token");
   const baseUrl = "http://localhost:8081";
 
-  // 🔹 Tải việc làm mới & Java jobs
+  //  Tải việc làm mới & Java jobs
   useEffect(() => {
     const loadData = async () => {
       setLoading(true);
@@ -41,7 +41,7 @@ export default function HomePage() {
     loadData();
   }, []);
 
-  // 🔹 Tải danh sách công ty nổi bật
+  //  Tải danh sách công ty nổi bật
   useEffect(() => {
     const fetchTopCompanies = async () => {
       try {
@@ -87,7 +87,7 @@ export default function HomePage() {
     </div>
   );
 
-  // ✅ Thẻ công ty nổi bật
+  //   Thẻ công ty nổi bật
   const CompanyCard = ({ company }) => (
     <div className="bg-white border border-gray-100 rounded-2xl p-5 hover:shadow-md transition text-center">
       <img
@@ -121,7 +121,7 @@ export default function HomePage() {
       <JobSearchSection />
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6">
-        {/* 🎯 Gợi ý việc làm phù hợp */}
+        {/*   Gợi ý việc làm phù hợp */}
         <RecommendedCarousel />
 
         {/* 🆕 Việc làm mới nhất */}
@@ -141,7 +141,7 @@ export default function HomePage() {
           )}
         </section>
 
-        {/* 💻 Việc làm Java nổi bật */}
+        {/*  Việc làm Java nổi bật */}
         <section className="mt-14">
           <h2 className="text-2xl font-bold text-green-600 mb-5">
             Việc làm Java nổi bật
@@ -157,7 +157,7 @@ export default function HomePage() {
           )}
         </section>
 
-        {/* 🏢 Công ty nổi bật */}
+        {/*   Công ty nổi bật */}
         <section className="mt-14">
           <h2 className="text-2xl font-bold text-green-600 mb-5">
             Công ty nổi bật

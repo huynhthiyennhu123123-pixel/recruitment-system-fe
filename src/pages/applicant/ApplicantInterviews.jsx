@@ -24,7 +24,7 @@ export default function ApplicantInterviews() {
 
   const baseUrl = "http://localhost:8081";
 
-  // 🧭 Map song song giữa FE (EN) và BE (VN)
+  //  Map song song giữa FE (EN) và BE (VN)
   const statusMap = {
     SCHEDULED: "XAC_NHAN",
     COMPLETED: "HOAN_TAT",
@@ -45,7 +45,7 @@ export default function ApplicantInterviews() {
         const data = res?.data?.data?.content || [];
         setInterviews(data);
       } catch (err) {
-        console.error("❌ Lỗi tải danh sách phỏng vấn:", err);
+        console.error("Lỗi tải danh sách phỏng vấn:", err);
         toast.error("Không thể tải lịch phỏng vấn. Vui lòng thử lại sau!");
       } finally {
         setLoading(false);
@@ -63,7 +63,7 @@ export default function ApplicantInterviews() {
       minute: "2-digit",
     });
 
-  // 🟢 Hiển thị tiếng Việt khi render UI
+  //  Hiển thị tiếng Việt khi render UI
   const renderStatus = (status) => {
     const mapToVN = {
       SCHEDULED: { text: "Đã xác nhận", color: "bg-blue-100 text-blue-700" },
@@ -99,7 +99,8 @@ export default function ApplicantInterviews() {
 
         {loading ? (
           <div className="flex justify-center items-center h-60 text-gray-500">
-            <FaSpinner className="animate-spin mr-2" /> Đang tải lịch phỏng vấn...
+            <FaSpinner className="animate-spin mr-2" /> Đang tải lịch phỏng
+            vấn...
           </div>
         ) : interviews.length === 0 ? (
           <p className="text-center text-gray-500 mt-10">

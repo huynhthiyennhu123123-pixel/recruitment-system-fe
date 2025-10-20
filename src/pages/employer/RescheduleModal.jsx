@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react"
+import React, { useState, useEffect } from "react";
 import {
   Dialog,
   DialogTitle,
@@ -10,56 +10,64 @@ import {
   Box,
   Divider,
   CircularProgress,
-} from "@mui/material"
-import { rescheduleInterview, getMyInterviews } from "../../services/interviewService"
-import dayjs from "dayjs"
-import "dayjs/locale/vi"
-import { toast } from "react-toastify"
+} from "@mui/material";
+import {
+  rescheduleInterview,
+  getMyInterviews,
+} from "../../services/interviewService";
+import dayjs from "dayjs";
+import "dayjs/locale/vi";
+import { toast } from "react-toastify";
 
-dayjs.locale("vi")
+dayjs.locale("vi");
 
-export default function RescheduleModal({ open, onClose, interview, onSuccess }) {
+export default function RescheduleModal({
+  open,
+  onClose,
+  interview,
+  onSuccess,
+}) {
   const [form, setForm] = useState({
     newScheduledAt: "",
     reason: "",
-  })
-  const [loading, setLoading] = useState(false)
-  const [interviewData, setInterviewData] = useState(null)
+  });
+  const [loading, setLoading] = useState(false);
+  const [interviewData, setInterviewData] = useState(null);
 
-  // ✅ Lấy danh sách phỏng vấn và lọc theo id
+  //  Lấy danh sách phỏng vấn và lọc theo id
   useEffect(() => {
-    if (!open || !interview?.id) return
+    if (!open || !interview?.id) return;
     const fetchInterview = async () => {
       try {
-        const res = await getMyInterviews(0, 50)
-        const all = res?.data?.data?.content || res?.data?.content || []
-        const found = all.find((i) => i.id === interview.id)
-        setInterviewData(found || interview)
+        const res = await getMyInterviews(0, 50);
+        const all = res?.data?.data?.content || res?.data?.content || [];
+        const found = all.find((i) => i.id === interview.id);
+        setInterviewData(found || interview);
       } catch (err) {
-        console.error("❌ Lỗi khi lấy thông tin phỏng vấn:", err)
+        console.error("Lỗi khi lấy thông tin phỏng vấn:", err);
       }
-    }
-    fetchInterview()
-  }, [open, interview])
+    };
+    fetchInterview();
+  }, [open, interview]);
 
   const handleSubmit = async () => {
     if (!form.newScheduledAt) {
-      toast.warn("⚠️ Vui lòng chọn thời gian mới!")
-      return
+      toast.warn(" Vui lòng chọn thời gian mới!");
+      return;
     }
-    setLoading(true)
+    setLoading(true);
     try {
-      await rescheduleInterview(interview.id, form)
-      toast.success("🎉 Đổi lịch phỏng vấn thành công!")
-      onSuccess?.()
-      onClose()
+      await rescheduleInterview(interview.id, form);
+      toast.success(" Đổi lịch phỏng vấn thành công!");
+      onSuccess?.();
+      onClose();
     } catch (error) {
-      console.error("❌ Lỗi đổi lịch:", error)
-      toast.error("Không thể đổi lịch phỏng vấn. Vui lòng thử lại.")
+      console.error("Lỗi đổi lịch:", error);
+      toast.error("Không thể đổi lịch phỏng vấn. Vui lòng thử lại.");
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
+  };
 
   return (
     <Dialog open={open} onClose={onClose} fullWidth maxWidth="sm">
@@ -79,14 +87,21 @@ export default function RescheduleModal({ open, onClose, interview, onSuccess })
               <Typography variant="subtitle2" color="text.secondary">
                 Thời gian hiện tại:
               </Typography>
-              <Typography variant="body1" sx={{ fontWeight: 600, color: "#058551" }}>
-                {dayjs(interviewData.scheduledAt).format("HH:mm, ngày DD/MM/YYYY")}{" "}
+              <Typography
+                variant="body1"
+                sx={{ fontWeight: 600, color: "#058551" }}
+              >
+                {dayjs(interviewData.scheduledAt).format(
+                  "HH:mm, ngày DD/MM/YYYY"
+                )}{" "}
                 ({interviewData.durationMinutes} phút)
               </Typography>
 
               <Typography variant="body2" color="text.secondary">
                 {interviewData.interviewType === "VIDEO"
-                  ? `Hình thức: Phỏng vấn trực tuyến (${interviewData.meetingLink || "chưa có link"})`
+                  ? `Hình thức: Phỏng vấn trực tuyến (${
+                      interviewData.meetingLink || "chưa có link"
+                    })`
                   : interviewData.interviewType === "PHONE"
                   ? "Hình thức: Qua điện thoại"
                   : `Địa điểm: ${interviewData.location || "Chưa xác định"}`}
@@ -100,7 +115,9 @@ export default function RescheduleModal({ open, onClose, interview, onSuccess })
               label="⏰ Thời gian mới"
               type="datetime-local"
               value={form.newScheduledAt}
-              onChange={(e) => setForm({ ...form, newScheduledAt: e.target.value })}
+              onChange={(e) =>
+                setForm({ ...form, newScheduledAt: e.target.value })
+              }
               fullWidth
               margin="normal"
               InputLabelProps={{ shrink: true }}
@@ -133,5 +150,5 @@ export default function RescheduleModal({ open, onClose, interview, onSuccess })
         </Button>
       </DialogActions>
     </Dialog>
-  )
+  );
 }

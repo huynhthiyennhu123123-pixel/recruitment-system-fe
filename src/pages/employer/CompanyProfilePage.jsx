@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react"
+import React, { useEffect, useState } from "react";
 import {
   Box,
   Container,
@@ -12,54 +12,53 @@ import {
   Divider,
   CircularProgress,
   Paper,
-} from "@mui/material"
+} from "@mui/material";
 import {
   Language,
   LocationOnOutlined,
   GroupsOutlined,
   ApartmentOutlined,
   CheckCircleOutline,
-} from "@mui/icons-material"
-import { useParams } from "react-router-dom"
-import { getPublicCompanyById } from "../../services/employerService"
-import JobList from "../../components/employer/JobList"
+} from "@mui/icons-material";
+import { useParams } from "react-router-dom";
+import { getPublicCompanyById } from "../../services/employerService";
+import JobList from "../../components/employer/JobList";
 
 export default function CompanyProfilePage() {
-  const { id } = useParams()
-  const [companyData, setCompanyData] = useState(null)
-  const [loading, setLoading] = useState(true)
+  const { id } = useParams();
+  const [companyData, setCompanyData] = useState(null);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-  const fetchCompany = async () => {
-    try {
-      const res = await getPublicCompanyById(id)
-      setCompanyData(res)  // ✅ sửa lại
-    } catch (err) {
-      console.error("❌ Lỗi khi tải công ty:", err)
-    } finally {
-      setLoading(false)  // ✅ đừng quên set loading false khi xong
-    }
-  }
+    const fetchCompany = async () => {
+      try {
+        const res = await getPublicCompanyById(id);
+        setCompanyData(res);
+      } catch (err) {
+        console.error("Lỗi khi tải công ty:", err);
+      } finally {
+        setLoading(false);
+      }
+    };
 
-  if (id) fetchCompany()
-}, [id])
-
+    if (id) fetchCompany();
+  }, [id]);
 
   if (loading)
     return (
       <Box textAlign="center" mt={10}>
         <CircularProgress color="success" />
       </Box>
-    )
+    );
 
   if (!companyData)
     return (
       <Typography textAlign="center" color="text.secondary" mt={5}>
         Không tìm thấy thông tin công ty.
       </Typography>
-    )
+    );
 
-  const { company, jobs } = companyData
+  const { company, jobs } = companyData;
 
   return (
     <Box sx={{ bgcolor: "#f9fef9", minHeight: "100vh" }}>
@@ -75,7 +74,11 @@ export default function CompanyProfilePage() {
         <Box
           sx={{
             height: 200,
-            backgroundImage: `url(${company.coverPhoto || company.companyPhotos?.[0] || "/assets/default-cover.jpg"})`,
+            backgroundImage: `url(${
+              company.coverPhoto ||
+              company.companyPhotos?.[0] ||
+              "/assets/default-cover.jpg"
+            })`,
             backgroundSize: "cover",
             backgroundPosition: "center",
             filter: "blur(8px)",
@@ -130,7 +133,7 @@ export default function CompanyProfilePage() {
             <Typography variant="h4" fontWeight="bold" color="#000000">
               {company.name}
             </Typography>
-            <Typography variant="h6" color="#2e7d32" sx={{marginTop:2}}>
+            <Typography variant="h6" color="#2e7d32" sx={{ marginTop: 2 }}>
               {company.address}
             </Typography>
             {company.isVerified && (
@@ -145,7 +148,6 @@ export default function CompanyProfilePage() {
           </Box>
         </Container>
       </Box>
-
 
       {/* Body */}
       <Container sx={{ mt: 10 }}>
@@ -241,7 +243,7 @@ export default function CompanyProfilePage() {
             </Typography>
           </Box>
 
-          {/* ✅ Thông tin thêm */}
+          {/*  Thông tin thêm */}
           <Box
             mt={3}
             p={3}
@@ -249,7 +251,12 @@ export default function CompanyProfilePage() {
             borderRadius={2}
             border="1px solid #c8e6c9"
           >
-            <Typography variant="subtitle1" fontWeight="bold" color="#2e7d32" gutterBottom>
+            <Typography
+              variant="subtitle1"
+              fontWeight="bold"
+              color="#2e7d32"
+              gutterBottom
+            >
               Thông tin thêm
             </Typography>
             <Divider sx={{ mb: 2 }} />
@@ -262,7 +269,12 @@ export default function CompanyProfilePage() {
                 </Typography>
                 <Box mt={1} display="flex" flexWrap="wrap" gap={1}>
                   {company.benefits.map((benefit, i) => (
-                    <Chip key={i} label={benefit} color="success" variant="outlined" />
+                    <Chip
+                      key={i}
+                      label={benefit}
+                      color="success"
+                      variant="outlined"
+                    />
                   ))}
                 </Box>
               </Box>
@@ -295,7 +307,10 @@ export default function CompanyProfilePage() {
                 {company.contactEmail && (
                   <>
                     <strong>Email:</strong>{" "}
-                    <a href={`mailto:${company.contactEmail}`} style={{ color: "#2e7d32" }}>
+                    <a
+                      href={`mailto:${company.contactEmail}`}
+                      style={{ color: "#2e7d32" }}
+                    >
                       {company.contactEmail}
                     </a>
                   </>
@@ -336,7 +351,6 @@ export default function CompanyProfilePage() {
               </Box>
             )}
           </Box>
-
         </Paper>
 
         {/* Job list */}
@@ -377,7 +391,7 @@ export default function CompanyProfilePage() {
                       borderRadius: 2,
                       overflow: "hidden",
                       boxShadow: "0 3px 10px rgba(0,0,0,0.1)",
-                      height: 200, // 👈 Chiều cao cố định
+                      height: 200,
                       display: "flex",
                       alignItems: "center",
                       justifyContent: "center",
@@ -390,7 +404,7 @@ export default function CompanyProfilePage() {
                       sx={{
                         width: "100%",
                         height: "100%",
-                        objectFit: "cover", // 👈 Đảm bảo ảnh không méo
+                        objectFit: "cover",
                         borderRadius: 2,
                       }}
                     />
@@ -400,8 +414,7 @@ export default function CompanyProfilePage() {
             </Grid>
           </Box>
         )}
-
       </Container>
     </Box>
-  )
+  );
 }

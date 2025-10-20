@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react"
+import React, { useEffect, useState } from "react";
 import {
   Box,
   Typography,
@@ -7,87 +7,84 @@ import {
   IconButton,
   Tooltip,
   CircularProgress,
-} from "@mui/material"
-import AddIcon from "@mui/icons-material/Add"
-import EditIcon from "@mui/icons-material/Edit"
-import CancelIcon from "@mui/icons-material/Cancel"
-import DoneAllIcon from "@mui/icons-material/DoneAll"
-import GroupAddIcon from "@mui/icons-material/GroupAdd"
-import { DataGrid } from "@mui/x-data-grid"
-import dayjs from "dayjs"
+} from "@mui/material";
+import AddIcon from "@mui/icons-material/Add";
+import EditIcon from "@mui/icons-material/Edit";
+import CancelIcon from "@mui/icons-material/Cancel";
+import DoneAllIcon from "@mui/icons-material/DoneAll";
+import GroupAddIcon from "@mui/icons-material/GroupAdd";
+import { DataGrid } from "@mui/x-data-grid";
+import dayjs from "dayjs";
 
 import {
   getMyInterviews,
   cancelInterview,
   completeInterview,
-} from "../../services/interviewService"
-import ScheduleModal from "./ScheduleModal"
-import RescheduleModal from "./RescheduleModal"
-import ParticipantModal from "./ParticipantModal"
+} from "../../services/interviewService";
+import ScheduleModal from "./ScheduleModal";
+import RescheduleModal from "./RescheduleModal";
+import ParticipantModal from "./ParticipantModal";
 
 export default function InterviewPage() {
-  const [interviews, setInterviews] = useState([])
-  const [loading, setLoading] = useState(true)
-  const [openSchedule, setOpenSchedule] = useState(false)
-  const [openReschedule, setOpenReschedule] = useState(null)
-  const [openParticipants, setOpenParticipants] = useState(null)
+  const [interviews, setInterviews] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [openSchedule, setOpenSchedule] = useState(false);
+  const [openReschedule, setOpenReschedule] = useState(null);
+  const [openParticipants, setOpenParticipants] = useState(null);
 
   // 🔹 Lấy danh sách phỏng vấn
   const fetchData = async () => {
-    setLoading(true)
+    setLoading(true);
     try {
-      const res = await getMyInterviews({ page: 0, size: 10 })
-      if (res?.data?.success) setInterviews(res.data.data.content || [])
+      const res = await getMyInterviews({ page: 0, size: 10 });
+      if (res?.data?.success) setInterviews(res.data.data.content || []);
     } catch (err) {
-      console.error("❌ Lỗi khi tải danh sách phỏng vấn:", err)
+      console.error("Lỗi khi tải danh sách phỏng vấn:", err);
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
+  };
 
   useEffect(() => {
-    fetchData()
-  }, [])
+    fetchData();
+  }, []);
 
-  // ✅ Hoàn tất phỏng vấn
+  // Hoàn tất phỏng vấn
   const handleComplete = async (row) => {
-    const notes = prompt("Nhập ghi chú hoàn tất:")
-    if (!notes) return
-    await completeInterview(row.id, { notes })
-    fetchData()
-  }
+    const notes = prompt("Nhập ghi chú hoàn tất:");
+    if (!notes) return;
+    await completeInterview(row.id, { notes });
+    fetchData();
+  };
 
-  // ✅ Hủy phỏng vấn
+  // Hủy phỏng vấn
   const handleCancel = async (row) => {
-    const reason = prompt("Nhập lý do hủy lịch:")
-    if (!reason) return
-    await cancelInterview(row.id, { reason })
-    fetchData()
-  }
+    const reason = prompt("Nhập lý do hủy lịch:");
+    if (!reason) return;
+    await cancelInterview(row.id, { reason });
+    fetchData();
+  };
 
-  // ✅ Chuẩn hóa dữ liệu phỏng vấn trước khi mở modal
+  // chuẩn hóa dữ liệu phỏng vấn trước khi mở modal
   const handleOpenParticipants = (interview) => {
-    
-  const jobPostingId =
-    interview?.jobPostingId ||
-    interview?.jobPosting?.id ||
-    interview?.application?.jobPosting?.id ||
-    null
+    const jobPostingId =
+      interview?.jobPostingId ||
+      interview?.jobPosting?.id ||
+      interview?.application?.jobPosting?.id ||
+      null;
 
-  const applicationId =
-    interview?.applicationId || interview?.application?.id || null
+    const applicationId =
+      interview?.applicationId || interview?.application?.id || null;
 
-  const fullInterview = {
-    ...interview,
-    jobPostingId,
-    applicationId,
-    participants: interview?.participants || [],
-  }
+    const fullInterview = {
+      ...interview,
+      jobPostingId,
+      applicationId,
+      participants: interview?.participants || [],
+    };
 
-  
-  setOpenParticipants(fullInterview)
-}
-
+    setOpenParticipants(fullInterview);
+  };
 
   const columns = [
     {
@@ -134,7 +131,7 @@ export default function InterviewPage() {
       width: 240,
       renderCell: (params) => (
         <>
-          {/* 👥 Quản lý ứng viên phỏng vấn */}
+          {/*  Quản lý ứng viên phỏng vấn */}
           <Tooltip title="Thêm / Xóa ứng viên phỏng vấn">
             <IconButton
               color="secondary"
@@ -144,7 +141,7 @@ export default function InterviewPage() {
             </IconButton>
           </Tooltip>
 
-          {/* ✏️ Đổi lịch */}
+          {/*  Đổi lịch */}
           <Tooltip title="Đổi lịch phỏng vấn">
             <IconButton
               color="primary"
@@ -154,7 +151,7 @@ export default function InterviewPage() {
             </IconButton>
           </Tooltip>
 
-          {/* ✅ Hoàn tất */}
+          {/* Hoàn tất */}
           <Tooltip title="Đánh dấu hoàn tất">
             <IconButton
               color="success"
@@ -164,19 +161,16 @@ export default function InterviewPage() {
             </IconButton>
           </Tooltip>
 
-          {/* ❌ Hủy lịch */}
+          {/* Hủy lịch */}
           <Tooltip title="Hủy phỏng vấn">
-            <IconButton
-              color="error"
-              onClick={() => handleCancel(params.row)}
-            >
+            <IconButton color="error" onClick={() => handleCancel(params.row)}>
               <CancelIcon />
             </IconButton>
           </Tooltip>
         </>
       ),
     },
-  ]
+  ];
 
   return (
     <Box p={3}>
@@ -245,7 +239,6 @@ export default function InterviewPage() {
           onUpdated={fetchData}
         />
       )}
-
     </Box>
-  )
+  );
 }

@@ -8,14 +8,14 @@ export default function VerifyEmailPage() {
   const navigate = useNavigate();
   const [status, setStatus] = useState("loading"); // loading | success | error
   const [message, setMessage] = useState("");
-  const hasRun = useRef(false); // ✅ Dùng để ngăn chạy 2 lần do Strict Mode
+  const hasRun = useRef(false); //  Dùng để ngăn chạy 2 lần do Strict Mode
 
   // Lấy token từ query ?token=...
   const searchParams = new URLSearchParams(location.search);
   const token = searchParams.get("token");
 
   useEffect(() => {
-    // ✅ Chặn không cho chạy 2 lần trong React Strict Mode (DEV)
+    //Chặn không cho chạy 2 lần trong React Strict Mode (DEV)
     if (hasRun.current) return;
     hasRun.current = true;
 
@@ -63,7 +63,7 @@ export default function VerifyEmailPage() {
 
       {status === "success" && (
         <>
-          <div className="text-green-600 text-5xl mb-3">✅</div>
+          <div className="text-green-600 text-5xl mb-3"></div>
           <p className="text-green-600 font-bold text-lg mb-2">{message}</p>
           <p>Bạn sẽ được chuyển đến trang đăng nhập...</p>
         </>
@@ -71,8 +71,10 @@ export default function VerifyEmailPage() {
 
       {status === "error" && (
         <>
-          <div className="text-red-600 text-5xl mb-3">❌</div>
-          <p className="text-red-600 font-bold text-lg mb-2">Xác minh thất bại</p>
+          <div className="text-red-600 text-5xl mb-3"></div>
+          <p className="text-red-600 font-bold text-lg mb-2">
+            Xác minh thất bại
+          </p>
           <p className="text-gray-600 mb-4">{message}</p>
 
           <Link
