@@ -7,23 +7,28 @@ import NotificationMenu from "../components/common/NotificationMenu";
 export default function Header() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
   const [user, setUser] = useState(null);
   const navigate = useNavigate();
   const location = useLocation();
 
+  // 🔹 Xử lý scroll để đổi màu header
   useEffect(() => {
     const storedUser = JSON.parse(localStorage.getItem("user") || "null");
     setUser(storedUser);
+
+    const handleScroll = () => {
+      setScrolled(window.scrollY > 30);
+    };
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
   const token = localStorage.getItem("accessToken");
   const role = user?.role || null;
 
   const handleLogout = () => {
-    localStorage.removeItem("accessToken");
-    localStorage.removeItem("refreshToken");
-    localStorage.removeItem("user");
-    localStorage.removeItem("companyId");
+    localStorage.clear();
     setUser(null);
     setMenuOpen(false);
     navigate("/", { replace: true });
@@ -33,32 +38,34 @@ export default function Header() {
   const isApplicant = location.pathname.startsWith("/applicant");
   const isAdmin = location.pathname.startsWith("/admin");
 
-  const bgColor = isEmployer
-    ? "bg-gray-50"
-    : isApplicant
-      ? "bg-green-50"
-      : isAdmin
-        ? "bg-red-50"
-        : "bg-green-50";
+  // 🎨 Màu nền header khi cuộn hoặc ở dashboard
+  const bgColor =
+    scrolled || isEmployer || isApplicant || isAdmin
+      ? "bg-white shadow-sm"
+      : "bg-transparent";
 
   return (
     <header
-      className={`${bgColor} sticky top-0 z-50 shadow-sm border-b border-gray-200 backdrop-blur-sm bg-opacity-95`}
+      className={`sticky top-0 z-50 transition-all duration-300 ${bgColor}`}
+      style={{
+        borderBottom: "none",
+        marginBottom: "-1px",
+      }}
     >
-      <div className="max-w-7xl mx-auto flex items-center justify-between px-6 py-3">
+      <div className="max-w-7xl mx-auto flex items-center justify-between px-6 h-[60px]">
         {/* 🔹 Logo */}
         <Link
           to="/"
           className="flex items-center gap-2 font-extrabold text-[#00b14f] text-xl hover:scale-105 transition-transform"
         >
           <FaBriefcase size={22} />
-          <span>Job</span>
-          <span className="text-gray-800">Recruit</span>
+          <span className="tracking-tight">Job</span>
+          <span className="text-gray-900 font-extrabold">Recruit</span>
         </Link>
 
-        {/* 🔹 Menu giữa */}
+        {/* 🔹 Menu chính */}
         {!token || role === "APPLICANT" ? (
-          <nav className="hidden md:flex items-center gap-6 text-gray-700 font-medium">
+          <nav className="hidden md:flex items-center gap-6 text-gray-800 font-semibold">
             <Link to="/" className="hover:text-[#00b14f] transition-colors">
               Trang chủ
             </Link>
@@ -85,7 +92,7 @@ export default function Header() {
             </Link>
           </nav>
         ) : role === "EMPLOYER" ? (
-          <nav className="hidden md:flex items-center gap-6 text-gray-700 font-medium">
+          <nav className="hidden md:flex items-center gap-6 text-gray-800 font-semibold">
             <Link to="/employer/dashboard" className="hover:text-[#00b14f]">
               Trang tuyển dụng
             </Link>
@@ -97,7 +104,7 @@ export default function Header() {
             </Link>
           </nav>
         ) : role === "ADMIN" ? (
-          <nav className="hidden md:flex items-center gap-6 text-gray-700 font-medium">
+          <nav className="hidden md:flex items-center gap-6 text-gray-800 font-semibold">
             <Link to="/admin/dashboard" className="hover:text-[#00b14f]">
               Quản trị
             </Link>
@@ -119,21 +126,21 @@ export default function Header() {
             <>
               <Link
                 to="/auth/login"
-                className="px-4 py-2 text-[#00b14f] border border-[#00b14f] rounded-lg hover:bg-[#00b14f] hover:text-white transition"
+                className="px-4 py-2 text-[#00b14f] border border-[#00b14f] rounded-lg font-semibold hover:bg-[#00b14f] hover:text-white transition"
               >
                 Đăng nhập
               </Link>
               <button
                 onClick={() => setIsModalOpen(true)}
-                className="px-4 py-2 bg-[#00b14f] text-white rounded-lg hover:bg-[#00915d] transition"
+                className="px-4 py-2 bg-[#00b14f] text-white rounded-lg font-semibold hover:bg-[#00915d] transition"
               >
                 Đăng ký
               </button>
               <Link
                 to="/auth/employer-register"
-                className="px-4 py-2 text-[#00915d] border border-[#00915d] rounded-lg hover:bg-[#00915d] hover:text-white transition"
+                className="px-4 py-2 text-[#00915d] border border-[#00915d] rounded-lg font-semibold hover:bg-[#00915d] hover:text-white transition"
               >
-                Dành cho Nhà tuyển dụng
+                Nhà tuyển dụng
               </Link>
             </>
           ) : (
@@ -142,103 +149,90 @@ export default function Header() {
 
               <button
                 onClick={() => setMenuOpen(!menuOpen)}
-                className="flex items-center gap-2 px-3 py-2 rounded-full hover:bg-green-50 transition"
+                className="flex items-center gap-2 px-3 py-2 rounded-full hover:bg-gray-50 transition"
               >
                 <FaUserCircle className="text-2xl text-[#00b14f]" />
-                <span className="font-medium text-gray-700">
+                <span className="font-semibold text-gray-800">
                   {user?.fullName ||
                     `${user?.firstName || "Người"} ${user?.lastName || ""}`}
                 </span>
               </button>
 
+              {/* 🔹 Dropdown menu */}
               {menuOpen && (
                 <div className="absolute right-0 top-12 w-56 bg-white border border-gray-100 shadow-lg rounded-xl overflow-hidden animate-fadeIn">
-                  {(role === "APPLICANT" ||
-                    role === "EMPLOYER" ||
-                    role === "ADMIN") && (
-                      <>
-                        {role === "APPLICANT" && (
-                          <>
-                            <Link
-                              to="/applicant/profile"
-                              className="block px-4 py-2 hover:bg-gray-100"
-                              onClick={() => setMenuOpen(false)}
-                            >
-                              Hồ sơ của tôi
-                            </Link>
-                            <Link
-                              to="/applicant/documents"
-                              className="block px-4 py-2 hover:bg-gray-100"
-                              onClick={() => setMenuOpen(false)}
-                            >
-                              Tài liệu của tôi
-                            </Link>
-                            <Link
-                              to="/applicant/interviews"
-                              className="block px-4 py-2 hover:bg-gray-100"
-                              onClick={() => setMenuOpen(false)}
-                            >
-                              Lịch phỏng vấn
-                            </Link>
-                            <Link
-                              to="/applicant/applications"
-                              className="block px-4 py-2 hover:bg-gray-100"
-                              onClick={() => setMenuOpen(false)}
-                            >
-                              Đơn ứng tuyển
-                            </Link>
-                            <Link
-                              to="/applicant/saved-jobs"
-                              className="block px-4 py-2 hover:bg-gray-100"
-                              onClick={() => setMenuOpen(false)}
-                            >
-                              Việc làm đã lưu
-                            </Link>
-                          </>
-                        )}
+                  {role === "APPLICANT" && (
+                    <>
+                      <Link
+                        to="/applicant/profile"
+                        className="block px-4 py-2 hover:bg-gray-100"
+                        onClick={() => setMenuOpen(false)}
+                      >
+                        Hồ sơ của tôi
+                      </Link>
+                      <Link
+                        to="/applicant/documents"
+                        className="block px-4 py-2 hover:bg-gray-100"
+                        onClick={() => setMenuOpen(false)}
+                      >
+                        Tài liệu của tôi
+                      </Link>
+                      <Link
+                        to="/applicant/interviews"
+                        className="block px-4 py-2 hover:bg-gray-100"
+                        onClick={() => setMenuOpen(false)}
+                      >
+                        Lịch phỏng vấn
+                      </Link>
+                      <Link
+                        to="/applicant/applications"
+                        className="block px-4 py-2 hover:bg-gray-100"
+                        onClick={() => setMenuOpen(false)}
+                      >
+                        Đơn ứng tuyển
+                      </Link>
+                      <Link
+                        to="/applicant/saved-jobs"
+                        className="block px-4 py-2 hover:bg-gray-100"
+                        onClick={() => setMenuOpen(false)}
+                      >
+                        Việc làm đã lưu
+                      </Link>
+                    </>
+                  )}
 
-                        {role === "EMPLOYER" && (
-                          <>
-                            <Link
-                              to="/employer/dashboard"
-                              className="block px-4 py-2 hover:bg-gray-100"
-                              onClick={() => setMenuOpen(false)}
-                            >
-                              Bảng điều khiển
-                            </Link>
-                            <Link
-                              to="/employer/company"
-                              className="block px-4 py-2 hover:bg-gray-100"
-                              onClick={() => setMenuOpen(false)}
-                            >
-                              Hồ sơ công ty
-                            </Link>
-                          </>
-                        )}
+                  {role === "EMPLOYER" && (
+                    <>
+                      <Link
+                        to="/employer/dashboard"
+                        className="block px-4 py-2 hover:bg-gray-100"
+                        onClick={() => setMenuOpen(false)}
+                      >
+                        Bảng điều khiển
+                      </Link>
+                      <Link
+                        to="/employer/company"
+                        className="block px-4 py-2 hover:bg-gray-100"
+                        onClick={() => setMenuOpen(false)}
+                      >
+                        Hồ sơ công ty
+                      </Link>
+                    </>
+                  )}
 
-                        {role === "ADMIN" && (
-                          <>
-                            <Link
-                              to="/admin/dashboard"
-                              className="block px-4 py-2 hover:bg-gray-100"
-                              onClick={() => setMenuOpen(false)}
-                            >
-                              Trang quản trị
-                            </Link>
-                            <Link
-                              to="/admin/users"
-                              className="block px-4 py-2 hover:bg-gray-100"
-                              onClick={() => setMenuOpen(false)}
-                            >
-                              Người dùng
-                            </Link>
-                          </>
-                        )}
-                      </>
-                    )}
+                  {role === "ADMIN" && (
+                    <Link
+                      to="/admin/dashboard"
+                      className="block px-4 py-2 hover:bg-gray-100"
+                      onClick={() => setMenuOpen(false)}
+                    >
+                      Trang quản trị
+                    </Link>
+                  )}
+
                   <button
                     onClick={handleLogout}
-                    className="w-full text-left px-4 py-2 text-red-600 hover:bg-gray-100 flex items-center gap-2 border-t border-gray-100"
+                    className="w-full text-left px-4 py-2 text-red-600 hover:bg-gray-100 flex items-center gap-2 border-t border-gray-100 font-semibold"
                   >
                     <FaSignOutAlt /> Đăng xuất
                   </button>
@@ -249,6 +243,7 @@ export default function Header() {
         </div>
       </div>
 
+      {/* 🔹 Modal đăng ký */}
       <RegisterModal
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}

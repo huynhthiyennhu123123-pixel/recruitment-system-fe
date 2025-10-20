@@ -55,44 +55,101 @@ export default function RecommendedCarousel() {
   };
 
   // 🔹 Thẻ hiển thị JobCard
-  const JobCard = ({ job }) => (
+  // 🎨 JobCard Pro (dành cho Carousel)
+const JobCard = ({ job }) => {
+  const [hovered, setHovered] = useState(false);
+
+  return (
     <motion.div
-      className="bg-white border border-gray-100 rounded-2xl p-5 shadow-sm hover:shadow-md transition w-[330px] flex-shrink-0"
       whileHover={{ scale: 1.02 }}
+      onMouseEnter={() => setHovered(true)}
+      onMouseLeave={() => setHovered(false)}
+      transition={{ type: "spring", stiffness: 180, damping: 15 }}
+      className="relative bg-white border border-gray-100 rounded-2xl p-5 shadow-sm hover:shadow-xl hover:border-[#00b14f]/50 transition-all duration-300 overflow-hidden group w-[330px] flex-shrink-0"
     >
-      <h3 className="text-lg font-semibold text-gray-800 mb-1 line-clamp-1">
-        {job.title}
-      </h3>
-      <p className="text-sm text-gray-500 mb-1 font-medium">
-        {job.company?.name || job.companyName || "Công ty đang cập nhật"}
-      </p>
+      {/* Logo + Tiêu đề */}
+      <div className="flex items-center gap-4 mb-4">
+        <img
+          src={job.company?.logoUrl || "/default-company.png"}
+          alt={job.company?.name || "Công ty"}
+          className="w-14 h-14 rounded-xl border object-cover bg-gray-50"
+        />
+        <div className="flex-1">
+          <h3 className="text-lg font-semibold text-gray-800 group-hover:text-[#00b14f] transition line-clamp-1">
+            {job.title}
+          </h3>
+          <p className="text-sm text-gray-500 line-clamp-1">
+            {job.company?.name || job.companyName || "Công ty đang cập nhật"}
+          </p>
+        </div>
+      </div>
 
-      <p className="flex items-center gap-1 text-gray-600 text-sm mb-2">
-        <FaMapMarkerAlt className="text-[#00b14f]" />
-        {job.location || "Không rõ địa điểm"}
-      </p>
+      {/* Thông tin việc làm */}
+      <div className="flex flex-col gap-2 text-sm text-gray-600">
+        <div className="flex items-center gap-1">
+          <FaMapMarkerAlt className="text-[#00b14f]" />
+          <span>{job.location || "Không rõ địa điểm"}</span>
+        </div>
 
-      {job.salaryMin && job.salaryMax && (
-        <p className="text-[#00b14f] font-medium mb-2">
-          {job.salaryMin.toLocaleString("vi-VN")}₫ -{" "}
-          {job.salaryMax.toLocaleString("vi-VN")}₫
-        </p>
-      )}
+        {job.salaryMin && job.salaryMax ? (
+          <p className="text-[#00b14f] font-semibold">
+            💰 {job.salaryMin.toLocaleString("vi-VN")}₫ –{" "}
+            {job.salaryMax.toLocaleString("vi-VN")}₫
+          </p>
+        ) : (
+          <p className="text-gray-500 italic">Mức lương thỏa thuận</p>
+        )}
 
-      {job.matchScore && (
-        <p className="text-sm text-green-600 mb-2">
-          Độ phù hợp: {job.matchScore}%
-        </p>
-      )}
+        {job.matchScore && (
+          <p className="text-sm text-green-600">🎯 Độ phù hợp: {job.matchScore}%</p>
+        )}
+      </div>
 
-      <Link
-        to={`/jobs/${job.id}`}
-        className="inline-block text-sm text-[#00b14f] font-medium hover:underline"
+      {/* Footer */}
+      <div className="flex justify-between items-center mt-5">
+        <span className="text-xs text-gray-400">
+          Cập nhật:{" "}
+          {new Date(job.createdAt || Date.now()).toLocaleDateString("vi-VN")}
+        </span>
+        <Link
+          to={`/jobs/${job.id}`}
+          className="text-sm font-medium text-[#00b14f] hover:text-[#008f3f] flex items-center gap-1"
+        >
+          Xem chi tiết
+        </Link>
+      </div>
+
+      {/* Ribbon */}
+      <div className="absolute top-0 right-0 bg-[#00b14f] text-white text-xs font-semibold px-3 py-1 rounded-bl-xl rounded-tr-2xl shadow">
+        {job.jobType || "Full-time"}
+      </div>
+
+      {/* ❤️ Nút lưu việc */}
+      <button
+        className="absolute top-3 right-3 text-gray-300 hover:text-[#00b14f] transition z-10"
+        title="Lưu việc làm"
       >
-        Xem chi tiết
-      </Link>
+        <i className="fa-regular fa-heart text-lg"></i>
+      </button>
+
+      {/* 🌟 Overlay + nút “Ứng tuyển ngay” */}
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: hovered ? 1 : 0 }}
+        transition={{ duration: 0.3 }}
+        className="absolute inset-0 bg-gradient-to-t from-[#00b14f]/90 via-[#00b14f]/60 to-transparent flex items-end justify-center p-5"
+      >
+        <Link
+          to={`/jobs/${job.id}`}
+          className="bg-white text-[#00b14f] font-semibold px-6 py-2 rounded-full shadow-lg hover:bg-[#00b14f] hover:text-white transition"
+        >
+          Ứng tuyển ngay
+        </Link>
+      </motion.div>
     </motion.div>
   );
+};
+
 
   return (
     <section className="mt-10 relative">
