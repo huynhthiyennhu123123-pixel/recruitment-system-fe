@@ -86,7 +86,6 @@ export default function JobManagePage() {
 }
 
 
-  // Hàm xác định màu cho Chip
 const getStatusColor = (status) => {
   switch (status) {
     case "ACTIVE":
@@ -107,9 +106,10 @@ const getStatusColor = (status) => {
       field: "title",
       headerName: "Tiêu đề công việc",
       flex: 1.5,
+     
       renderCell: (params) => (
         <Box>
-          <Typography variant="subtitle2" fontWeight="bold" color="#1b5e20">
+          <Typography variant="subtitle2" fontWeight="bold" fontSize={18} color="#1b5e20">
             {params.row.title}
           </Typography>
           <Typography variant="body2" color="text.secondary">
@@ -122,6 +122,8 @@ const getStatusColor = (status) => {
       field: "status",
       headerName: "Trạng thái",
       width: 150,
+      align: "center",
+      headerAlign: "center",
       renderCell: (params) => (
       <Chip
         label={
@@ -141,23 +143,17 @@ const getStatusColor = (status) => {
       />
     )
     },
-    { field: "applicationsCount", headerName: "Ứng viên", width: 110 },
-    { field: "viewsCount", headerName: "Lượt xem", width: 110 },
-    {
-      field: "createdAt",
-      headerName: "Ngày tạo",
-      width: 140,
-      valueGetter: (params) => {
-        const date = params?.row?.createdAt
-        return date ? new Date(date).toLocaleDateString("vi-VN") : "—"
-      },
-    },
+    { field: "applicationsCount", headerName: "Ứng viên", width: 110,align: "center", headerAlign: "center" },
+    { field: "viewsCount", headerName: "Lượt xem", width: 110,align: "center", headerAlign: "center" },
+    
 
     {
       field: "actions",
       headerName: "Hành động",
       width: 200,
       sortable: false,
+      align: "center", 
+      headerAlign: "center",
       renderCell: (params) => (
         <Box>
           <Tooltip title="Xem chi tiết">

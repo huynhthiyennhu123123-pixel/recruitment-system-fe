@@ -110,7 +110,6 @@ export default function InterviewPage() {
     setOpenParticipants(fullInterview)
   }
 
-  // 🔹 Cấu hình cột DataGrid
   const columns = [
     {
       field: "stt",
@@ -127,14 +126,24 @@ export default function InterviewPage() {
       field: "scheduledAt",
       headerName: "Thời gian phỏng vấn",
       width: 220,
+      align: "center",
+      headerAlign: "center",
       renderCell: (p) =>
         p.value ? dayjs(p.value).format("DD/MM/YYYY • HH:mm") : "—",
     },
-    { field: "location", headerName: "Địa điểm", width: 220 },
+    {
+      field: "location",
+      headerName: "Địa điểm",
+      width: 220,
+      align: "center",
+      headerAlign: "center",
+    },
     {
       field: "meetingLink",
       headerName: "Link họp",
       width: 200,
+      align: "center",
+      headerAlign: "center",
       renderCell: (params) =>
         params.value ? (
           <a
@@ -155,12 +164,16 @@ export default function InterviewPage() {
       field: "interviewType",
       headerName: "Hình thức",
       width: 180,
+      align: "center",
+      headerAlign: "center",
       renderCell: (params) => interviewTypeMap[params.value] || "Không xác định",
     },
     {
       field: "status",
       headerName: "Trạng thái",
       width: 140,
+      align: "center",
+      headerAlign: "center",
       renderCell: (params) => {
         const s = statusMap[params.value] || {
           label: "Không xác định",
@@ -173,6 +186,8 @@ export default function InterviewPage() {
       field: "actions",
       headerName: "Hành động",
       width: 210,
+      align: "center",
+      headerAlign: "center",
       renderCell: (params) => (
         <>
           <Tooltip title="Thêm / Xóa ứng viên phỏng vấn">
@@ -208,6 +223,7 @@ export default function InterviewPage() {
       ),
     },
   ]
+
 
   return (
     <Box p={3}>
@@ -250,8 +266,8 @@ export default function InterviewPage() {
             autoHeight
             disableSelectionOnClick
             sx={{
-              "& .MuiDataGrid-row:nth-of-type(odd)": { backgroundColor: "#f8f9fa" },
-              "& .MuiDataGrid-row:nth-of-type(even)": { backgroundColor: "#ffffff" },
+              "& .MuiDataGrid-row:nth-of-type(odd)": { backgroundColor: "#ecf0f5ff" },
+              "& .MuiDataGrid-row:nth-of-type(even)": { backgroundColor: "#f7fadaff" },
               "& .MuiDataGrid-row:hover": {
                 backgroundColor: "#c2e0dfff",
                 transition: "background-color 0.2s ease-in-out",

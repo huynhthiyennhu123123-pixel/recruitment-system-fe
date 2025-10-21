@@ -7,14 +7,17 @@
 
 .MuiDataGrid-columnHeaderTitle,
 .MuiDataGrid-columnHeaderTitleContainerContent {
-  color: #2a9d8f !important;
+  color: #0b554c !important;
   font-weight: 700 !important;
-  font-size: 15px !important;
+  font-size: 17px !important;
+
 }
 
 
 .MuiDataGrid-columnHeaderTitleContainer {
-  background-color: #ffff !important;
+  background-color: #ffffff !important;
+  justify-content: center;
+  
 }
 
 @import url("https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700&display=swap");
