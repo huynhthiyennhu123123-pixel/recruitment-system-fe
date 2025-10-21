@@ -68,7 +68,7 @@ export default function EmployerLayout() {
         navigate("/", { replace: true });
       }, 1200);
     } catch (err) {
-      console.error("❌ Lỗi khi đăng xuất:", err);
+      console.error(" Lỗi khi đăng xuất:", err);
       setSnackbar({
         open: true,
         message: "Lỗi khi đăng xuất. Vui lòng thử lại.",
@@ -157,7 +157,8 @@ export default function EmployerLayout() {
             Hồ sơ công ty
           </Button>
 
-          <NotificationMenu />
+          <NotificationMenu iconColor="white" />
+
           {/* Dropdown tài khoản */}
           <IconButton color="inherit" onClick={handleMenu}>
             {user?.avatarUrl || user?.company?.logoUrl ? (

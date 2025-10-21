@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react"
+import React, { useState, useEffect } from "react";
 import {
   Box,
   Grid,
@@ -11,24 +11,22 @@ import {
   CircularProgress,
   MenuItem,
   Autocomplete,
-} from "@mui/material"
-import { AddCircleOutline } from "@mui/icons-material"
-import { useDropzone } from "react-dropzone"
-import axios from "axios"
-import { MuiChipsInput } from "mui-chips-input"
-import { LocalizationProvider } from "@mui/x-date-pickers"
-import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs"
-import { TimePicker } from "@mui/x-date-pickers/TimePicker"
-import dayjs from "dayjs"
+} from "@mui/material";
+import { AddCircleOutline } from "@mui/icons-material";
+import { useDropzone } from "react-dropzone";
+import axios from "axios";
+import { MuiChipsInput } from "mui-chips-input";
+import { LocalizationProvider } from "@mui/x-date-pickers";
+import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
+import { TimePicker } from "@mui/x-date-pickers/TimePicker";
+import dayjs from "dayjs";
 import {
   getEmployerCompanyId,
   getPublicCompanyById,
   updateCompanyProfile,
-} from "../../services/employerService"
-import { uploadToCloudinary } from "../../utils/cloudinaryUpload"
-import { useNavigate } from "react-router-dom"
-
-
+} from "../../services/employerService";
+import { uploadToCloudinary } from "../../utils/cloudinaryUpload";
+import { useNavigate } from "react-router-dom";
 
 export default function CompanyProfileEdit() {
   const [form, setForm] = useState({
@@ -46,31 +44,31 @@ export default function CompanyProfileEdit() {
     country: "",
     phoneNumber: "",
     contactEmail: "",
-  })
-  const [loading, setLoading] = useState(false)
+  });
+  const [loading, setLoading] = useState(false);
   const [snackbar, setSnackbar] = useState({
     open: false,
     message: "",
     severity: "success",
-  })
-  const [images, setImages] = useState([])
-  const [countries, setCountries] = useState([])
-  const [provinces, setProvinces] = useState([])
-  const [startTime, setStartTime] = useState(dayjs("08:00", "HH:mm"))
-  const [endTime, setEndTime] = useState(dayjs("17:00", "HH:mm"))
-  const navigate = useNavigate()
+  });
+  const [images, setImages] = useState([]);
+  const [countries, setCountries] = useState([]);
+  const [provinces, setProvinces] = useState([]);
+  const [startTime, setStartTime] = useState(dayjs("08:00", "HH:mm"));
+  const [endTime, setEndTime] = useState(dayjs("17:00", "HH:mm"));
+  const navigate = useNavigate();
 
   // Lấy thông tin công ty khi vào trang
   useEffect(() => {
     const fetchCompany = async () => {
-      setLoading(true)
+      setLoading(true);
       try {
-        const companyId = await getEmployerCompanyId()
-        if (!companyId) throw new Error("Không tìm thấy ID công ty!")
+        const companyId = await getEmployerCompanyId();
+        if (!companyId) throw new Error("Không tìm thấy ID công ty!");
 
-        const res = await getPublicCompanyById(companyId)
+        const res = await getPublicCompanyById(companyId);
         if (res?.company) {
-          const c = res.company
+          const c = res.company;
           setForm({
             name: c.name || "",
             description: c.description || "",
@@ -86,194 +84,198 @@ export default function CompanyProfileEdit() {
             country: c.country || "",
             phoneNumber: c.phoneNumber || "",
             contactEmail: c.contactEmail || "",
-          })
+          });
 
-          // ⏰ Tách giờ làm việc
+          // Tách giờ làm việc
           if (c.workingHours) {
-            const [start, end] = c.workingHours.split("-")
-            if (start) setStartTime(dayjs(start, "HH:mm"))
-            if (end) setEndTime(dayjs(end, "HH:mm"))
+            const [start, end] = c.workingHours.split("-");
+            if (start) setStartTime(dayjs(start, "HH:mm"));
+            if (end) setEndTime(dayjs(end, "HH:mm"));
           }
 
           // 🖼 Ảnh công ty
           if (c.companyPhotos?.length > 0) {
-            setImages(c.companyPhotos.map((url) => ({ preview: url })))
+            setImages(c.companyPhotos.map((url) => ({ preview: url })));
           }
         }
       } catch (err) {
-        console.error("❌ Lỗi khi tải thông tin công ty:", err)
+        console.error(" Lỗi khi tải thông tin công ty:", err);
       } finally {
-        setLoading(false)
+        setLoading(false);
       }
-    }
-    fetchCompany()
-  }, [])
+    };
+    fetchCompany();
+  }, []);
 
   //  Load quốc gia và tỉnh/thành
   useEffect(() => {
-  // 🌍 Lấy danh sách quốc gia
-  axios
-    .get("https://restcountries.com/v3.1/all?fields=name")
-    .then((res) => {
-      const sorted = res.data.map((c) => c.name.common).sort()
-      setCountries(sorted)
-    })
-    .catch((err) => {
-      console.error("❌ Lỗi tải quốc gia:", err)
-      // fallback demo
-      setCountries(["Việt Nam", "Thailand", "Singapore", "Malaysia"])
-    })
-
-  // 🏙 Lấy danh sách tỉnh/thành
-  const ghnToken = import.meta.env.VITE_GHN_TOKEN || "YOUR_GHN_TOKEN"
-
-  // ✅ Nếu chưa cấu hình GHN Token → dùng OpenAPI thay thế
-  if (!ghnToken || ghnToken === "YOUR_GHN_TOKEN") {
-    console.warn("⚠️ GHN token chưa được cấu hình → dùng OpenAPI fallback.")
+    // 🌍 Lấy danh sách quốc gia
     axios
-      .get("https://provinces.open-api.vn/api/v1/provinces")
+      .get("https://restcountries.com/v3.1/all?fields=name")
       .then((res) => {
-        const provincesData = res.data || []
-        setProvinces(
-          provincesData.map((p) => ({
-            ProvinceID: p.code || p.id,
-            ProvinceName: p.name,
-          }))
-        )
-        console.log("✅ Provinces loaded từ OpenAPI:", provincesData.length)
+        const sorted = res.data.map((c) => c.name.common).sort();
+        setCountries(sorted);
       })
       .catch((err) => {
-        console.error("❌ Lỗi tải tỉnh từ OpenAPI:", err)
-        // fallback demo cứng
-        setProvinces([
-          { ProvinceID: 1, ProvinceName: "Hà Nội" },
-          { ProvinceID: 2, ProvinceName: "TP. Hồ Chí Minh" },
-          { ProvinceID: 3, ProvinceName: "Đà Nẵng" },
-          { ProvinceID: 4, ProvinceName: "Cần Thơ" },
-          { ProvinceID: 5, ProvinceName: "Bình Dương" },
-        ])
-      })
-    return
-  }
+        console.error(" Lỗi tải quốc gia:", err);
+        // fallback demo
+        setCountries(["Việt Nam", "Thailand", "Singapore", "Malaysia"]);
+      });
 
-  // ✅ Nếu có token GHN → ưu tiên gọi API GHN
-  axios
-    .get("https://online-gateway.ghn.vn/shiip/public-api/master-data/province", {
-      headers: { token: ghnToken },
-    })
-    .then((res) => {
-      const data = res.data?.data || []
-      setProvinces(data.map((p) => ({ ProvinceID: p.ProvinceID, ProvinceName: p.ProvinceName })))
-      console.log("✅ Provinces loaded từ GHN:", data.length)
-    })
-    .catch((err) => {
-      console.error("❌ Lỗi tải tỉnh từ GHN:", err)
-      // fallback qua OpenAPI khi GHN lỗi
+    // Lấy danh sách tỉnh/thành
+    const ghnToken = import.meta.env.VITE_GHN_TOKEN || "YOUR_GHN_TOKEN";
+
+    //  Nếu chưa cấu hình GHN Token → dùng OpenAPI thay thế
+    if (!ghnToken || ghnToken === "YOUR_GHN_TOKEN") {
+      console.warn("GHN token chưa được cấu hình → dùng OpenAPI fallback.");
       axios
         .get("https://provinces.open-api.vn/api/v1/provinces")
         .then((res) => {
-          const provincesData = res.data || []
+          const provincesData = res.data || [];
           setProvinces(
             provincesData.map((p) => ({
               ProvinceID: p.code || p.id,
               ProvinceName: p.name,
             }))
-          )
+          );
+          console.log("Provinces loaded từ OpenAPI:", provincesData.length);
         })
-        .catch(() => {
+        .catch((err) => {
+          console.error("Lỗi tải tỉnh từ OpenAPI:", err);
+          // fallback demo cứng
           setProvinces([
             { ProvinceID: 1, ProvinceName: "Hà Nội" },
             { ProvinceID: 2, ProvinceName: "TP. Hồ Chí Minh" },
             { ProvinceID: 3, ProvinceName: "Đà Nẵng" },
-          ])
-        })
-    })
-}, [])
+            { ProvinceID: 4, ProvinceName: "Cần Thơ" },
+            { ProvinceID: 5, ProvinceName: "Bình Dương" },
+          ]);
+        });
+      return;
+    }
 
+    //  Nếu có token GHN → ưu tiên gọi API GHN
+    axios
+      .get(
+        "https://online-gateway.ghn.vn/shiip/public-api/master-data/province",
+        {
+          headers: { token: ghnToken },
+        }
+      )
+      .then((res) => {
+        const data = res.data?.data || [];
+        setProvinces(
+          data.map((p) => ({
+            ProvinceID: p.ProvinceID,
+            ProvinceName: p.ProvinceName,
+          }))
+        );
+        console.log("Provinces loaded từ GHN:", data.length);
+      })
+      .catch((err) => {
+        console.error("Lỗi tải tỉnh từ GHN:", err);
+        // fallback qua OpenAPI khi GHN lỗi
+        axios
+          .get("https://provinces.open-api.vn/api/v1/provinces")
+          .then((res) => {
+            const provincesData = res.data || [];
+            setProvinces(
+              provincesData.map((p) => ({
+                ProvinceID: p.code || p.id,
+                ProvinceName: p.name,
+              }))
+            );
+          })
+          .catch(() => {
+            setProvinces([
+              { ProvinceID: 1, ProvinceName: "Hà Nội" },
+              { ProvinceID: 2, ProvinceName: "TP. Hồ Chí Minh" },
+              { ProvinceID: 3, ProvinceName: "Đà Nẵng" },
+            ]);
+          });
+      });
+  }, []);
 
   //  Xóa ảnh khỏi danh sách
   const handleRemoveImage = (index) => {
-    setImages((prev) => prev.filter((_, i) => i !== index))
-  }
-
+    setImages((prev) => prev.filter((_, i) => i !== index));
+  };
 
   const handleChange = (e) => {
-    const { name, value } = e.target
-    setForm({ ...form, [name]: value })
-  }
+    const { name, value } = e.target;
+    setForm({ ...form, [name]: value });
+  };
 
   const handleDrop = async (acceptedFiles) => {
-  try {
-    const uploadedImages = await Promise.all(
-      acceptedFiles.map(async (file) => {
-        const url = await uploadToCloudinary(file)
-        return { preview: url }
-      })
-    )
-    setImages((prev) => [...prev, ...uploadedImages])
-  } catch (err) {
-    console.error("❌ Lỗi khi upload ảnh:", err)
-  }
-}
-
+    try {
+      const uploadedImages = await Promise.all(
+        acceptedFiles.map(async (file) => {
+          const url = await uploadToCloudinary(file);
+          return { preview: url };
+        })
+      );
+      setImages((prev) => [...prev, ...uploadedImages]);
+    } catch (err) {
+      console.error("Lỗi khi upload ảnh:", err);
+    }
+  };
 
   const handleSocialChange = (key, value) => {
-    setForm({ ...form, socialLinks: { ...form.socialLinks, [key]: value } })
-  }
+    setForm({ ...form, socialLinks: { ...form.socialLinks, [key]: value } });
+  };
 
-  const handleCloseSnackbar = () => setSnackbar({ ...snackbar, open: false })
+  const handleCloseSnackbar = () => setSnackbar({ ...snackbar, open: false });
 
   const handleSubmit = async (e) => {
-    e.preventDefault()
+    e.preventDefault();
     const payload = {
-  name: form.name || "",
-  description: form.description || "",
-  workingHours: `${startTime.format("HH:mm")}-${endTime.format("HH:mm")}`,
-  benefits: form.benefits?.length ? form.benefits : [],
-  companyPhotos: images.map((f) => f.preview) || [],
-  socialLinks: {
-    facebook: form.socialLinks?.facebook || "",
-    linkedin: form.socialLinks?.linkedin || "",
-  },
-  companySize: form.companySize || "STARTUP",
-  website: form.website || "",
-  industry: form.industry || "",
-  address: form.address || "",
-  city: form.city || "",
-  country: form.country || "",
-  phoneNumber: form.phoneNumber || "",
-  contactEmail: form.contactEmail || "",
-}
+      name: form.name || "",
+      description: form.description || "",
+      workingHours: `${startTime.format("HH:mm")}-${endTime.format("HH:mm")}`,
+      benefits: form.benefits?.length ? form.benefits : [],
+      companyPhotos: images.map((f) => f.preview) || [],
+      socialLinks: {
+        facebook: form.socialLinks?.facebook || "",
+        linkedin: form.socialLinks?.linkedin || "",
+      },
+      companySize: form.companySize || "STARTUP",
+      website: form.website || "",
+      industry: form.industry || "",
+      address: form.address || "",
+      city: form.city || "",
+      country: form.country || "",
+      phoneNumber: form.phoneNumber || "",
+      contactEmail: form.contactEmail || "",
+    };
 
-    setLoading(true)
+    setLoading(true);
     try {
-      // console.log("📦 Payload gửi lên:", JSON.stringify(payload, null, 2))
-      const res = await updateCompanyProfile(payload)
+      const res = await updateCompanyProfile(payload);
       setSnackbar({
         open: true,
         message: res.message || "Cập nhật thông tin công ty thành công!",
         severity: "success",
-      })
-      const companyId = await getEmployerCompanyId()
+      });
+      const companyId = await getEmployerCompanyId();
       setTimeout(() => {
-        navigate(`/employer/company/${companyId}`)
-      }, 1500)
+        navigate(`/employer/company/${companyId}`);
+      }, 1500);
     } catch (err) {
-      console.error("❌ Lỗi khi cập nhật:", err)
+      console.error("Lỗi khi cập nhật:", err);
       setSnackbar({
         open: true,
         message: "Không thể cập nhật thông tin công ty!",
         severity: "error",
-      })
+      });
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
+  };
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
     onDrop: handleDrop,
     accept: { "image/*": [] },
-  })
+  });
 
   return (
     <LocalizationProvider dateAdapter={AdapterDayjs}>
@@ -304,14 +306,14 @@ export default function CompanyProfileEdit() {
                     value={form.name || ""}
                     onChange={handleChange}
                     fullWidth
-                    sx={{marginInlineEnd:18  }}
-                     InputLabelProps={{
-                        sx: {
-                          color: "#26a751ff", 
-                          fontWeight: "bold", 
-                          fontSize: 20
-                        },
-                      }}
+                    sx={{ marginInlineEnd: 18 }}
+                    InputLabelProps={{
+                      sx: {
+                        color: "#26a751ff",
+                        fontWeight: "bold",
+                        fontSize: 20,
+                      },
+                    }}
                   />
                 </Grid>
                 <Grid item xs={12} sm={6} md={3}>
@@ -321,14 +323,14 @@ export default function CompanyProfileEdit() {
                     value={form.website}
                     onChange={handleChange}
                     fullWidth
-                    sx={{marginInlineEnd:10  }}
+                    sx={{ marginInlineEnd: 10 }}
                     InputLabelProps={{
-                        sx: {
-                          color: "#26a751ff", 
-                          fontWeight: "bold", 
-                          fontSize: 20
-                        },
-                      }}
+                      sx: {
+                        color: "#26a751ff",
+                        fontWeight: "bold",
+                        fontSize: 20,
+                      },
+                    }}
                   />
                 </Grid>
                 <Grid item xs={12} sm={6} md={3}>
@@ -338,14 +340,14 @@ export default function CompanyProfileEdit() {
                     value={form.contactEmail}
                     onChange={handleChange}
                     fullWidth
-                    sx={{marginInlineEnd:7  }}
+                    sx={{ marginInlineEnd: 7 }}
                     InputLabelProps={{
-                        sx: {
-                          color: "#26a751ff", 
-                          fontWeight: "bold", 
-                          fontSize: 20
-                        },
-                      }}
+                      sx: {
+                        color: "#26a751ff",
+                        fontWeight: "bold",
+                        fontSize: 20,
+                      },
+                    }}
                   />
                 </Grid>
                 <Grid item xs={12} sm={6} md={3}>
@@ -357,12 +359,12 @@ export default function CompanyProfileEdit() {
                     onChange={handleChange}
                     fullWidth
                     InputLabelProps={{
-                        sx: {
-                          color: "#26a751ff", 
-                          fontWeight: "bold", 
-                          fontSize: 20
-                        },
-                      }}
+                      sx: {
+                        color: "#26a751ff",
+                        fontWeight: "bold",
+                        fontSize: 20,
+                      },
+                    }}
                   >
                     <MenuItem value="STARTUP">Startup</MenuItem>
                     <MenuItem value="SMALL">Nhỏ (10-50)</MenuItem>
@@ -370,8 +372,6 @@ export default function CompanyProfileEdit() {
                     <MenuItem value="LARGE">Lớn (200+)</MenuItem>
                   </TextField>
                 </Grid>
-              
-               
 
                 {/* --- ĐỊA CHỈ & LIÊN HỆ --- */}
                 <Grid item xs={12} sm={6} md={3}>
@@ -381,14 +381,14 @@ export default function CompanyProfileEdit() {
                     value={form.address}
                     onChange={handleChange}
                     fullWidth
-                    sx={{marginInlineEnd:18  }}
+                    sx={{ marginInlineEnd: 18 }}
                     InputLabelProps={{
-                        sx: {
-                          color: "#26a751ff", 
-                          fontWeight: "bold", 
-                          fontSize: 20
-                        },
-                      }}
+                      sx: {
+                        color: "#26a751ff",
+                        fontWeight: "bold",
+                        fontSize: 20,
+                      },
+                    }}
                   />
                 </Grid>
                 {/* --- GIỜ LÀM VIỆC --- */}
@@ -398,14 +398,14 @@ export default function CompanyProfileEdit() {
                     value={startTime}
                     onChange={(v) => setStartTime(v)}
                     slotProps={{ textField: { fullWidth: true } }}
-                    sx={{marginInlineEnd:-14  }}
+                    sx={{ marginInlineEnd: -14 }}
                     InputLabelProps={{
-                        sx: {
-                          color: "#26a751ff", 
-                          fontWeight: "bold", 
-                          fontSize: 20
-                        },
-                      }}
+                      sx: {
+                        color: "#26a751ff",
+                        fontWeight: "bold",
+                        fontSize: 20,
+                      },
+                    }}
                   />
                 </Grid>
                 <Grid item xs={12} sm={6} md={3}>
@@ -414,14 +414,14 @@ export default function CompanyProfileEdit() {
                     value={endTime}
                     onChange={(v) => setEndTime(v)}
                     slotProps={{ textField: { fullWidth: true } }}
-                    sx={{marginInlineEnd:-14  }}
+                    sx={{ marginInlineEnd: -14 }}
                     InputLabelProps={{
-                        sx: {
-                          color: "#26a751ff", 
-                          fontWeight: "bold", 
-                          fontSize: 20
-                        },
-                      }}
+                      sx: {
+                        color: "#26a751ff",
+                        fontWeight: "bold",
+                        fontSize: 20,
+                      },
+                    }}
                   />
                 </Grid>
                 <Grid item xs={12} sm={6} md={3}>
@@ -431,14 +431,14 @@ export default function CompanyProfileEdit() {
                     value={form.industry}
                     onChange={handleChange}
                     fullWidth
-                    sx={{marginInlineEnd:7  }}
+                    sx={{ marginInlineEnd: 7 }}
                     InputLabelProps={{
-                        sx: {
-                          color: "#26a751ff", 
-                          fontWeight: "bold", 
-                          fontSize: 20
-                        },
-                      }}
+                      sx: {
+                        color: "#26a751ff",
+                        fontWeight: "bold",
+                        fontSize: 20,
+                      },
+                    }}
                   />
                 </Grid>
                 <Grid item xs={12} sm={6} md={3}>
@@ -448,14 +448,14 @@ export default function CompanyProfileEdit() {
                     value={form.phoneNumber}
                     onChange={handleChange}
                     fullWidth
-                    sx={{marginInlineEnd:-10  }}
+                    sx={{ marginInlineEnd: -10 }}
                     InputLabelProps={{
-                        sx: {
-                          color: "#26a751ff", 
-                          fontWeight: "bold", 
-                          fontSize: 20
-                        },
-                      }}
+                      sx: {
+                        color: "#26a751ff",
+                        fontWeight: "bold",
+                        fontSize: 20,
+                      },
+                    }}
                   />
                 </Grid>
 
@@ -463,48 +463,60 @@ export default function CompanyProfileEdit() {
                   <TextField
                     label="Facebook"
                     value={form.socialLinks.facebook}
-                    onChange={(e) => handleSocialChange("facebook", e.target.value)}
+                    onChange={(e) =>
+                      handleSocialChange("facebook", e.target.value)
+                    }
                     fullWidth
-                    sx={{marginInlineEnd:18  }}
+                    sx={{ marginInlineEnd: 18 }}
                     InputLabelProps={{
-                        sx: {
-                          color: "#26a751ff", 
-                          fontWeight: "bold", 
-                          fontSize: 20
-                        },
-                      }}
+                      sx: {
+                        color: "#26a751ff",
+                        fontWeight: "bold",
+                        fontSize: 20,
+                      },
+                    }}
                   />
                 </Grid>
                 <Grid item xs={12} sm={6}>
                   <TextField
                     label="LinkedIn"
                     value={form.socialLinks.linkedin}
-                    onChange={(e) => handleSocialChange("linkedin", e.target.value)}
+                    onChange={(e) =>
+                      handleSocialChange("linkedin", e.target.value)
+                    }
                     fullWidth
-                    sx={{marginInlineEnd:10  }}
+                    sx={{ marginInlineEnd: 10 }}
                     InputLabelProps={{
-                        sx: {
-                          color: "#26a751ff", 
-                          fontWeight: "bold", 
-                          fontSize: 20
-                        },
-                      }}
+                      sx: {
+                        color: "#26a751ff",
+                        fontWeight: "bold",
+                        fontSize: 20,
+                      },
+                    }}
                   />
                 </Grid>
 
-                <Grid item xs={12} sm={6} md={3} >
+                <Grid item xs={12} sm={6} md={3}>
                   <Autocomplete
                     options={countries}
                     value={form.country}
-                    onChange={(_, val) => setForm({ ...form, country: val || "" })}
-                    renderInput={(params) => <TextField {...params} sx={{marginInlineEnd:10  }} label="Quốc gia" InputLabelProps={{
-                        sx: {
-                          color: "#26a751ff", 
-                          fontWeight: "bold", 
-                          fontSize: 20
-                        },
-                      }} /> }
-                    
+                    onChange={(_, val) =>
+                      setForm({ ...form, country: val || "" })
+                    }
+                    renderInput={(params) => (
+                      <TextField
+                        {...params}
+                        sx={{ marginInlineEnd: 10 }}
+                        label="Quốc gia"
+                        InputLabelProps={{
+                          sx: {
+                            color: "#26a751ff",
+                            fontWeight: "bold",
+                            fontSize: 20,
+                          },
+                        }}
+                      />
+                    )}
                   />
                 </Grid>
                 <Grid item xs={12} sm={6} md={3}>
@@ -512,13 +524,20 @@ export default function CompanyProfileEdit() {
                     options={provinces.map((p) => p.ProvinceName)}
                     value={form.city}
                     onChange={(_, val) => setForm({ ...form, city: val || "" })}
-                    renderInput={(params) => <TextField {...params} label="Tỉnh / Thành phố" sx={{marginInlineEnd:11  }} InputLabelProps={{
-                        sx: {
-                          color: "#26a751ff", 
-                          fontWeight: "bold", 
-                          fontSize: 20
-                        },
-                      }} />}
+                    renderInput={(params) => (
+                      <TextField
+                        {...params}
+                        label="Tỉnh / Thành phố"
+                        sx={{ marginInlineEnd: 11 }}
+                        InputLabelProps={{
+                          sx: {
+                            color: "#26a751ff",
+                            fontWeight: "bold",
+                            fontSize: 20,
+                          },
+                        }}
+                      />
+                    )}
                   />
                 </Grid>
                 {/* --- PHÚC LỢI --- */}
@@ -528,18 +547,18 @@ export default function CompanyProfileEdit() {
                     value={form.benefits}
                     onChange={(chips) => setForm({ ...form, benefits: chips })}
                     fullWidth
-                    sx={{marginInlineEnd:110  }}
+                    sx={{ marginInlineEnd: 110 }}
                     InputLabelProps={{
-                        sx: {
-                          color: "#26a751ff", 
-                          fontWeight: "bold", 
-                          fontSize: 20
-                        },
-                      }}
+                      sx: {
+                        color: "#26a751ff",
+                        fontWeight: "bold",
+                        fontSize: 20,
+                      },
+                    }}
                   />
                 </Grid>
-              
-                 {/* --- MÔ TẢ & NGÀNH --- */}
+
+                {/* --- MÔ TẢ & NGÀNH --- */}
                 <Grid item xs={12}>
                   <TextField
                     label="Mô tả công ty"
@@ -549,18 +568,17 @@ export default function CompanyProfileEdit() {
                     fullWidth
                     multiline
                     rows={7}
-                    sx={{marginInlineEnd:20, marginTop:2  }}
+                    sx={{ marginInlineEnd: 20, marginTop: 2 }}
                     InputLabelProps={{
-                        sx: {
-                          color: "#26a751ff", 
-                          fontWeight: "bold", 
-                          fontSize: 20
-                        },
-                      }}
+                      sx: {
+                        color: "#26a751ff",
+                        fontWeight: "bold",
+                        fontSize: 20,
+                      },
+                    }}
                   />
                 </Grid>
-                
-                
+
                 {/* --- ẢNH CÔNG TY --- */}
                 <Grid item xs={12}>
                   <Typography fontWeight="bold" color="#2e7d32" mb={1}>
@@ -579,7 +597,11 @@ export default function CompanyProfileEdit() {
                     }}
                   >
                     <input {...getInputProps()} />
-                    <Typography color="#264653" fontSize={15}  sx={{marginInlineEnd:57  }} >
+                    <Typography
+                      color="#264653"
+                      fontSize={15}
+                      sx={{ marginInlineEnd: 57 }}
+                    >
                       {isDragActive
                         ? "Thả ảnh vào đây..."
                         : "Kéo & thả ảnh hoặc nhấn để chọn"}
@@ -622,8 +644,7 @@ export default function CompanyProfileEdit() {
                     </Grid>
                   </Box>
                 </Grid>
-
-              </Grid>  
+              </Grid>
 
               {/* --- NÚT LƯU --- */}
               <Box textAlign="center" mt={5}>
@@ -660,12 +681,15 @@ export default function CompanyProfileEdit() {
           onClose={handleCloseSnackbar}
           anchorOrigin={{ vertical: "top", horizontal: "right" }}
         >
-          <Alert onClose={handleCloseSnackbar} severity={snackbar.severity} variant="filled">
+          <Alert
+            onClose={handleCloseSnackbar}
+            severity={snackbar.severity}
+            variant="filled"
+          >
             {snackbar.message}
           </Alert>
         </Snackbar>
       </Box>
     </LocalizationProvider>
-
-  )
+  );
 }

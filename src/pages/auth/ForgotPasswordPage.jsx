@@ -1,7 +1,7 @@
 import { useState } from "react";
 import axiosClient from "../../utils/axiosClient";
 import { Link } from "react-router-dom";
-import { toast } from "react-toastify"; // ✅ Thêm dòng này
+import { toast } from "react-toastify";
 
 export default function ForgotPasswordPage() {
   const [email, setEmail] = useState("");
@@ -21,19 +21,20 @@ export default function ForgotPasswordPage() {
         setSuccess(true);
         const msg = res.data.message || "Email đặt lại mật khẩu đã được gửi!";
         setMessage(msg);
-        toast.success(msg); // ✅ Thông báo thành công
+        toast.success(msg);
       } else {
         setSuccess(false);
-        const msg = res.data?.message || "Không thể gửi email đặt lại mật khẩu.";
+        const msg =
+          res.data?.message || "Không thể gửi email đặt lại mật khẩu.";
         setMessage(msg);
-        toast.error(msg); // ✅ Thông báo lỗi
+        toast.error(msg);
       }
     } catch (err) {
       console.error("Forgot password error:", err);
       setSuccess(false);
       const msg = "Có lỗi xảy ra khi gửi yêu cầu.";
       setMessage(msg);
-      toast.error(msg); // ✅ Thông báo lỗi
+      toast.error(msg);
     }
 
     setLoading(false);

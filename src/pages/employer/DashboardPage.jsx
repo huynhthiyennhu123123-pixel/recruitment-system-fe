@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react"
+import React, { useEffect, useState } from "react";
 import {
   Box,
   Grid,
@@ -6,11 +6,11 @@ import {
   Typography,
   CircularProgress,
   Divider,
-} from "@mui/material"
-import WorkOutline from "@mui/icons-material/WorkOutline"
-import PeopleAltOutlined from "@mui/icons-material/PeopleAltOutlined"
-import EventAvailableOutlined from "@mui/icons-material/EventAvailableOutlined"
-import ShowChartOutlined from "@mui/icons-material/ShowChartOutlined"
+} from "@mui/material";
+import WorkOutline from "@mui/icons-material/WorkOutline";
+import PeopleAltOutlined from "@mui/icons-material/PeopleAltOutlined";
+import EventAvailableOutlined from "@mui/icons-material/EventAvailableOutlined";
+import ShowChartOutlined from "@mui/icons-material/ShowChartOutlined";
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -22,9 +22,9 @@ import {
   Filler,
   Tooltip,
   Legend,
-} from "chart.js"
-import { Bar, Line } from "react-chartjs-2"
-import { DataGrid } from "@mui/x-data-grid"
+} from "chart.js";
+import { Bar, Line } from "react-chartjs-2";
+import { DataGrid } from "@mui/x-data-grid";
 
 ChartJS.register(
   CategoryScale,
@@ -36,13 +36,13 @@ ChartJS.register(
   Title,
   Tooltip,
   Legend
-)
+);
 
-const API_URL = "http://localhost:8081/api/employer/dashboard"
+const API_URL = "http://localhost:8081/api/employer/dashboard";
 
 export default function EmployerDashboardPage() {
-  const [data, setData] = useState(null)
-  const [loading, setLoading] = useState(true)
+  const [data, setData] = useState(null);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -51,31 +51,31 @@ export default function EmployerDashboardPage() {
           headers: {
             Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
           },
-        })
-        const json = await res.json()
-        setData(json.data)
+        });
+        const json = await res.json();
+        setData(json.data);
       } catch (err) {
-        console.error("❌ Lỗi khi tải dashboard:", err)
+        console.error(" Lỗi khi tải dashboard:", err);
       } finally {
-        setLoading(false)
+        setLoading(false);
       }
-    }
-    fetchData()
-  }, [])
+    };
+    fetchData();
+  }, []);
 
   if (loading)
     return (
       <Box textAlign="center" py={5}>
         <CircularProgress color="success" />
       </Box>
-    )
+    );
 
   if (!data)
     return (
       <Typography color="error" textAlign="center" mt={4}>
         Không có dữ liệu hiển thị.
       </Typography>
-    )
+    );
 
   /* ========== 1️⃣ Thẻ tổng quan nhanh ========== */
   const summaryCards = [
@@ -87,7 +87,10 @@ export default function EmployerDashboardPage() {
     },
     {
       title: "Ứng viên nhận được",
-      value: Object.values(data.applicationsByStatus || {}).reduce((a, b) => a + b, 0),
+      value: Object.values(data.applicationsByStatus || {}).reduce(
+        (a, b) => a + b,
+        0
+      ),
       color: "#0288d1",
       icon: <PeopleAltOutlined sx={{ fontSize: 36, color: "#0288d1" }} />,
     },
@@ -103,7 +106,7 @@ export default function EmployerDashboardPage() {
       color: "#7b1fa2",
       icon: <EventAvailableOutlined sx={{ fontSize: 36, color: "#7b1fa2" }} />,
     },
-  ]
+  ];
 
   /* ========== 2️⃣ Biểu đồ xu hướng tuyển dụng (Line chart) ========== */
   const hiringTrendData = {
@@ -118,7 +121,7 @@ export default function EmployerDashboardPage() {
         tension: 0.3,
       },
     ],
-  }
+  };
 
   /* ========== 3️⃣ Biểu đồ Top Jobs hiệu quả (Bar chart) ========== */
   const topJobsData = {
@@ -140,7 +143,7 @@ export default function EmployerDashboardPage() {
         backgroundColor: "rgba(46,125,50,0.5)",
       },
     ],
-  }
+  };
 
   /* ========== 4️⃣ Bảng chi tiết top jobs ========== */
   const columns = [
@@ -177,11 +180,16 @@ export default function EmployerDashboardPage() {
       headerAlign: "center",
       valueFormatter: (params) => `${(params.value * 100).toFixed(1)}%`,
     },
-  ]
+  ];
 
   return (
     <Box p={3}>
-      <Typography variant="h5" fontWeight="bold" gutterBottom sx={{ color: "#2e7d32" }}>
+      <Typography
+        variant="h5"
+        fontWeight="bold"
+        gutterBottom
+        sx={{ color: "#2e7d32" }}
+      >
         Bảng điều khiển Nhà tuyển dụng
       </Typography>
 
@@ -206,7 +214,11 @@ export default function EmployerDashboardPage() {
                 <Typography variant="subtitle1" color="text.secondary">
                   {card.title}
                 </Typography>
-                <Typography variant="h5" fontWeight="bold" sx={{ color: card.color }}>
+                <Typography
+                  variant="h5"
+                  fontWeight="bold"
+                  sx={{ color: card.color }}
+                >
                   {card.value}
                 </Typography>
               </Box>
@@ -233,7 +245,9 @@ export default function EmployerDashboardPage() {
             }}
           />
         ) : (
-          <Typography color="text.secondary">Chưa có dữ liệu xu hướng</Typography>
+          <Typography color="text.secondary">
+            Chưa có dữ liệu xu hướng
+          </Typography>
         )}
       </Paper>
 
@@ -270,5 +284,5 @@ export default function EmployerDashboardPage() {
         </div>
       </Paper>
     </Box>
-  )
+  );
 }
