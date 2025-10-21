@@ -5,20 +5,22 @@ import { motion } from "framer-motion";
 export default function JobSearchSection() {
   const navigate = useNavigate();
   const [query, setQuery] = useState("");
-  const [category, setCategory] = useState("");
+  const [jobType, setJobType] = useState(""); // 🔹 đổi từ category → jobType
   const [location, setLocation] = useState("");
 
-  const categoryOptions = [
-    "Bán hàng / Kinh doanh",
-    "Dịch vụ khách hàng / CSKH",
-    "Kế toán / Kiểm toán",
-    "Khách sạn / Nhà hàng",
+  // 🔹 đổi từ categoryOptions → jobTypeOptions, tuân theo enum BE
+  const jobTypeOptions = [
+    { label: "Toàn thời gian (Full-time)", value: "FULL_TIME" },
+    { label: "Bán thời gian (Part-time)", value: "PART_TIME" },
+    { label: "Hợp đồng (Contract)", value: "CONTRACT" },
+    { label: "Thực tập (Internship)", value: "INTERNSHIP" },
+    { label: "Tự do (Freelance)", value: "FREELANCE" },
   ];
 
   const handleSearch = () => {
     const params = new URLSearchParams();
     if (query) params.append("keyword", query);
-    if (category) params.append("category", category);
+    if (jobType) params.append("jobType", jobType); // 🔹 gửi đúng tên param jobType
     if (location) params.append("location", location);
     navigate(`/jobs?${params.toString()}`);
   };
@@ -30,7 +32,7 @@ export default function JobSearchSection() {
       transition={{ duration: 0.6 }}
       className="relative w-full max-w-5xl mx-auto px-6"
     >
-      {/* Thẻ container */}
+      {/* Container */}
       <div className="bg-white/95 backdrop-blur-md border border-white/40 shadow-xl rounded-2xl p-8 text-center relative">
         {/* Tiêu đề */}
         <div className="mb-6">
@@ -42,9 +44,9 @@ export default function JobSearchSection() {
           </p>
         </div>
 
-        {/* Khung input tìm kiếm */}
+        {/* Ô tìm kiếm */}
         <div className="flex flex-wrap justify-center gap-3 sm:gap-4">
-          {/* Ô nhập công việc */}
+          {/* Ô nhập từ khóa */}
           <input
             type="text"
             placeholder="Tiêu đề công việc, vị trí..."
@@ -53,16 +55,16 @@ export default function JobSearchSection() {
             className="flex-1 min-w-[230px] rounded-full border border-gray-300 px-5 py-2.5 text-gray-700 focus:outline-none focus:ring-2 focus:ring-[#00B14F] transition"
           />
 
-          {/* Dropdown ngành nghề */}
+          {/* 🔹 Dropdown loại công việc (thay cho ngành nghề cũ) */}
           <select
-            value={category}
-            onChange={(e) => setCategory(e.target.value)}
+            value={jobType}
+            onChange={(e) => setJobType(e.target.value)}
             className="rounded-full border border-gray-300 px-4 py-2.5 text-gray-700 bg-white min-w-[180px] focus:outline-none focus:ring-2 focus:ring-[#00B14F] transition"
           >
-            <option value="">Lọc theo ngành nghề</option>
-            {categoryOptions.map((cat) => (
-              <option key={cat} value={cat}>
-                {cat}
+            <option value="">Lọc theo loại công việc</option>
+            {jobTypeOptions.map((type) => (
+              <option key={type.value} value={type.value}>
+                {type.label}
               </option>
             ))}
           </select>
@@ -85,7 +87,7 @@ export default function JobSearchSection() {
           </button>
         </div>
 
-        {/* Dòng thống kê */}
+        {/* Thống kê */}
         <div className="mt-6 text-sm text-gray-600">
           Việc làm hôm nay:{" "}
           <span className="text-[#00B14F] font-semibold">16</span> | Ngày:{" "}
@@ -93,8 +95,8 @@ export default function JobSearchSection() {
             {new Date().toLocaleDateString("vi-VN")}
           </span>{" "}
           | Việc làm đang tuyển:{" "}
-          <span className="text-[#00B14F] font-semibold">1.593</span> | Hồ sơ ứng
-          viên: <span className="text-[#00B14F] font-semibold">32.248</span>
+          <span className="text-[#00B14F] font-semibold">1.593</span> | Hồ sơ
+          ứng viên: <span className="text-[#00B14F] font-semibold">32.248</span>
         </div>
       </div>
     </motion.section>
