@@ -339,6 +339,34 @@ export default function EmployerRegisterPage() {
           </Typography>
         )}
       </form>
+      {message && (
+          <Typography
+            variant="body2"
+            sx={{ mt: 1.5, textAlign: "center" }}
+            color="error"
+          >
+            {message}
+          </Typography>
+        )}
+
+        {/* 🔗 Liên kết đăng nhập */}
+        <Box mt={3} textAlign="center">
+          <Typography variant="body2" color="text.secondary">
+            Đã có tài khoản?{" "}
+            <Button
+              variant="text"
+              onClick={() => navigate("/auth/login")}
+              sx={{
+                textTransform: "none",
+                fontWeight: "bold",
+                color: "#2e7d32",
+                "&:hover": { textDecoration: "underline" },
+              }}
+            >
+              Đăng nhập ngay
+            </Button>
+          </Typography>
+        </Box>
     </Container>
   );
 }
