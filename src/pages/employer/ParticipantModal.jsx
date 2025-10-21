@@ -66,7 +66,7 @@ export default function ParticipantModal({
       });
 
       if (res?.success || res?.data?.success) {
-        toast.success("🎉 Đã thêm ứng viên vào buổi phỏng vấn!");
+        toast.success(" Đã thêm ứng viên vào buổi phỏng vấn!");
 
         const newlyAdded = applicants
           .filter((a) => selectedIds.has(a.id))
@@ -95,7 +95,7 @@ export default function ParticipantModal({
   const handleRemove = async (userId) => {
     try {
       await removeParticipants(interview.id, { userIds: [userId] });
-      toast.success("🗑️ Đã xóa ứng viên khỏi buổi phỏng vấn.");
+      toast.success(" Đã xóa ứng viên khỏi buổi phỏng vấn.");
 
       const removed = participants.find((p) => p.id === userId);
       const newList = participants.filter((p) => p.id !== userId);
@@ -119,7 +119,7 @@ export default function ParticipantModal({
         await cancelInterview(interview.id, {
           reason: "Không còn ứng viên nào tham gia",
         });
-        toast.info("🟡 Buổi phỏng vấn đã được hủy.");
+        toast.info(" Buổi phỏng vấn đã được hủy.");
         onUpdated?.();
         onClose();
       }
