@@ -33,6 +33,7 @@ export default function JobListPage() {
         location: filters.location || undefined,
         jobType: filters.jobType || undefined,
         minSalary: filters.salaryMin || undefined,
+
         page,
         size: 12,
         sortBy: "createdAt",
@@ -43,7 +44,7 @@ export default function JobListPage() {
       setJobs(list);
       setTotalPages(res?.data?.totalPages || res?.totalPages || 1);
     } catch (err) {
-      console.error("❌ Lỗi tải việc làm:", err);
+      console.error("Lỗi tải việc làm:", err);
     } finally {
       setLoading(false);
     }
@@ -56,8 +57,7 @@ export default function JobListPage() {
       if (filters.keyword) params.append("keyword", filters.keyword);
       if (filters.location) params.append("location", filters.location);
       if (filters.jobType) params.append("jobType", filters.jobType);
-      if (filters.salaryMin) params.append("salaryMin", filters.salaryMin);
-      if (filters.salaryMax) params.append("salaryMax", filters.salaryMax);
+      if (filters.salaryMin) params.append("minSalary", filters.salaryMin);
       params.append("page", page);
 
       navigate(`/jobs?${params.toString()}`, { replace: true });
@@ -87,7 +87,7 @@ export default function JobListPage() {
   };
 
   // =============================
-  // JobCard (đồng bộ JobDetailPage & HomePage)
+  // JobCard
   // =============================
   const JobCard = ({ job }) => {
     const [hovered, setHovered] = useState(false);
@@ -126,7 +126,7 @@ export default function JobListPage() {
 
           {job.salaryMin && job.salaryMax ? (
             <p className="text-[#00b14f] font-semibold">
-              💰 {job.salaryMin.toLocaleString("vi-VN")}₫ –{" "}
+              {job.salaryMin.toLocaleString("vi-VN")}₫ –{" "}
               {job.salaryMax.toLocaleString("vi-VN")}₫
             </p>
           ) : (
@@ -169,7 +169,8 @@ export default function JobListPage() {
   if (loading)
     return (
       <div className="flex justify-center items-center h-80 text-gray-500">
-        <FaSpinner className="animate-spin mr-2" /> Đang tải danh sách việc làm...
+        <FaSpinner className="animate-spin mr-2" /> Đang tải danh sách việc
+        làm...
       </div>
     );
 
@@ -213,28 +214,20 @@ export default function JobListPage() {
 
           <div className="mb-4">
             <label className="block text-sm font-medium text-gray-700 mb-1">
-              Khoảng lương (VNĐ)
+              Lương tối thiểu (triệu VNĐ)
             </label>
-            <div className="flex gap-2">
-              <input
-                type="number"
-                placeholder="Tối thiểu"
-                value={filters.salaryMin}
-                onChange={(e) =>
-                  handleFilterChange("salaryMin", e.target.value)
-                }
-                className="w-1/2 border border-gray-300 rounded-md px-3 py-2 text-sm outline-none focus:border-[#00b14f]"
-              />
-              <input
-                type="number"
-                placeholder="Tối đa"
-                value={filters.salaryMax}
-                onChange={(e) =>
-                  handleFilterChange("salaryMax", e.target.value)
-                }
-                className="w-1/2 border border-gray-300 rounded-md px-3 py-2 text-sm outline-none focus:border-[#00b14f]"
-              />
-            </div>
+            <input
+              type="number"
+              placeholder="VD: 10"
+              value={filters.salaryMin ? filters.salaryMin / 1_000_000 : ""}
+              onChange={(e) =>
+                handleFilterChange(
+                  "salaryMin",
+                  Number(e.target.value) * 1_000_000
+                )
+              }
+              className="w-full border border-gray-300 rounded-md px-3 py-2 text-sm outline-none focus:border-[#00b14f] focus:ring-1 focus:ring-[#00b14f] transition"
+            />
           </div>
 
           <button
