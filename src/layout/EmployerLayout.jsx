@@ -59,7 +59,7 @@ export default function EmployerLayout() {
       await logout();
       setSnackbar({
         open: true,
-        message: "Đăng xuất thành công! 👋 Đang quay về trang chủ...",
+        message: "Đăng xuất thành công!",
         severity: "success",
       });
 
@@ -234,7 +234,7 @@ export default function EmployerLayout() {
         <Container maxWidth="lg">
           <Grid container spacing={4}>
             {/* Cột 1: logo + giới thiệu */}
-            <Grid item xs={12} md={4}>
+            <Grid  size={{ xs: 12, md: 4 }}>
               <Typography variant="h6" gutterBottom>
                 JobRecruit Employer
               </Typography>
@@ -245,7 +245,7 @@ export default function EmployerLayout() {
             </Grid>
 
             {/* Cột 2: liên kết nhanh */}
-            <Grid item xs={12} md={4}>
+            <Grid  size={{ xs: 12, md: 4 }}>
               <Typography variant="h6" gutterBottom>
                 Liên kết nhanh
               </Typography>
@@ -278,7 +278,7 @@ export default function EmployerLayout() {
             </Grid>
 
             {/* Cột 3: liên hệ */}
-            <Grid item xs={12} md={4}>
+            <Grid size={{ xs: 12, md: 4 }}>
               <Typography variant="h6" gutterBottom>
                 Liên hệ
               </Typography>
