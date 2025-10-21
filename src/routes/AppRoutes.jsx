@@ -87,16 +87,14 @@ function App() {
           <Route path="about" element={<AboutPage />} />
         </Route>
 
-        {/* Auth */}
-        <Route path="/auth" element={<AuthLayout />}>
-          <Route path="login" element={<LoginPage />} />
-          <Route path="register" element={<RegisterPage />} />
-          <Route path="employer-register" element={<EmployerRegisterPage />} />
-          <Route path="check-email" element={<CheckEmailPage />} />
-          <Route path="verify-email" element={<VerifyEmailPage />} />
-          <Route path="forgot-password" element={<ForgotPasswordPage />} />
-          <Route path="reset-password" element={<ResetPasswordPage />} />
-        </Route>
+        {/* Auth - Tất cả trang đều full layout */}
+        <Route path="/auth/login" element={<LoginPage />} />
+        <Route path="/auth/register" element={<RegisterPage />} />
+        <Route path="/auth/employer-register" element={<EmployerRegisterPage />} />
+        <Route path="/auth/check-email" element={<CheckEmailPage />} />
+        <Route path="/auth/verify-email" element={<VerifyEmailPage />} />
+        <Route path="/auth/forgot-password" element={<ForgotPasswordPage />} />
+        <Route path="/auth/reset-password" element={<ResetPasswordPage />} />
 
 
         {/* Redirect khi BE trả link trực tiếp */}

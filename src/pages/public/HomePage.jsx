@@ -65,98 +65,96 @@ export default function HomePage() {
     fetchTopCompanies();
   }, []);
 
-  // 🎨 JobCard kiểu TopCV Pro
-const JobCard = ({ job }) => {
-  const [hovered, setHovered] = useState(false);
+ 
+  const JobCard = ({ job }) => {
+    const [hovered, setHovered] = useState(false);
 
-  return (
-    <motion.div
-      whileHover={{ scale: 1.02 }}
-      onMouseEnter={() => setHovered(true)}
-      onMouseLeave={() => setHovered(false)}
-      transition={{ type: "spring", stiffness: 180, damping: 15 }}
-      className="relative bg-white border border-gray-100 rounded-2xl p-5 shadow-sm hover:shadow-xl transition-all duration-300 overflow-hidden group"
-    >
-      {/* Logo + tiêu đề */}
-      <div className="flex items-center gap-4 mb-4">
-        <img
-          src={job.company?.logoUrl || "/default-company.png"}
-          alt={job.company?.name || "Công ty"}
-          className="w-14 h-14 rounded-xl border object-cover bg-gray-50"
-        />
-        <div className="flex-1">
-          <h3 className="text-lg font-semibold text-gray-800 group-hover:text-[#00b14f] transition line-clamp-1">
-            {job.title}
-          </h3>
-          <p className="text-sm text-gray-500 line-clamp-1">
-            {job.company?.name || "Công ty chưa xác định"}
-          </p>
-        </div>
-      </div>
-
-      {/* Thông tin việc làm */}
-      <div className="flex flex-col gap-2 text-sm text-gray-600">
-        <div className="flex items-center gap-1">
-          <FaMapMarkerAlt className="text-[#00b14f]" />
-          <span>{job.location || "Không rõ địa điểm"}</span>
-        </div>
-
-        {job.salaryMin && job.salaryMax ? (
-          <p className="text-[#00b14f] font-semibold">
-            💰 {job.salaryMin.toLocaleString("vi-VN")}₫ –{" "}
-            {job.salaryMax.toLocaleString("vi-VN")}₫
-          </p>
-        ) : (
-          <p className="text-gray-500 italic">Mức lương thỏa thuận</p>
-        )}
-      </div>
-
-      {/* Footer */}
-      <div className="flex justify-between items-center mt-5">
-        <span className="text-xs text-gray-400">
-          Cập nhật:{" "}
-          {new Date(job.createdAt || Date.now()).toLocaleDateString("vi-VN")}
-        </span>
-        <Link
-          to={`/jobs/${job.id}`}
-          className="text-sm font-medium text-[#00b14f] hover:text-[#008f3f] flex items-center gap-1"
-        >
-          Xem chi tiết <FaArrowRight size={12} />
-        </Link>
-      </div>
-
-      {/* Ribbon */}
-      <div className="absolute top-0 right-0 bg-[#00b14f] text-white text-xs font-semibold px-3 py-1 rounded-bl-xl rounded-tr-2xl shadow">
-        {job.jobType || "Full-time"}
-      </div>
-
-      {/* ❤️ Nút lưu việc */}
-      <button
-        className="absolute top-3 right-3 text-gray-300 hover:text-[#00b14f] transition z-10"
-        title="Lưu việc làm"
-      >
-        <i className="fa-regular fa-heart text-lg"></i>
-      </button>
-
-      {/* 🌟 Hiệu ứng hover overlay + nút Ứng tuyển */}
+    return (
       <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: hovered ? 1 : 0 }}
-        transition={{ duration: 0.3 }}
-        className="absolute inset-0 bg-gradient-to-t from-[#00b14f]/90 via-[#00b14f]/60 to-transparent flex items-end justify-center p-5"
+        whileHover={{ scale: 1.02 }}
+        onMouseEnter={() => setHovered(true)}
+        onMouseLeave={() => setHovered(false)}
+        transition={{ type: "spring", stiffness: 180, damping: 15 }}
+        className="relative bg-white border border-gray-100 rounded-2xl p-5 shadow-sm hover:shadow-xl transition-all duration-300 overflow-hidden group"
       >
-        <Link
-          to={`/jobs/${job.id}`}
-          className="bg-white text-[#00b14f] font-semibold px-6 py-2 rounded-full shadow-lg hover:bg-[#00b14f] hover:text-white transition"
+        {/* Logo + tiêu đề */}
+        <div className="flex items-center gap-4 mb-4">
+          <img
+            src={job.company?.logoUrl || "/default-company.png"}
+            alt={job.company?.name || "Công ty"}
+            className="w-14 h-14 rounded-xl border object-cover bg-gray-50"
+          />
+          <div className="flex-1">
+            <h3 className="text-lg font-semibold text-gray-800 group-hover:text-[#00b14f] transition line-clamp-1">
+              {job.title}
+            </h3>
+            <p className="text-sm text-gray-500 line-clamp-1">
+              {job.company?.name || "Công ty chưa xác định"}
+            </p>
+          </div>
+        </div>
+
+        {/* Thông tin việc làm */}
+        <div className="flex flex-col gap-2 text-sm text-gray-600">
+          <div className="flex items-center gap-1">
+            <FaMapMarkerAlt className="text-[#00b14f]" />
+            <span>{job.location || "Không rõ địa điểm"}</span>
+          </div>
+
+          {job.salaryMin && job.salaryMax ? (
+            <p className="text-[#00b14f] font-semibold">
+              💰 {job.salaryMin.toLocaleString("vi-VN")}₫ –{" "}
+              {job.salaryMax.toLocaleString("vi-VN")}₫
+            </p>
+          ) : (
+            <p className="text-gray-500 italic">Mức lương thỏa thuận</p>
+          )}
+        </div>
+
+        {/* Footer */}
+        <div className="flex justify-between items-center mt-5">
+          <span className="text-xs text-gray-400">
+            Cập nhật:{" "}
+            {new Date(job.createdAt || Date.now()).toLocaleDateString("vi-VN")}
+          </span>
+          <Link
+            to={`/jobs/${job.id}`}
+            className="text-sm font-medium text-[#00b14f] hover:text-[#008f3f] flex items-center gap-1"
+          >
+            Xem chi tiết <FaArrowRight size={12} />
+          </Link>
+        </div>
+
+        {/* Ribbon */}
+        <div className="absolute top-0 right-0 bg-[#00b14f] text-white text-xs font-semibold px-3 py-1 rounded-bl-xl rounded-tr-2xl shadow">
+          {job.jobType || "Full-time"}
+        </div>
+
+        {/* ❤️ Nút lưu việc */}
+        <button
+          className="absolute top-3 right-3 text-gray-300 hover:text-[#00b14f] transition z-10"
+          title="Lưu việc làm"
         >
-          Ứng tuyển ngay
-        </Link>
+          <i className="fa-regular fa-heart text-lg"></i>
+        </button>
+
+        {/* 🌟 Hiệu ứng hover overlay + nút Ứng tuyển */}
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: hovered ? 1 : 0 }}
+          transition={{ duration: 0.3 }}
+          className="absolute inset-0 bg-gradient-to-t from-[#00b14f]/90 via-[#00b14f]/60 to-transparent flex items-end justify-center p-5"
+        >
+          <Link
+            to={`/jobs/${job.id}`}
+            className="bg-white text-[#00b14f] font-semibold px-6 py-2 rounded-full shadow-lg hover:bg-[#00b14f] hover:text-white transition"
+          >
+            Ứng tuyển ngay
+          </Link>
+        </motion.div>
       </motion.div>
-    </motion.div>
-  );
-};
-
-
+    );
+  };
   // 🎨 Company card
   const CompanyCard = ({ company }) => (
     <motion.div
@@ -358,6 +356,90 @@ const JobCard = ({ job }) => {
                 </p>
               </div>
             ))}
+          </div>
+        </motion.section>
+        {/* 📰 Tin tức & Cẩm nang nghề nghiệp */}
+        <motion.section
+          initial={{ opacity: 0, y: 30 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          className="mt-20"
+        >
+          <h2 className="text-2xl font-bold text-green-600 mb-8 text-center">
+            Tin tức & Cẩm nang nghề nghiệp
+          </h2>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            {[
+              {
+                title: "5 Mẹo giúp CV của bạn nổi bật trước nhà tuyển dụng",
+                img: "/cv-tips.png",
+                desc: "Từ ngôn từ, bố cục đến cách trình bày – cùng tìm hiểu cách khiến CV của bạn ghi điểm tuyệt đối.",
+              },
+              {
+                title: "Cách trả lời câu hỏi phỏng vấn khó nhằn nhất",
+                img: "/interview.jpg",
+                desc: "Đối mặt với câu hỏi 'Điểm yếu của bạn là gì?' một cách tự tin và chuyên nghiệp.",
+              },
+              {
+                title: "Top ngành nghề hot năm 2025: Cơ hội và xu hướng",
+                img: "/hot-jobs.png",
+                desc: "Ngành công nghệ, AI, và Marketing kỹ thuật số đang dẫn đầu xu hướng tuyển dụng 2025.",
+              },
+            ].map((a, i) => (
+              <motion.div
+                key={i}
+                whileHover={{ scale: 1.03 }}
+                className="bg-white rounded-2xl overflow-hidden shadow-sm border border-gray-100 hover:shadow-md transition"
+              >
+                <img
+                  src={a.img}
+                  alt={a.title}
+                  className="w-full h-44 object-cover"
+                />
+                <div className="p-5">
+                  <h3 className="font-semibold text-gray-800 mb-2 line-clamp-2">
+                    {a.title}
+                  </h3>
+                  <p className="text-sm text-gray-600 mb-4 line-clamp-3">
+                    {a.desc}
+                  </p>
+                  <Link
+                    to="/articles"
+                    className="text-[#00b14f] font-medium text-sm hover:underline"
+                  >
+                    Đọc thêm →
+                  </Link>
+                </div>
+              </motion.div>
+            ))}
+          </div>
+        </motion.section>
+        {/* 📊 Thống kê hệ thống */}
+        <motion.section
+          initial={{ opacity: 0, y: 30 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          className="mt-20"
+        >
+          <div className="bg-green-50 rounded-3xl py-12 px-6 text-center">
+            <h2 className="text-2xl font-bold text-green-700 mb-10">
+              Cùng JobRecruit tạo nên mạng lưới tuyển dụng lớn mạnh
+            </h2>
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-8 max-w-4xl mx-auto">
+              {[
+                { number: "15K+", label: "Công việc đang tuyển" },
+                { number: "8K+", label: "Nhà tuyển dụng uy tín" },
+                { number: "200K+", label: "Ứng viên hoạt động" },
+                { number: "98%", label: "Tỷ lệ phản hồi nhanh" },
+              ].map((item) => (
+                <div key={item.label}>
+                  <h3 className="text-3xl font-bold text-green-600 mb-1">
+                    {item.number}
+                  </h3>
+                  <p className="text-gray-600 text-sm">{item.label}</p>
+                </div>
+              ))}
+            </div>
           </div>
         </motion.section>
       </div>

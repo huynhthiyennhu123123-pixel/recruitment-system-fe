@@ -2,20 +2,21 @@ import { useEffect, useRef, useState } from "react";
 import { useLocation, useNavigate, Link } from "react-router-dom";
 import axiosClient from "../../utils/axiosClient";
 import { toast } from "react-toastify";
+import { motion } from "framer-motion";
+import logo from "../../assets/images/logo.png";
 
 export default function VerifyEmailPage() {
   const location = useLocation();
   const navigate = useNavigate();
   const [status, setStatus] = useState("loading"); // loading | success | error
   const [message, setMessage] = useState("");
-  const hasRun = useRef(false); //  Dùng để ngăn chạy 2 lần do Strict Mode
+  const hasRun = useRef(false); // ✅ Chặn chạy 2 lần trong Strict Mode
 
   // Lấy token từ query ?token=...
   const searchParams = new URLSearchParams(location.search);
   const token = searchParams.get("token");
 
   useEffect(() => {
-    //Chặn không cho chạy 2 lần trong React Strict Mode (DEV)
     if (hasRun.current) return;
     hasRun.current = true;
 
@@ -35,8 +36,7 @@ export default function VerifyEmailPage() {
           setStatus("success");
           setMessage(msg);
           toast.success(msg);
-          // Tự động chuyển hướng sau 2 giây
-          setTimeout(() => navigate("/auth/login"), 2000);
+          setTimeout(() => navigate("/auth/login"), 2500);
         } else {
           const msg = res.data?.message || "Xác minh thất bại.";
           setStatus("error");
@@ -56,41 +56,88 @@ export default function VerifyEmailPage() {
   }, [token, navigate]);
 
   return (
-    <div className="text-center mt-10">
-      {status === "loading" && (
-        <p className="text-gray-600">Đang xác minh email...</p>
-      )}
+    <div className="flex min-h-screen">
+      {/* Bên trái: nội dung (65%) */}
+      <motion.div
+        initial={{ opacity: 0, x: -40 }}
+        animate={{ opacity: 1, x: 0 }}
+        transition={{ duration: 0.5 }}
+        className="w-full md:w-[65%] flex items-center justify-center bg-white px-8 lg:px-16"
+      >
+        <div className="w-full max-w-md text-center">
+          <img src={logo} alt="Logo" className="h-14 mx-auto mb-4" />
 
-      {status === "success" && (
-        <>
-          <div className="text-green-600 text-5xl mb-3"></div>
-          <p className="text-green-600 font-bold text-lg mb-2">{message}</p>
-          <p>Bạn sẽ được chuyển đến trang đăng nhập...</p>
-        </>
-      )}
+          {/* Loading */}
+          {status === "loading" && (
+            <div className="space-y-3">
+              <div className="text-gray-600 text-lg animate-pulse">
+                Đang xác minh email...
+              </div>
+            </div>
+          )}
 
-      {status === "error" && (
-        <>
-          <div className="text-red-600 text-5xl mb-3"></div>
-          <p className="text-red-600 font-bold text-lg mb-2">
-            Xác minh thất bại
-          </p>
-          <p className="text-gray-600 mb-4">{message}</p>
+          {/* Success */}
+          {status === "success" && (
+            <motion.div
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1 }}
+              className="space-y-4"
+            >
+              <div className="text-green-600 text-5xl font-bold">✓</div>
+              <h2 className="text-xl font-semibold text-green-600">
+                {message}
+              </h2>
+              <p className="text-gray-600">
+                Bạn sẽ được chuyển đến trang đăng nhập trong giây lát...
+              </p>
+            </motion.div>
+          )}
 
-          <Link
-            to="/auth/check-email"
-            className="block bg-green-600 text-white px-4 py-2 rounded mb-2"
-          >
-            Gửi lại email xác nhận
-          </Link>
-          <Link
-            to="/auth/login"
-            className="block text-blue-600 hover:underline"
-          >
-            Quay lại đăng nhập
-          </Link>
-        </>
-      )}
+          {/* Error */}
+          {status === "error" && (
+            <motion.div
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1 }}
+              className="space-y-4"
+            >
+              <div className="text-red-600 text-5xl font-bold">✕</div>
+              <h2 className="text-xl font-semibold text-red-600">
+                Xác minh thất bại
+              </h2>
+              <p className="text-gray-600 mb-4">{message}</p>
+
+              <Link
+                to="/auth/check-email"
+                className="block w-full bg-green-600 hover:bg-green-700 text-white font-medium py-2.5 rounded-lg transition"
+              >
+                Gửi lại email xác nhận
+              </Link>
+              <Link
+                to="/auth/login"
+                className="block text-green-600 hover:underline text-sm mt-2"
+              >
+                ← Quay lại đăng nhập
+              </Link>
+            </motion.div>
+          )}
+        </div>
+      </motion.div>
+
+      {/* Bên phải: banner (35%) */}
+      <motion.div
+        initial={{ opacity: 0, x: 40 }}
+        animate={{ opacity: 1, x: 0 }}
+        transition={{ duration: 0.5 }}
+        className="hidden md:flex w-[35%] bg-gradient-to-br from-[#004d40] via-[#00332c] to-[#001f1f] text-white flex-col justify-center items-center px-10"
+      >
+        <h2 className="text-3xl font-bold mb-4 text-center leading-snug">
+          Xác thực tài khoản <br />
+          <span className="text-green-400">Kích hoạt hành trình nghề nghiệp</span>
+        </h2>
+        <p className="max-w-md text-center text-gray-300 text-sm">
+          JobRecruit — giúp bạn bảo mật thông tin và mở ra nhiều cơ hội mới.
+        </p>
+      </motion.div>
     </div>
   );
 }
