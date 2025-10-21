@@ -19,6 +19,7 @@ import {
   LineElement,
   BarElement,
   Title,
+  Filler,
   Tooltip,
   Legend,
 } from "chart.js";
@@ -31,6 +32,7 @@ ChartJS.register(
   PointElement,
   LineElement,
   BarElement,
+  Filler,
   Title,
   Tooltip,
   Legend
@@ -194,7 +196,7 @@ export default function EmployerDashboardPage() {
       {/* 1️⃣ Tổng quan nhanh */}
       <Grid container spacing={3}>
         {summaryCards.map((card, idx) => (
-          <Grid item xs={12} md={3} key={idx}>
+          <Grid  size={{ xs: 12, md: 3 }} key={idx}>
             <Paper
               elevation={4}
               sx={{

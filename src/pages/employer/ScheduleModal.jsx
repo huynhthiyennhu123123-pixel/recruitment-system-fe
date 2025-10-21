@@ -13,16 +13,17 @@ import {
   Divider,
   Snackbar,
   Alert,
-} from "@mui/material";
-import CalendarMonthIcon from "@mui/icons-material/CalendarMonth";
-import AccessTimeIcon from "@mui/icons-material/AccessTime";
-import VideoCameraFrontIcon from "@mui/icons-material/VideoCameraFront";
-import LocationOnIcon from "@mui/icons-material/LocationOn";
-import LinkIcon from "@mui/icons-material/Link";
-import NotesIcon from "@mui/icons-material/Notes";
-import { getManagedApplications } from "../../services/employerService";
-import { scheduleInterview } from "../../services/interviewService";
-import dayjs from "dayjs";
+} from "@mui/material"
+import CalendarMonthIcon from "@mui/icons-material/CalendarMonth"
+import AccessTimeIcon from "@mui/icons-material/AccessTime"
+import VideoCameraFrontIcon from "@mui/icons-material/VideoCameraFront"
+import LocationOnIcon from "@mui/icons-material/LocationOn"
+import LinkIcon from "@mui/icons-material/Link"
+import NotesIcon from "@mui/icons-material/Notes"
+import { getManagedApplications } from "../../services/employerService"
+import { scheduleInterview } from "../../services/interviewService"
+import dayjs from "dayjs"
+import Slide from "@mui/material/Slide"
 
 const INTERVIEW_METHODS = [
   { value: "VIDEO", label: "Phỏng vấn trực tuyến (Video)" },
@@ -146,6 +147,12 @@ export default function ScheduleModal({ open, onClose, onSuccess }) {
     setSnackbar((prev) => ({ ...prev, open: false }));
   };
 
+
+  function SlideTransition(props) {
+    return <Slide {...props} direction="left" />
+  }
+
+  
   return (
     <>
       <Dialog open={open} onClose={onClose} fullWidth maxWidth="md">
@@ -343,16 +350,27 @@ export default function ScheduleModal({ open, onClose, onSuccess }) {
         open={snackbar.open}
         autoHideDuration={3000}
         onClose={handleCloseSnackbar}
-        anchorOrigin={{ vertical: "top", horizontal: "center" }}
+        anchorOrigin={{ vertical: "top", horizontal: "right" }} 
+        TransitionComponent={SlideTransition}
+        sx={{
+          mt: 2, 
+        }}
       >
         <Alert
           severity={snackbar.severity}
           onClose={handleCloseSnackbar}
-          sx={{ width: "100%", fontSize: "16px" }}
+          variant="filled" 
+          sx={{
+            width: "100%",
+            fontSize: "16px",
+            boxShadow: 3,
+            borderRadius: 2,
+          }}
         >
           {snackbar.message}
         </Alert>
       </Snackbar>
+
     </>
   );
 }
