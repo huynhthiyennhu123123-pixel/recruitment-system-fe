@@ -11,6 +11,8 @@ import {
   Avatar,
   Chip,
   Divider,
+  Grid,
+  Tooltip,
 } from "@mui/material"
 import PersonOutline from "@mui/icons-material/PersonOutline"
 import WorkOutline from "@mui/icons-material/WorkOutline"
@@ -36,20 +38,68 @@ export default function ApplicantsPage() {
     fetchApplicants()
   }, [])
 
+  // 🧮 Tính thống kê trạng thái
+  const pendingCount = applicants.filter((a) => a.status === "PENDING").length
+  const approvedCount = applicants.filter((a) => a.status === "APPROVED").length
+  const rejectedCount = applicants.filter((a) => a.status === "REJECTED").length
+
+  const formatTimeAgo = (dateString) => {
+    const diff = Math.floor((Date.now() - new Date(dateString)) / (1000 * 60 * 60 * 24))
+    if (diff <= 0) return "Hôm nay"
+    if (diff === 1) return "1 ngày trước"
+    return `${diff} ngày trước`
+  }
+
   return (
     <Box sx={{ maxWidth: 1000, mx: "auto", my: 4 }}>
+      {/* Header */}
       <Typography
         variant="h5"
         fontWeight="bold"
-        color="#2e7d32"
         gutterBottom
-        sx={{ display: "flex", alignItems: "center", gap: 1 }}
+        sx={{
+          display: "flex",
+          alignItems: "center",
+          gap: 1,
+          background: "linear-gradient(45deg, #2e7d32, #66bb6a)",
+          WebkitBackgroundClip: "text",
+          WebkitTextFillColor: "transparent",
+        }}
       >
-        <PersonOutline sx={{ fontSize: 28 }} />
+        <PersonOutline sx={{ fontSize: 28, color: "#2e7d32" }} />
         Ứng viên đã ứng tuyển
       </Typography>
 
-      <Paper sx={{ p: 2, borderRadius: 3, mt: 2 }}>
+      {/* Thống kê */}
+      <Grid container spacing={2} mb={3}>
+        {[
+          { label: "Đang chờ", value: pendingCount, bg: "linear-gradient(135deg,#fff59d,#fbc02d)" },
+          { label: "Được chấp nhận", value: approvedCount, bg: "linear-gradient(135deg,#81c784,#43a047)" },
+          { label: "Bị từ chối", value: rejectedCount, bg: "linear-gradient(135deg,#ef9a9a,#e53935)" },
+        ].map((item, i) => (
+          <Grid item xs={12} sm={4} key={i}>
+            <Paper
+              sx={{
+                p: 2,
+                borderRadius: 3,
+                textAlign: "center",
+                background: item.bg,
+                color: "#fff",
+                boxShadow: "0 4px 12px rgba(0,0,0,0.15)",
+                "&:hover": { transform: "translateY(-4px)", transition: "0.3s" },
+              }}
+            >
+              <Typography variant="h5" fontWeight="bold">
+                {item.value}
+              </Typography>
+              <Typography variant="body1">{item.label}</Typography>
+            </Paper>
+          </Grid>
+        ))}
+      </Grid>
+
+      {/* Danh sách ứng viên */}
+      <Paper sx={{ p: 2, borderRadius: 3, boxShadow: "0 3px 10px rgba(0,0,0,0.1)" }}>
         {loading ? (
           <Box textAlign="center" py={5}>
             <CircularProgress color="success" />
@@ -64,18 +114,33 @@ export default function ApplicantsPage() {
             Chưa có ứng viên nào ứng tuyển.
           </Typography>
         ) : (
-          <List>
+          <List disablePadding>
             {applicants.map((a, idx) => (
               <React.Fragment key={a.id || idx}>
-                <ListItem alignItems="flex-start">
+                <ListItem
+                  sx={{
+                    bgcolor: idx % 2 === 0 ? "#f9fbe7" : "#ffffff",
+                    borderRadius: 2,
+                    transition: "0.3s",
+                    "&:hover": { backgroundColor: "#f1f8e9" },
+                  }}
+                >
                   <ListItemAvatar>
-                    <Avatar sx={{ bgcolor: "#2e7d32" }}>
-                      <PersonOutline />
+                    <Avatar
+                      sx={{
+                        bgcolor: "#2e7d32",
+                        width: 48,
+                        height: 48,
+                        fontWeight: "bold",
+                      }}
+                    >
+                      {a.fullName ? a.fullName[0].toUpperCase() : <PersonOutline />}
                     </Avatar>
                   </ListItemAvatar>
+
                   <ListItemText
                     primary={
-                      <Typography variant="subtitle1" fontWeight="bold">
+                      <Typography variant="subtitle1" fontWeight="bold" color="#1b5e20">
                         {a.fullName || "Ứng viên ẩn danh"}
                       </Typography>
                     }
@@ -87,27 +152,38 @@ export default function ApplicantsPage() {
                             Ứng tuyển vào: {a.jobTitle || "Không xác định"}
                           </Typography>
                         </Box>
+
                         <Box sx={{ display: "flex", alignItems: "center", gap: 1, mt: 0.5 }}>
                           <CalendarMonthOutlined sx={{ fontSize: 18, color: "#757575" }} />
-                          <Typography variant="body2" color="text.secondary">
-                            Ngày ứng tuyển:{" "}
-                            {a.appliedAt
-                              ? new Date(a.appliedAt).toLocaleDateString("vi-VN")
-                              : "Không rõ"}
-                          </Typography>
+                          <Tooltip title={a.appliedAt ? new Date(a.appliedAt).toLocaleString("vi-VN") : ""}>
+                            <Typography variant="body2" color="text.secondary">
+                              {a.appliedAt ? `Ứng tuyển ${formatTimeAgo(a.appliedAt)}` : "Không rõ"}
+                            </Typography>
+                          </Tooltip>
                         </Box>
+
                         {a.status && (
                           <Box sx={{ mt: 1 }}>
                             <Chip
-                              label={a.status === "PENDING" ? "Đang chờ" : a.status}
-                              color={
-                                a.status === "APPROVED"
-                                  ? "success"
+                              label={
+                                a.status === "PENDING"
+                                  ? "Đang chờ duyệt"
+                                  : a.status === "APPROVED"
+                                  ? "Đã chấp nhận"
                                   : a.status === "REJECTED"
-                                  ? "error"
-                                  : "default"
+                                  ? "Đã từ chối"
+                                  : "Không xác định"
                               }
-                              size="small"
+                              sx={{
+                                fontWeight: 500,
+                                background:
+                                  a.status === "APPROVED"
+                                    ? "linear-gradient(45deg,#81c784,#43a047)"
+                                    : a.status === "REJECTED"
+                                    ? "linear-gradient(45deg,#ef9a9a,#e53935)"
+                                    : "linear-gradient(45deg,#fff59d,#fbc02d)",
+                                color: a.status === "REJECTED" ? "#fff" : "#000",
+                              }}
                             />
                           </Box>
                         )}
@@ -115,7 +191,7 @@ export default function ApplicantsPage() {
                     }
                   />
                 </ListItem>
-                {idx < applicants.length - 1 && <Divider variant="inset" component="li" />}
+                {idx < applicants.length - 1 && <Divider component="li" />}
               </React.Fragment>
             ))}
           </List>

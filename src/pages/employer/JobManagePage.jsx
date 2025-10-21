@@ -237,32 +237,30 @@ const getStatusColor = (status) => {
         </Button>
       </Box>
 
-      {/* Stats cards */}
       <Grid container spacing={2} mb={3}>
         {[
-          { label: "Đang hiển thị", value: activeCount, color: "#2e7d32" },
-          { label: "Bản nháp", value: draftCount, color: "#9e9e9e" },
-          { label: "Hết hạn", value: expiredCount, color: "#f9a825" },
-          { label: "Đã xóa mềm", value: closeCount, color: "#dd1547ff" },
+          { label: "Đang hiển thị", value: activeCount, color: "#2e7d32", bg: "linear-gradient(135deg,#a5d6a7,#66bb6a)"},
+          { label: "Bản nháp", value: draftCount, color: "#0288d1", bg: "linear-gradient(135deg,#81d4fa,#4fc3f7)" },
+          { label: "Hết hạn", value: expiredCount, color: "#f9a825", bg: "linear-gradient(135deg,#fff176,#fdd835)" },
+          { label: "Đã xóa mềm", value: closeCount, color: "#c62828", bg: "linear-gradient(135deg,#ef9a9a,#e57373)" },
         ].map((item, idx) => (
-          <Grid item xs={12} md={4} key={idx}>
+          <Grid item xs={12} sm={6} md={3} key={idx}>
             <Paper
               sx={{
-                p: 2,
+                p: 2.5,
                 textAlign: "center",
                 borderRadius: 3,
-                boxShadow: "0 3px 10px rgba(0,0,0,0.1)",
+                background: item.bg,
+                color: "#fff",
+                boxShadow: "0 4px 12px rgba(0,0,0,0.15)",
                 transition: "0.3s",
-                "&:hover": { transform: "translateY(-3px)", boxShadow: 6 },
+                "&:hover": { transform: "translateY(-4px)", boxShadow: "0 6px 16px rgba(0,0,0,0.2)" },
               }}
             >
-              <Typography
-                variant="h6"
-                sx={{ color: item.color, fontWeight: "bold" }}
-              >
+              <Typography variant="h4" fontWeight="bold">
                 {item.value}
               </Typography>
-              <Typography variant="body2" color="text.secondary">
+              <Typography variant="body1" sx={{ opacity: 0.9 }}>
                 {item.label}
               </Typography>
             </Paper>
@@ -287,16 +285,31 @@ const getStatusColor = (status) => {
             disableSelectionOnClick
             sx={{
               border: "none",
+              borderRadius: 2,
               "& .MuiDataGrid-columnHeaders": {
                 backgroundColor: "#e8f5e9",
                 color: "#1b5e20",
                 fontWeight: "bold",
+                fontSize: 15,
               },
               "& .MuiDataGrid-cell": {
                 borderBottom: "1px solid #f0f0f0",
+                
+              },
+              // 🌿 Hàng xen kẽ màu
+              "& .MuiDataGrid-row:nth-of-type(odd)": {
+                backgroundColor: "#ecf0f5ff", // xanh nhạt
+              },
+              "& .MuiDataGrid-row:nth-of-type(even)": {
+                backgroundColor: "#f7fadaff", // trắng
+              },
+              "& .MuiDataGrid-row:hover": {
+                backgroundColor: "#f1f8e9", // hiệu ứng hover
+                transition: "background-color 0.3s",
               },
             }}
           />
+
         )}
         <Snackbar
           open={snackbar.open}

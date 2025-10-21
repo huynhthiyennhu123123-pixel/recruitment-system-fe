@@ -169,7 +169,7 @@ export default function JobPostEdit() {
       {/* FORM */}
       <Paper
         elevation={3}
-        sx={{ flex: 2, p: 4, borderRadius: 3, bgcolor: "#fff" }}
+        sx={{ flex: 2, p: 4, borderRadius: 3, bgcolor: "#fff",  }}
       >
         <Typography
           variant="h5"
@@ -179,6 +179,7 @@ export default function JobPostEdit() {
             alignItems: "center",
             fontWeight: "bold",
             color: "#2e7d32",
+            
           }}
         >
           <WorkOutline sx={{ mr: 1, fontSize: 28 }} />
@@ -478,6 +479,7 @@ export default function JobPostEdit() {
           borderRadius: 3,
           bgcolor: "#f9fef9",
           border: "1px solid #a5d6a7",
+          backgroundColor: "#f7fadaff",
         }}
       >
         <Typography
@@ -530,27 +532,27 @@ export default function JobPostEdit() {
         </Typography>
 
         <Box sx={{ mt: 2 }}>
-          <Typography variant="subtitle2" fontWeight="bold" color="#2e7d32">
+          <Typography variant="subtitle2" fontWeight="bold" color="#2e7d32" fontSize={18}>
             Kỹ năng yêu cầu
           </Typography>
-          <Typography variant="body2">
+          <Typography variant="body2" >
             {form.skillsRequired || "Chưa có kỹ năng cụ thể"}
           </Typography>
         </Box>
         <Box sx={{ mt: 2 }}>
-          <Typography variant="subtitle2" fontWeight="bold" color="#2e7d32">
+          <Typography variant="subtitle2" fontWeight="bold" color="#2e7d32" fontSize={18}>
             Mô tả công việc
           </Typography>
           <Typography variant="body2">{form.description || "..."}</Typography>
         </Box>
         <Box sx={{ mt: 2 }}>
-          <Typography variant="subtitle2" fontWeight="bold" color="#2e7d32">
+          <Typography variant="subtitle2" fontWeight="bold" color="#2e7d32" fontSize={18}>
             Yêu cầu ứng viên
           </Typography>
           <Typography variant="body2">{form.requirements || "..."}</Typography>
         </Box>
         <Box sx={{ mt: 2 }}>
-          <Typography variant="subtitle2" fontWeight="bold" color="#2e7d32">
+          <Typography variant="subtitle2" fontWeight="bold" color="#2e7d32" fontSize={18}>
             Phúc lợi
           </Typography>
           <Typography variant="body2">{form.benefits || "..."}</Typography>
