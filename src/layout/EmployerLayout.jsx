@@ -269,7 +269,7 @@ export default function EmployerLayout() {
                 </li>
                 <li>
                   <Link
-                    to="/employer/applicants"
+                    to="/employer/applications"
                     style={{ color: "white", textDecoration: "none" }}
                   >
                     Ứng viên
