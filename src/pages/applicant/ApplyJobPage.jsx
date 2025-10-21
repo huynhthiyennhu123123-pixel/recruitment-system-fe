@@ -2,12 +2,18 @@ import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { applyJob } from "../../services/applicationService";
 import { getProfile } from "../../services/applicantService";
-import { FaFileAlt, FaPaperPlane, FaRegSmile } from "react-icons/fa";
+import {
+  FaFileAlt,
+  FaPaperPlane,
+  FaRegSmile,
+  FaSpinner,
+} from "react-icons/fa";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import { motion } from "framer-motion";
 
 export default function ApplyJobPage() {
-  const { id } = useParams(); // jobPostingId
+  const { id } = useParams();
   const navigate = useNavigate();
 
   const [form, setForm] = useState({
@@ -17,7 +23,6 @@ export default function ApplyJobPage() {
   const [loading, setLoading] = useState(false);
   const [profile, setProfile] = useState(null);
 
-  // 📂 Lấy CV mặc định từ hồ sơ ứng viên
   useEffect(() => {
     const fetchProfile = async () => {
       try {
@@ -28,7 +33,6 @@ export default function ApplyJobPage() {
         if (profileData?.resumeUrl) {
           let resumeUrl = profileData.resumeUrl.trim();
 
-          // 🔁 Nếu là link localhost → chuyển sang domain hợp lệ
           if (resumeUrl.includes("localhost:5173")) {
             resumeUrl = resumeUrl.replace(
               "http://localhost:5173",
@@ -41,8 +45,6 @@ export default function ApplyJobPage() {
               "https://example.com"
             );
           }
-
-          // Nếu chỉ là /uploads/... → thêm domain vào
           if (resumeUrl.startsWith("/uploads")) {
             resumeUrl = `https://example.com${resumeUrl}`;
           }
@@ -57,24 +59,20 @@ export default function ApplyJobPage() {
     fetchProfile();
   }, []);
 
-  const handleChange = (e) => {
+  const handleChange = (e) =>
     setForm({ ...form, [e.target.name]: e.target.value });
-  };
 
-  // 📨 Xử lý nộp đơn
   const handleSubmit = async (e) => {
     e.preventDefault();
 
     let resumeUrl = form.resumeUrl?.trim() || "";
 
-    // ⚠️ Nếu chưa có CV
     if (!resumeUrl) {
-      toast.warning("⚠️ Bạn cần upload CV trước khi nộp đơn!");
+      toast.warning("📄 Bạn cần upload CV trước khi nộp đơn!");
       navigate("/applicant/profile");
       return;
     }
 
-    // ✅ Chuyển localhost → domain hợp lệ để backend chấp nhận
     if (resumeUrl.includes("localhost:5173")) {
       resumeUrl = resumeUrl.replace(
         "http://localhost:5173",
@@ -87,31 +85,24 @@ export default function ApplyJobPage() {
         "https://example.com"
       );
     }
-
-    // ✅ Nếu chỉ có /uploads → thêm domain
     if (resumeUrl.startsWith("/uploads")) {
       resumeUrl = `https://example.com${resumeUrl}`;
     }
 
-    // ⚠️ Nếu vẫn không hợp lệ
     if (!resumeUrl.startsWith("http")) {
-      toast.error("⚠️ URL CV không hợp lệ — vui lòng upload lại CV!");
+      toast.error("URL CV không hợp lệ — vui lòng upload lại CV!");
       navigate("/applicant/profile");
       return;
     }
 
-    console.log("📤 resumeUrl gửi lên backend:", resumeUrl);
-
-    setLoading(true);
-
-    // ✅ Hiển thị toast loading duy nhất
     const toastId = toast.loading("Đang gửi đơn ứng tuyển...");
+    setLoading(true);
 
     try {
       const payload = {
         jobPostingId: Number(id),
         coverLetter: form.coverLetter,
-        resumeUrl: resumeUrl, // ✅ URL hợp lệ
+        resumeUrl: resumeUrl,
       };
 
       const res = await applyJob(payload);
@@ -123,7 +114,6 @@ export default function ApplyJobPage() {
           isLoading: false,
           autoClose: 2000,
         });
-
         setTimeout(() => navigate("/applicant/applications"), 1500);
       } else {
         toast.update(toastId, {
@@ -136,7 +126,7 @@ export default function ApplyJobPage() {
     } catch (err) {
       console.error("Apply job error:", err.response?.data || err.message);
       toast.update(toastId, {
-        render: "❌ Nộp đơn thất bại!",
+        render: "Nộp đơn thất bại!",
         type: "error",
         isLoading: false,
         autoClose: 2000,
@@ -148,10 +138,14 @@ export default function ApplyJobPage() {
 
   return (
     <div className="min-h-screen bg-gray-50 flex items-center justify-center px-4 py-10">
-      {/* ✅ ToastContainer */}
       <ToastContainer position="top-right" autoClose={2000} theme="colored" />
 
-      <div className="max-w-2xl w-full bg-white rounded-2xl shadow-md border border-gray-100 p-8">
+      <motion.div
+        className="max-w-2xl w-full bg-white rounded-2xl shadow-sm border border-gray-200 p-8"
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5 }}
+      >
         {/* Tiêu đề */}
         <div className="flex items-center gap-3 mb-6">
           <FaFileAlt className="text-[#00b14f] text-2xl" />
@@ -160,7 +154,7 @@ export default function ApplyJobPage() {
           </h1>
         </div>
 
-        <form onSubmit={handleSubmit} className="space-y-5">
+        <form onSubmit={handleSubmit} className="space-y-6">
           {/* Thư xin việc */}
           <div>
             <label className="block text-gray-700 font-medium mb-2">
@@ -172,14 +166,14 @@ export default function ApplyJobPage() {
               value={form.coverLetter}
               onChange={handleChange}
               rows={6}
-              className="border border-gray-300 focus:ring-2 focus:ring-[#00b14f] rounded-lg w-full p-3 text-gray-700 outline-none transition"
+              className="border border-gray-300 focus:ring-2 focus:ring-[#00b14f] rounded-xl w-full p-3 text-gray-700 outline-none transition"
               required
             />
           </div>
 
           {/* CV hiển thị */}
           {form.resumeUrl ? (
-            <p className="text-sm text-gray-600">
+            <p className="text-sm text-gray-600 bg-gray-50 p-3 rounded-lg border border-gray-200">
               <FaRegSmile className="inline text-[#00b14f] mr-1" />
               CV mặc định:{" "}
               <a
@@ -198,20 +192,31 @@ export default function ApplyJobPage() {
           )}
 
           {/* Nút nộp đơn */}
-          <button
+          <motion.button
             type="submit"
             disabled={loading}
-            className={`w-full flex justify-center items-center gap-2 px-4 py-2.5 rounded-lg font-medium text-white transition ${
+            whileHover={{ scale: !loading ? 1.02 : 1 }}
+            whileTap={{ scale: 0.98 }}
+            className={`w-full flex justify-center items-center gap-2 px-4 py-3 rounded-xl font-semibold text-white transition-all shadow-sm ${
               loading
                 ? "bg-gray-400 cursor-not-allowed"
                 : "bg-[#00b14f] hover:bg-green-600"
             }`}
           >
-            <FaPaperPlane />
-            {loading ? "Đang nộp..." : "Nộp đơn ngay"}
-          </button>
+            {loading ? (
+              <>
+                <FaSpinner className="animate-spin" />
+                Đang nộp...
+              </>
+            ) : (
+              <>
+                <FaPaperPlane />
+                Nộp đơn ngay
+              </>
+            )}
+          </motion.button>
         </form>
-      </div>
+      </motion.div>
     </div>
   );
 }

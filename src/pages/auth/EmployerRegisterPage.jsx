@@ -1,4 +1,4 @@
-import React, { useState } from "react"
+import React, { useState } from "react";
 import {
   Box,
   Button,
@@ -12,14 +12,14 @@ import {
   RadioGroup,
   FormLabel,
   IconButton,
-  InputAdornment
-} from "@mui/material"
-import { Visibility, VisibilityOff } from "@mui/icons-material"
-import { registerEmployer } from "../../services/authService"
-import { useNavigate } from "react-router-dom"
+  InputAdornment,
+} from "@mui/material";
+import { Visibility, VisibilityOff } from "@mui/icons-material";
+import { registerEmployer } from "../../services/authService";
+import { useNavigate } from "react-router-dom";
 
 export default function EmployerRegisterPage() {
-  const navigate = useNavigate()
+  const navigate = useNavigate();
   const [formData, setFormData] = useState({
     email: "",
     password: "",
@@ -34,43 +34,43 @@ export default function EmployerRegisterPage() {
     companyIndustry: "",
     companyAddress: "",
     role: "EMPLOYER",
-    agree: false
-  })
-  const [message, setMessage] = useState("")
-  const [showPassword, setShowPassword] = useState(false)
-  const [showConfirmPassword, setShowConfirmPassword] = useState(false)
+    agree: false,
+  });
+  const [message, setMessage] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
   const handleChange = (e) => {
-    const { name, value, type, checked } = e.target
-    setFormData({ ...formData, [name]: type === "checkbox" ? checked : value })
-  }
+    const { name, value, type, checked } = e.target;
+    setFormData({ ...formData, [name]: type === "checkbox" ? checked : value });
+  };
 
   const handleSubmit = async (e) => {
-    e.preventDefault()
-    setMessage("")
+    e.preventDefault();
+    setMessage("");
 
     if (formData.password !== formData.confirmPassword) {
-      setMessage("❌ Mật khẩu nhập lại không khớp")
-      return
+      setMessage("Mật khẩu nhập lại không khớp");
+      return;
     }
     if (!formData.agree) {
-      setMessage("❌ Bạn cần đồng ý với điều khoản")
-      return
+      setMessage(" Bạn cần đồng ý với điều khoản");
+      return;
     }
 
     try {
-      const res = await registerEmployer(formData)
+      const res = await registerEmployer(formData);
       if (res?.success) {
-        setMessage("✅ Đăng ký thành công! Vui lòng xác thực email.")
-        navigate("/auth/login", { state: { email: formData.email } })
+        setMessage(" Đăng ký thành công! Vui lòng xác thực email.");
+        navigate("/auth/login", { state: { email: formData.email } });
       } else {
-        setMessage("❌ " + (res?.message || "Đăng ký thất bại"))
+        setMessage(res?.message || "Đăng ký thất bại");
       }
     } catch (err) {
-      console.error(err)
-      setMessage("❌ " + (err.response?.data?.message || "Lỗi khi đăng ký"))
+      console.error(err);
+      setMessage(err.response?.data?.message || "Lỗi khi đăng ký");
     }
-  }
+  };
 
   return (
     <Container
@@ -80,7 +80,7 @@ export default function EmployerRegisterPage() {
         mb: 5,
         p: 3,
         borderRadius: 2,
-        backgroundColor: "#ffffff"
+        backgroundColor: "#ffffff",
       }}
     >
       <Typography
@@ -130,7 +130,7 @@ export default function EmployerRegisterPage() {
                   {showPassword ? <VisibilityOff /> : <Visibility />}
                 </IconButton>
               </InputAdornment>
-            )
+            ),
           }}
         />
 
@@ -154,7 +154,7 @@ export default function EmployerRegisterPage() {
                   {showConfirmPassword ? <VisibilityOff /> : <Visibility />}
                 </IconButton>
               </InputAdornment>
-            )
+            ),
           }}
         />
 
@@ -177,8 +177,7 @@ export default function EmployerRegisterPage() {
               value={formData.firstName}
               onChange={handleChange}
               required
-              sx={{ marginInlineEnd:5 }}
-
+              sx={{ marginInlineEnd: 5 }}
             />
           </Grid>
           <Grid item xs={6}>
@@ -190,7 +189,7 @@ export default function EmployerRegisterPage() {
               value={formData.lastName}
               onChange={handleChange}
               required
-              sx={{ marginInlineEnd:7 }}
+              sx={{ marginInlineEnd: 7 }}
             />
           </Grid>
         </Grid>
@@ -206,10 +205,10 @@ export default function EmployerRegisterPage() {
               value={formData.phoneNumber}
               onChange={handleChange}
               required
-              sx={{ marginInlineEnd:5 }}
+              sx={{ marginInlineEnd: 5 }}
             />
           </Grid>
-          <Grid item xs={6} sx={{ marginInlineStart:9 }}>
+          <Grid item xs={6} sx={{ marginInlineStart: 9 }}>
             <FormLabel component="legend" sx={{ fontSize: 13, mb: 0.3 }}>
               Giới tính
             </FormLabel>
@@ -218,10 +217,17 @@ export default function EmployerRegisterPage() {
               name="gender"
               value={formData.gender}
               onChange={handleChange}
-              
             >
-              <FormControlLabel value="male" control={<Radio size="small" />} label="Nam" />
-              <FormControlLabel value="female" control={<Radio size="small" />} label="Nữ" />
+              <FormControlLabel
+                value="male"
+                control={<Radio size="small" />}
+                label="Nam"
+              />
+              <FormControlLabel
+                value="female"
+                control={<Radio size="small" />}
+                label="Nữ"
+              />
             </RadioGroup>
           </Grid>
         </Grid>
@@ -316,7 +322,7 @@ export default function EmployerRegisterPage() {
               fontWeight: "bold",
               borderRadius: 1,
               py: 0.8,
-              fontSize: 14
+              fontSize: 14,
             }}
           >
             Hoàn tất
@@ -324,11 +330,15 @@ export default function EmployerRegisterPage() {
         </Box>
 
         {message && (
-          <Typography variant="body2" sx={{ mt: 1.5, textAlign: "center" }} color="error">
+          <Typography
+            variant="body2"
+            sx={{ mt: 1.5, textAlign: "center" }}
+            color="error"
+          >
             {message}
           </Typography>
         )}
       </form>
     </Container>
-  )
+  );
 }

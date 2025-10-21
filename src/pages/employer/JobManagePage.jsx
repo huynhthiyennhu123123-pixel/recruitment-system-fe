@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react"
+import React, { useState, useEffect } from "react";
 import {
   Box,
   Button,
@@ -9,62 +9,69 @@ import {
   IconButton,
   CircularProgress,
   Grid,
-} from "@mui/material"
-import { DataGrid } from "@mui/x-data-grid"
-import { Link } from "react-router-dom"
+} from "@mui/material";
+import { DataGrid } from "@mui/x-data-grid";
+import { Link } from "react-router-dom";
 import {
   AddCircleOutline,
   EditOutlined,
   DeleteOutline,
   VisibilityOutlined,
   WorkOutline,
-} from "@mui/icons-material"
-import { getMyJobs, deleteJob, updateJobStatus  } from "../../services/employerService"
-import Snackbar from "@mui/material/Snackbar"
-import MuiAlert from "@mui/material/Alert"
+} from "@mui/icons-material";
+import {
+  getMyJobs,
+  deleteJob,
+  updateJobStatus,
+} from "../../services/employerService";
+import Snackbar from "@mui/material/Snackbar";
+import MuiAlert from "@mui/material/Alert";
 
 export default function JobManagePage() {
-  const [jobs, setJobs] = useState([])
-  const [loading, setLoading] = useState(false)
-  const [snackbar, setSnackbar] = useState({ open: false, message: "", severity: "success" })
-  const handleCloseSnackbar = () => setSnackbar({ ...snackbar, open: false })
+  const [jobs, setJobs] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [snackbar, setSnackbar] = useState({
+    open: false,
+    message: "",
+    severity: "success",
+  });
+  const handleCloseSnackbar = () => setSnackbar({ ...snackbar, open: false });
 
   const fetchJobs = async () => {
-    setLoading(true)
+    setLoading(true);
     try {
-      const res = await getMyJobs(0, 20)
-      setJobs(res?.data?.content || [])
+      const res = await getMyJobs(0, 20);
+      setJobs(res?.data?.content || []);
     } catch (err) {
-      console.error("❌ Lỗi khi tải danh sách tin tuyển dụng:", err)
+      console.error(" Lỗi khi tải danh sách tin tuyển dụng:", err);
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
+  };
 
   useEffect(() => {
-    fetchJobs()
-  }, [])
+    fetchJobs();
+  }, []);
 
- const handleDelete = async (id) => {
-  if (!window.confirm("Bạn có chắc muốn xoá tin này?")) return
-  try {
-    const res = await deleteJob(id)
-    setSnackbar({
-      open: true,
-      message: res.message || "Đã xoá tin tuyển dụng.",
-      severity: res.success ? "success" : "error",
-    })
-    fetchJobs()
-  } catch (err) {
-    console.error("❌ Lỗi khi xoá tin:", err)
-    setSnackbar({
-      open: true,
-      message: "Không thể xoá tin tuyển dụng.",
-      severity: "error",
-    })
-  }
-}
-
+  const handleDelete = async (id) => {
+    if (!window.confirm("Bạn có chắc muốn xoá tin này?")) return;
+    try {
+      const res = await deleteJob(id);
+      setSnackbar({
+        open: true,
+        message: res.message || "Đã xoá tin tuyển dụng.",
+        severity: res.success ? "success" : "error",
+      });
+      fetchJobs();
+    } catch (err) {
+      console.error("Lỗi khi xoá tin:", err);
+      setSnackbar({
+        open: true,
+        message: "Không thể xoá tin tuyển dụng.",
+        severity: "error",
+      });
+    }
+  };
 
   const handleToggleStatus = async (job) => {
   const newStatus = job.status === "ACTIVE" ? "DRAFT" : "ACTIVE"
@@ -93,13 +100,13 @@ const getStatusColor = (status) => {
     case "DRAFT":
       return "info" // Màu vàng
       case "EXPIRED":
-      return "warning" // Màu vàng
-    case "CLOSED":
-      return "default" // Màu xám
-    default:
-      return "default"
-  }
-}
+        return "warning";
+      case "CLOSED":
+        return "default";
+      default:
+        return "default";
+    }
+  };
 
   const columns = [
     {
@@ -125,23 +132,23 @@ const getStatusColor = (status) => {
       align: "center",
       headerAlign: "center",
       renderCell: (params) => (
-      <Chip
-        label={
-          params.row.status === "ACTIVE"
-            ? "Đang hiển thị"
-            : params.row.status === "DRAFT"
-            ? "Bản nháp"
-            : params.row.status === "EXPIRED"
-            ? "Hết hạn"
-            : params.row.status === "CLOSED"
-            ? "Đã xóa mềm"
-            : "Không xác định"
-        }
-        color={getStatusColor(params.row.status)}
-        size="small"
-        sx={{ fontWeight: 500 }}
-      />
-    )
+        <Chip
+          label={
+            params.row.status === "ACTIVE"
+              ? "Đang hiển thị"
+              : params.row.status === "DRAFT"
+              ? "Bản nháp"
+              : params.row.status === "EXPIRED"
+              ? "Hết hạn"
+              : params.row.status === "CLOSED"
+              ? "Đã xóa mềm"
+              : "Không xác định"
+          }
+          color={getStatusColor(params.row.status)}
+          size="small"
+          sx={{ fontWeight: 500 }}
+        />
+      ),
     },
     { field: "applicationsCount", headerName: "Ứng viên", width: 110,align: "center", headerAlign: "center" },
     { field: "viewsCount", headerName: "Lượt xem", width: 110,align: "center", headerAlign: "center" },
@@ -183,26 +190,32 @@ const getStatusColor = (status) => {
             </IconButton>
           </Tooltip>
           <Tooltip title="Xoá tin">
-            <IconButton color="error" onClick={() => handleDelete(params.row.id)}>
+            <IconButton
+              color="error"
+              onClick={() => handleDelete(params.row.id)}
+            >
               <DeleteOutline />
             </IconButton>
           </Tooltip>
         </Box>
       ),
     },
+  ];
 
-  ]
-
-  const activeCount = jobs.filter((j) => j.status === "ACTIVE").length
-  const draftCount = jobs.filter((j) => j.status === "DRAFT").length
-  const expiredCount = jobs.filter((j) => j.status === "EXPIRED").length
-  const closeCount = jobs.filter((j) => j.status === "CLOSED").length
-
+  const activeCount = jobs.filter((j) => j.status === "ACTIVE").length;
+  const draftCount = jobs.filter((j) => j.status === "DRAFT").length;
+  const expiredCount = jobs.filter((j) => j.status === "EXPIRED").length;
+  const closeCount = jobs.filter((j) => j.status === "CLOSED").length;
 
   return (
     <Box sx={{ maxWidth: 1300, mx: "auto", my: 4 }}>
       {/* Header */}
-      <Box display="flex" justifyContent="space-between" alignItems="center" mb={3}>
+      <Box
+        display="flex"
+        justifyContent="space-between"
+        alignItems="center"
+        mb={3}
+      >
         <Typography
           variant="h5"
           fontWeight="bold"
@@ -231,7 +244,6 @@ const getStatusColor = (status) => {
           { label: "Bản nháp", value: draftCount, color: "#9e9e9e" },
           { label: "Hết hạn", value: expiredCount, color: "#f9a825" },
           { label: "Đã xóa mềm", value: closeCount, color: "#dd1547ff" },
-
         ].map((item, idx) => (
           <Grid item xs={12} md={4} key={idx}>
             <Paper
@@ -287,24 +299,21 @@ const getStatusColor = (status) => {
           />
         )}
         <Snackbar
-            open={snackbar.open}
-            autoHideDuration={3000}
+          open={snackbar.open}
+          autoHideDuration={3000}
+          onClose={handleCloseSnackbar}
+          anchorOrigin={{ vertical: "top", horizontal: "right" }}
+        >
+          <MuiAlert
             onClose={handleCloseSnackbar}
-            anchorOrigin={{ vertical: "top", horizontal: "right" }}
+            severity={snackbar.severity}
+            elevation={6}
+            variant="filled"
           >
-            <MuiAlert
-              onClose={handleCloseSnackbar}
-              severity={snackbar.severity}
-              elevation={6}
-              variant="filled"
-            >
-              {snackbar.message}
-            </MuiAlert>
-          </Snackbar>
+            {snackbar.message}
+          </MuiAlert>
+        </Snackbar>
       </Paper>
     </Box>
-    
-
-  )
-
+  );
 }

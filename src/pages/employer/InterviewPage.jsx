@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react"
+import React, { useEffect, useState } from "react";
 import {
   Box,
   Typography,
@@ -61,34 +61,34 @@ export default function InterviewPage() {
 
   // 🔹 Lấy danh sách phỏng vấn
   const fetchData = async () => {
-    setLoading(true)
+    setLoading(true);
     try {
       const res = await getMyInterviews({ page: 0, size: 50 })
       if (res?.data?.success) setInterviews(res.data.data.content || [])
     } catch (err) {
-      console.error("❌ Lỗi khi tải danh sách phỏng vấn:", err)
+      console.error("Lỗi khi tải danh sách phỏng vấn:", err);
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
+  };
 
   useEffect(() => {
-    fetchData()
-  }, [])
+    fetchData();
+  }, []);
 
   const handleComplete = async (row) => {
-    const notes = prompt("Nhập ghi chú hoàn tất:")
-    if (!notes) return
-    await completeInterview(row.id, { notes })
-    fetchData()
-  }
+    const notes = prompt("Nhập ghi chú hoàn tất:");
+    if (!notes) return;
+    await completeInterview(row.id, { notes });
+    fetchData();
+  };
 
   const handleCancel = async (row) => {
-    const reason = prompt("Nhập lý do hủy lịch:")
-    if (!reason) return
-    await cancelInterview(row.id, { reason })
-    fetchData()
-  }
+    const reason = prompt("Nhập lý do hủy lịch:");
+    if (!reason) return;
+    await cancelInterview(row.id, { reason });
+    fetchData();
+  };
 
   const handleOpenParticipants = (interview) => {
     const jobPostingId =
@@ -222,7 +222,7 @@ export default function InterviewPage() {
         </>
       ),
     },
-  ]
+  ];
 
 
   return (
@@ -550,5 +550,5 @@ export default function InterviewPage() {
         />
       )}
     </Box>
-  )
+  );
 }

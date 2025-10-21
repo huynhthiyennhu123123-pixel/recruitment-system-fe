@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react"
+import React, { useEffect, useState } from "react";
 import {
   Box,
   Typography,
@@ -8,57 +8,60 @@ import {
   Select,
   FormControl,
   InputLabel,
-} from "@mui/material"
-import { DataGrid } from "@mui/x-data-grid"
-import { getManagedApplications, getEmployerJobs } from "../../services/employerService"
-import ApplicationDetailDialog from "./ApplicationDetailDialog"
+} from "@mui/material";
+import { DataGrid } from "@mui/x-data-grid";
+import {
+  getManagedApplications,
+  getEmployerJobs,
+} from "../../services/employerService";
+import ApplicationDetailDialog from "./ApplicationDetailDialog";
 
 export default function ApplicationListPage() {
-  const [applications, setApplications] = useState([])
-  const [jobs, setJobs] = useState([])
-  const [loading, setLoading] = useState(true)
-  const [status, setStatus] = useState("")
-  const [jobId, setJobId] = useState("")
-  const [openDetail, setOpenDetail] = useState(false)
-  const [selectedId, setSelectedId] = useState(null)
+  const [applications, setApplications] = useState([]);
+  const [jobs, setJobs] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [status, setStatus] = useState("");
+  const [jobId, setJobId] = useState("");
+  const [openDetail, setOpenDetail] = useState(false);
+  const [selectedId, setSelectedId] = useState(null);
 
-  // ✅ Lấy danh sách công việc
+  //  Lấy danh sách công việc
   useEffect(() => {
     const fetchJobs = async () => {
       try {
-        const res = await getEmployerJobs(0, 100)
-        if (res?.data?.content) setJobs(res.data.content)
+        const res = await getEmployerJobs(0, 100);
+        if (res?.data?.content) setJobs(res.data.content);
       } catch (err) {
-        console.error("❌ Lỗi tải danh sách công việc:", err)
+        console.error(" Lỗi tải danh sách công việc:", err);
       }
-    }
-    fetchJobs()
-  }, [])
+    };
+    fetchJobs();
+  }, []);
 
-  // ✅ Lấy danh sách ứng viên
+  //  Lấy danh sách ứng viên
   const fetchApplications = async () => {
-    setLoading(true)
+    setLoading(true);
     try {
-      const res = await getManagedApplications(0, 20, status, jobId)
-      const raw = res?.data?.content || []
+      const res = await getManagedApplications(0, 20, status, jobId);
+      const raw = res?.data?.content || [];
       const mapped = raw.map((a) => ({
         id: a.id,
         applicantName: a.applicant?.fullName || "—",
         jobTitle: a.jobPosting?.title || "—",
         status: a.status,
         createdAt: a.createdAt,
-      }))
-      setApplications(mapped)
+      }));
+      setApplications(mapped);
     } catch (err) {
-      console.error("❌ Lỗi tải danh sách ứng viên:", err)
+      console.error("Lỗi tải danh sách ứng viên:", err);
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
+  };
 
   useEffect(() => {
-    fetchApplications()
-  }, [status, jobId])
+    fetchApplications();
+  }, [status, jobId]);
 
   //  Cấu hình bảng
   const columns = [
@@ -68,7 +71,10 @@ export default function ApplicationListPage() {
       width: 80,
       align: "center",
       headerAlign: "center",
-      renderCell: (params) => params.api ? params.api.getRowIndexRelativeToVisibleRows(params.row.id) + 1 : params.rowIndex + 1,
+      renderCell: (params) =>
+        params.api
+          ? params.api.getRowIndexRelativeToVisibleRows(params.row.id) + 1
+          : params.rowIndex + 1,
     },
     {
       field: "applicantName",
@@ -102,7 +108,7 @@ export default function ApplicationListPage() {
           OFFER: "#388e3c",
           HIRED: "#2e7d32",
           REJECTED: "#d32f2f",
-        }
+        };
         return (
           <Box
             sx={{
@@ -119,7 +125,7 @@ export default function ApplicationListPage() {
           >
             {params.value || "—"}
           </Box>
-        )
+        );
       },
     },
     {
@@ -129,25 +135,33 @@ export default function ApplicationListPage() {
       align: "center",
       headerAlign: "center",
       valueGetter: (params) => {
-        if (!params.row?.createdAt) return "—"
-        const d = new Date(params.row.createdAt)
-        return `${d.toLocaleDateString("vi-VN")} ${d.toLocaleTimeString("vi-VN", {
-          hour: "2-digit",
-          minute: "2-digit",
-        })}`
+        if (!params.row?.createdAt) return "—";
+        const d = new Date(params.row.createdAt);
+        return `${d.toLocaleDateString("vi-VN")} ${d.toLocaleTimeString(
+          "vi-VN",
+          {
+            hour: "2-digit",
+            minute: "2-digit",
+          }
+        )}`;
       },
     },
-  ]
+  ];
 
   // Khi click mở chi tiết
   const handleRowClick = (params) => {
-    setSelectedId(params.id)
-    setOpenDetail(true)
-  }
+    setSelectedId(params.id);
+    setOpenDetail(true);
+  };
 
   return (
     <Box p={3}>
-      <Typography variant="h5" fontWeight="bold" gutterBottom sx={{ color: "#2e7d32" }}>
+      <Typography
+        variant="h5"
+        fontWeight="bold"
+        gutterBottom
+        sx={{ color: "#2e7d32" }}
+      >
         Quản lý ứng viên
       </Typography>
 
@@ -216,9 +230,9 @@ export default function ApplicationListPage() {
           open={openDetail}
           id={selectedId}
           onClose={() => setOpenDetail(false)}
-          onUpdated={() => fetchApplications()} 
+          onUpdated={() => fetchApplications()}
         />
       )}
     </Box>
-  )
+  );
 }

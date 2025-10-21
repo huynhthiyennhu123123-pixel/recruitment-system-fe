@@ -1,7 +1,7 @@
 import { useState } from "react";
 import axiosClient from "../../utils/axiosClient";
 import { Link } from "react-router-dom";
-import { toast } from "react-toastify"; // ✅ Thêm dòng này
+import { toast } from "react-toastify";
 
 export default function CheckEmailPage() {
   const [email, setEmail] = useState("");
@@ -15,25 +15,27 @@ export default function CheckEmailPage() {
     setMessage("");
 
     try {
-      const res = await axiosClient.post("/auth/resend-verification", { email });
+      const res = await axiosClient.post("/auth/resend-verification", {
+        email,
+      });
 
       if (res.data?.success) {
         setSuccess(true);
         const msg = res.data.message || "Email xác thực đã được gửi lại!";
         setMessage(msg);
-        toast.success(msg); // ✅ Thông báo thành công
+        toast.success(msg);
       } else {
         setSuccess(false);
         const msg = res.data?.message || "Không thể gửi lại email xác thực.";
         setMessage(msg);
-        toast.error(msg); // ✅ Thông báo lỗi
+        toast.error(msg);
       }
     } catch (err) {
       console.error("Resend error:", err);
       setSuccess(false);
       const msg = "Có lỗi xảy ra khi gửi lại email.";
       setMessage(msg);
-      toast.error(msg); // ✅ Thông báo lỗi
+      toast.error(msg);
     }
 
     setLoading(false);
@@ -62,9 +64,7 @@ export default function CheckEmailPage() {
       </form>
 
       {message && (
-        <p
-          className={`mt-4 ${success ? "text-green-600" : "text-red-600"}`}
-        >
+        <p className={`mt-4 ${success ? "text-green-600" : "text-red-600"}`}>
           {message}
         </p>
       )}

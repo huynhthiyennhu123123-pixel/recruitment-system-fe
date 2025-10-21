@@ -1,47 +1,47 @@
-import React, { useState } from "react"
-import { uploadResume } from "../../../services/documentService"
-import { FaFileUpload, FaCheckCircle } from "react-icons/fa"
-import { useNavigate } from "react-router-dom"
-import toast, { Toaster } from "react-hot-toast"
+import React, { useState } from "react";
+import { uploadResume } from "../../../services/documentService";
+import { FaFileUpload, FaCheckCircle } from "react-icons/fa";
+import { useNavigate } from "react-router-dom";
+import toast, { Toaster } from "react-hot-toast";
 
 export default function UploadResumePage() {
-  const [file, setFile] = useState(null)
-  const [loading, setLoading] = useState(false)
-  const navigate = useNavigate()
+  const [file, setFile] = useState(null);
+  const [loading, setLoading] = useState(false);
+  const navigate = useNavigate();
 
   const handleUpload = async (e) => {
-    e.preventDefault()
+    e.preventDefault();
 
     if (!file) {
-      toast.error("Vui lòng chọn tệp PDF trước!")
-      return
+      toast.error("Vui lòng chọn tệp PDF trước!");
+      return;
     }
 
     if (!file.name.toLowerCase().endsWith(".pdf")) {
-      toast.error("Chỉ chấp nhận tệp PDF!")
-      return
+      toast.error("Chỉ chấp nhận tệp PDF!");
+      return;
     }
 
-    setLoading(true)
+    setLoading(true);
 
-    // 🔄 Gói promise để toast tự động hiển thị trạng thái
+    //  Gói promise để toast tự động hiển thị trạng thái
     const uploadPromise = uploadResume(file)
       .then(() => {
-        navigate("/applicant/documents")
+        navigate("/applicant/documents");
       })
       .catch((err) => {
-        console.error("Upload error:", err)
-        throw err
-      })
+        console.error("Upload error:", err);
+        throw err;
+      });
 
     toast.promise(uploadPromise, {
       loading: "Đang tải CV lên...",
       success: "Upload CV thành công!",
       error: "Upload thất bại, vui lòng thử lại!",
-    })
+    });
 
-    uploadPromise.finally(() => setLoading(false))
-  }
+    uploadPromise.finally(() => setLoading(false));
+  };
 
   return (
     <div className="min-h-screen bg-gray-50 py-10 px-4">
@@ -53,7 +53,8 @@ export default function UploadResumePage() {
         </h1>
 
         <p className="text-gray-600 mb-6">
-          Vui lòng chọn file <strong>PDF</strong> chứa CV của bạn để tải lên hệ thống.
+          Vui lòng chọn file <strong>PDF</strong> chứa CV của bạn để tải lên hệ
+          thống.
         </p>
 
         <form onSubmit={handleUpload} className="space-y-5">
@@ -88,5 +89,5 @@ export default function UploadResumePage() {
         </form>
       </div>
     </div>
-  )
+  );
 }

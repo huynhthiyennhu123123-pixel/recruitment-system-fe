@@ -2,7 +2,7 @@ import { useState } from "react";
 import { login, resendVerification } from "../../services/authService";
 import { useNavigate, Link } from "react-router-dom";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
-import { toast } from "react-toastify"; // ✅ Thêm import
+import { toast } from "react-toastify";
 
 export default function LoginPage() {
   const [form, setForm] = useState({ email: "", password: "" });
@@ -19,13 +19,13 @@ export default function LoginPage() {
 
     try {
       const res = await login(form);
-      console.log("✅ Login response:", res);
+      console.log(" Login response:", res);
 
       const user = res?.user;
 
-      // ⚠️ Kiểm tra email xác thực trước khi cho vào
+      //  Kiểm tra email xác thực trước khi cho vào
       if (user && user.emailVerified === false) {
-        toast.warn("⚠️ Tài khoản của bạn chưa xác thực email!");
+        toast.warn("Tài khoản của bạn chưa xác thực email!");
         setLoading(false);
         return;
       }
@@ -35,9 +35,9 @@ export default function LoginPage() {
         localStorage.setItem("user", JSON.stringify(res.user));
 
         const role = user.role?.toUpperCase();
-        toast.success("🎉 Đăng nhập thành công!");
+        toast.success("Đăng nhập thành công!");
 
-        // ✅ Điều hướng theo vai trò
+        //  Điều hướng theo vai trò
         switch (role) {
           case "APPLICANT":
             navigate("/", { replace: true });
@@ -55,12 +55,12 @@ export default function LoginPage() {
         }
       }
     } catch (err) {
-      console.error("❌ Login error:", err);
+      console.error(" Login error:", err);
       const message =
         err?.response?.data?.message ||
         err?.message ||
         "Đăng nhập thất bại. Vui lòng thử lại.";
-      toast.error(message); // ✅ Hiển thị lỗi bằng toast
+      toast.error(message);
     } finally {
       setLoading(false);
     }

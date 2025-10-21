@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { getProfile, updateProfile } from "../../services/applicantService";
 import { FaUserCircle, FaSave } from "react-icons/fa";
 import { toast, ToastContainer } from "react-toastify";
+import { motion } from "framer-motion";
 import "react-toastify/dist/ReactToastify.css";
 
 export default function ProfilePage() {
@@ -26,7 +27,7 @@ export default function ProfilePage() {
         phoneNumber: user.phoneNumber,
       });
     } catch (err) {
-      console.error("❌ Get profile error:", err);
+      console.error("Get profile error:", err);
       toast.error("Không thể tải hồ sơ.");
     }
   };
@@ -38,9 +39,9 @@ export default function ProfilePage() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!profile) return;
-
     setLoading(true);
 
+    // ✅ Chuẩn hóa dữ liệu gửi đúng format backend
     const {
       dateOfBirth,
       gender,
@@ -100,26 +101,21 @@ export default function ProfilePage() {
       isPublic: Boolean(isPublic),
     };
 
-    // ✅ Hiển thị toast loading duy nhất
     const toastId = toast.loading("Đang lưu thay đổi...");
 
     try {
       await updateProfile(formattedData);
 
-      // ✅ Cập nhật toast thành công
       toast.update(toastId, {
-        render: "🎉 Cập nhật hồ sơ thành công!",
+        render: "Cập nhật hồ sơ thành công!",
         type: "success",
         isLoading: false,
         autoClose: 2000,
-        closeOnClick: true,
       });
 
       fetchProfile();
     } catch (err) {
-      console.error("❌ Update error:", err);
-
-      // ❌ Cập nhật toast lỗi
+      console.error("Update error:", err);
       toast.update(toastId, {
         render: "Lỗi khi cập nhật hồ sơ!",
         type: "error",
@@ -133,22 +129,30 @@ export default function ProfilePage() {
 
   if (!profile)
     return (
-      <p className="p-6 text-gray-500 italic text-center">
+      <p className="p-6 text-gray-500 italic text-center animate-pulse">
         Đang tải hồ sơ...
       </p>
     );
 
   return (
-    <div className="min-h-screen bg-gray-50 py-8 px-4">
+    <div className="min-h-screen bg-gray-50 py-10 px-5">
       <ToastContainer position="top-right" autoClose={2000} theme="colored" />
 
-      <div className="max-w-4xl mx-auto space-y-8">
+      <motion.div
+        className="max-w-4xl mx-auto space-y-8"
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.6 }}
+      >
         {/* 🧍 Thông tin cá nhân */}
-        <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 flex items-center gap-5">
-          <div className="w-24 h-24 rounded-full bg-gray-200 flex items-center justify-center text-5xl text-gray-400">
+        <motion.div
+          className="bg-white rounded-2xl shadow-lg border border-green-100 p-6 flex items-center gap-6 hover:shadow-xl transition"
+          whileHover={{ scale: 1.02 }}
+        >
+          <div className="w-28 h-28 rounded-full bg-gradient-to-br from-green-100 to-green-200 flex items-center justify-center text-6xl text-green-500 shadow-inner">
             {profile.firstName ? (
-              <span className="text-[#00b14f] font-bold">
-                {profile.firstName[0]}
+              <span className="font-bold">
+                {profile.firstName[0].toUpperCase()}
               </span>
             ) : (
               <FaUserCircle />
@@ -161,15 +165,20 @@ export default function ProfilePage() {
             <p className="text-gray-600">{profile.email}</p>
             <p className="text-gray-600">{profile.phoneNumber}</p>
           </div>
-        </div>
+        </motion.div>
 
         {/* 📝 Form hồ sơ */}
-        <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
-          <h1 className="text-xl font-bold text-[#00b14f] mb-5">
+        <motion.div
+          className="bg-white rounded-2xl shadow-lg border border-green-100 p-8"
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.2 }}
+        >
+          <h1 className="text-2xl font-bold text-green-600 mb-6">
             Thông tin hồ sơ
           </h1>
 
-          <form onSubmit={handleSubmit} className="space-y-5">
+          <form onSubmit={handleSubmit} className="space-y-6">
             {/* Thành phố */}
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -179,7 +188,7 @@ export default function ProfilePage() {
                 name="city"
                 value={profile.city || ""}
                 onChange={handleChange}
-                className="border border-gray-300 focus:ring-2 focus:ring-[#00b14f] rounded-lg p-2 w-full outline-none"
+                className="border border-gray-300 focus:ring-2 focus:ring-green-500 rounded-lg p-3 w-full outline-none transition-all focus:shadow-sm"
               />
             </div>
 
@@ -192,7 +201,7 @@ export default function ProfilePage() {
                 name="desiredLocation"
                 value={profile.desiredLocation || ""}
                 onChange={handleChange}
-                className="border border-gray-300 focus:ring-2 focus:ring-[#00b14f] rounded-lg p-2 w-full outline-none"
+                className="border border-gray-300 focus:ring-2 focus:ring-green-500 rounded-lg p-3 w-full outline-none transition-all focus:shadow-sm"
               />
             </div>
 
@@ -206,7 +215,7 @@ export default function ProfilePage() {
                 value={profile.summary || ""}
                 onChange={handleChange}
                 rows={3}
-                className="border border-gray-300 focus:ring-2 focus:ring-[#00b14f] rounded-lg p-2 w-full outline-none"
+                className="border border-gray-300 focus:ring-2 focus:ring-green-500 rounded-lg p-3 w-full outline-none transition-all focus:shadow-sm"
               />
             </div>
 
@@ -224,7 +233,7 @@ export default function ProfilePage() {
                 }
                 onChange={handleChange}
                 rows={3}
-                className="border border-gray-300 focus:ring-2 focus:ring-[#00b14f] rounded-lg p-2 w-full outline-none"
+                className="border border-gray-300 focus:ring-2 focus:ring-green-500 rounded-lg p-3 w-full outline-none transition-all focus:shadow-sm"
               />
             </div>
 
@@ -238,7 +247,7 @@ export default function ProfilePage() {
                 value={profile.experience || ""}
                 onChange={handleChange}
                 rows={4}
-                className="border border-gray-300 focus:ring-2 focus:ring-[#00b14f] rounded-lg p-2 w-full outline-none"
+                className="border border-gray-300 focus:ring-2 focus:ring-green-500 rounded-lg p-3 w-full outline-none transition-all focus:shadow-sm"
               />
             </div>
 
@@ -252,26 +261,27 @@ export default function ProfilePage() {
                 value={profile.education || ""}
                 onChange={handleChange}
                 rows={3}
-                className="border border-gray-300 focus:ring-2 focus:ring-[#00b14f] rounded-lg p-2 w-full outline-none"
+                className="border border-gray-300 focus:ring-2 focus:ring-green-500 rounded-lg p-3 w-full outline-none transition-all focus:shadow-sm"
               />
             </div>
 
             {/* Nút lưu */}
-            <button
+            <motion.button
               type="submit"
               disabled={loading}
-              className={`w-full flex justify-center items-center gap-2 px-4 py-2.5 rounded-lg text-white font-medium transition ${
+              className={`w-full flex justify-center items-center gap-2 px-5 py-3 rounded-xl text-white font-semibold shadow-md transition-all ${
                 loading
                   ? "bg-gray-400 cursor-not-allowed"
-                  : "bg-[#00b14f] hover:bg-green-600"
+                  : "bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 hover:shadow-lg"
               }`}
+              whileTap={{ scale: 0.97 }}
             >
               <FaSave />
               {loading ? "Đang lưu..." : "Lưu thay đổi"}
-            </button>
+            </motion.button>
           </form>
-        </div>
-      </div>
+        </motion.div>
+      </motion.div>
     </div>
   );
 }
