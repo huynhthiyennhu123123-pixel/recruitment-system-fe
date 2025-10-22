@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from "react";
-import { useLocation, Link, useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { searchJobs } from "../../services/jobService";
-import { FaMapMarkerAlt, FaSpinner, FaArrowRight } from "react-icons/fa";
+import { FaSpinner } from "react-icons/fa";
+import JobCard from "../../components/job/JobCard"; // ✅ dùng JobCard chung
 import { motion } from "framer-motion";
 
 export default function JobListPage() {
@@ -33,7 +34,6 @@ export default function JobListPage() {
         location: filters.location || undefined,
         jobType: filters.jobType || undefined,
         minSalary: filters.salaryMin || undefined,
-
         page,
         size: 12,
         sortBy: "createdAt",
@@ -59,7 +59,6 @@ export default function JobListPage() {
       if (filters.jobType) params.append("jobType", filters.jobType);
       if (filters.salaryMin) params.append("minSalary", filters.salaryMin);
       params.append("page", page);
-
       navigate(`/jobs?${params.toString()}`, { replace: true });
       fetchJobs();
     }, 400);
@@ -87,90 +86,12 @@ export default function JobListPage() {
   };
 
   // =============================
-  // JobCard
+  // Render
   // =============================
-  const JobCard = ({ job }) => {
-    const [hovered, setHovered] = useState(false);
-
-    return (
-      <motion.div
-        whileHover={{ scale: 1.03 }}
-        transition={{ type: "spring", stiffness: 160, damping: 15 }}
-        onMouseEnter={() => setHovered(true)}
-        onMouseLeave={() => setHovered(false)}
-        className="relative bg-white border border-gray-100 rounded-2xl p-5 shadow-sm hover:shadow-lg transition-all duration-300 overflow-hidden group"
-      >
-        {/* Logo + tiêu đề */}
-        <div className="flex items-center gap-4 mb-4">
-          <img
-            src={job.company?.logoUrl || "/default-company.png"}
-            alt={job.company?.name || "Công ty"}
-            className="w-14 h-14 rounded-xl border object-cover bg-gray-50 transition-transform duration-300 group-hover:scale-110"
-          />
-          <div className="flex-1">
-            <h3 className="text-lg font-semibold text-gray-800 group-hover:text-[#00b14f] transition line-clamp-1">
-              {job.title}
-            </h3>
-            <p className="text-sm text-gray-500 line-clamp-1">
-              {job.company?.name || "Công ty chưa xác định"}
-            </p>
-          </div>
-        </div>
-
-        {/* Thông tin việc làm */}
-        <div className="flex flex-col gap-2 text-sm text-gray-600">
-          <div className="flex items-center gap-1">
-            <FaMapMarkerAlt className="text-[#00b14f]" />
-            <span>{job.location || "Không rõ địa điểm"}</span>
-          </div>
-
-          {job.salaryMin && job.salaryMax ? (
-            <p className="text-[#00b14f] font-semibold">
-              {job.salaryMin.toLocaleString("vi-VN")}₫ –{" "}
-              {job.salaryMax.toLocaleString("vi-VN")}₫
-            </p>
-          ) : (
-            <p className="text-gray-500 italic">Mức lương thỏa thuận</p>
-          )}
-        </div>
-
-        {/* Footer */}
-        <div className="flex justify-between items-center mt-5 text-xs text-gray-400">
-          <span>
-            Cập nhật:{" "}
-            {new Date(job.createdAt || Date.now()).toLocaleDateString("vi-VN")}
-          </span>
-          <Link
-            to={`/jobs/${job.id}`}
-            className="text-sm font-medium text-[#00b14f] hover:text-[#009944] flex items-center gap-1"
-          >
-            Xem chi tiết <FaArrowRight size={12} />
-          </Link>
-        </div>
-
-        {/* Overlay + Nút Ứng tuyển */}
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: hovered ? 1 : 0 }}
-          transition={{ duration: 0.3 }}
-          className="absolute inset-0 bg-gradient-to-t from-[#00b14f]/90 via-[#00b14f]/60 to-transparent flex items-end justify-center p-5"
-        >
-          <Link
-            to={`/jobs/${job.id}`}
-            className="bg-white text-[#00b14f] font-semibold px-6 py-2 rounded-full shadow-lg hover:bg-[#00b14f] hover:text-white transition-all duration-300 hover:scale-[1.05]"
-          >
-            Ứng tuyển ngay
-          </Link>
-        </motion.div>
-      </motion.div>
-    );
-  };
-
   if (loading)
     return (
       <div className="flex justify-center items-center h-80 text-gray-500">
-        <FaSpinner className="animate-spin mr-2" /> Đang tải danh sách việc
-        làm...
+        <FaSpinner className="animate-spin mr-2" /> Đang tải danh sách việc làm...
       </div>
     );
 
@@ -179,9 +100,7 @@ export default function JobListPage() {
       <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-4 gap-8 px-4">
         {/* Sidebar filter */}
         <aside className="bg-white rounded-2xl border border-gray-200 p-6 h-fit shadow-sm hover:shadow-md transition-all duration-300">
-          <h2 className="text-lg font-bold mb-4 text-[#00b14f]">
-            Bộ lọc tìm kiếm
-          </h2>
+          <h2 className="text-lg font-bold mb-4 text-[#00b14f]">Bộ lọc tìm kiếm</h2>
 
           <input
             type="text"
@@ -221,10 +140,7 @@ export default function JobListPage() {
               placeholder="VD: 10"
               value={filters.salaryMin ? filters.salaryMin / 1_000_000 : ""}
               onChange={(e) =>
-                handleFilterChange(
-                  "salaryMin",
-                  Number(e.target.value) * 1_000_000
-                )
+                handleFilterChange("salaryMin", Number(e.target.value) * 1_000_000)
               }
               className="w-full border border-gray-300 rounded-md px-3 py-2 text-sm outline-none focus:border-[#00b14f] focus:ring-1 focus:ring-[#00b14f] transition"
             />
@@ -249,11 +165,16 @@ export default function JobListPage() {
               Không tìm thấy việc làm phù hợp với bộ lọc hiện tại.
             </p>
           ) : (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5 }}
+              className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6"
+            >
               {jobs.map((job) => (
                 <JobCard key={job.id} job={job} />
               ))}
-            </div>
+            </motion.div>
           )}
         </section>
       </div>
