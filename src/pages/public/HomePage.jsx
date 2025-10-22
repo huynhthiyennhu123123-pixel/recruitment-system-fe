@@ -3,9 +3,16 @@ import { Link } from "react-router-dom";
 import JobSearchSection from "../../layout/JobSearchSection";
 import { latestJobs, searchJobs } from "../../services/jobService";
 import axios from "axios";
-import { FaMapMarkerAlt, FaSpinner, FaArrowRight } from "react-icons/fa";
+import {
+  FaMapMarkerAlt,
+  FaSpinner,
+  FaArrowRight,
+  FaBriefcase,
+  FaRegHeart,
+} from "react-icons/fa";
 import RecommendedCarousel from "../../components/RecommendedCarousel";
 import { motion } from "framer-motion";
+import "../../styles/HomePage.css";
 
 export default function HomePage() {
   const [latest, setLatest] = useState([]);
@@ -16,12 +23,10 @@ export default function HomePage() {
   const heroRef = useRef(null);
   const baseUrl = "http://localhost:8081";
 
-  // 🔹 Lấy chiều cao thật của header để căn sát
+  // 🔹 Lấy chiều cao header
   useEffect(() => {
     const header = document.querySelector("header");
-    if (header) {
-      setHeaderHeight(header.offsetHeight);
-    }
+    if (header) setHeaderHeight(header.offsetHeight);
   }, []);
 
   // 🔹 Load jobs
@@ -50,14 +55,37 @@ export default function HomePage() {
     loadData();
   }, []);
 
-  // 🔹 Load top companies
+  // 🔹 Load công ty (mock nếu API trống)
   useEffect(() => {
     const fetchTopCompanies = async () => {
       try {
         const res = await axios.get(`${baseUrl}/api/companies`, {
           params: { page: 0, size: 6, sortBy: "createdAt", sortDir: "DESC" },
         });
-        setCompanies(res.data?.data?.content || []);
+        const list = res.data?.data?.content || [];
+        if (list.length > 0) setCompanies(list);
+        else {
+          setCompanies([
+            {
+              id: 1,
+              name: "Tech Innovate Co.",
+              city: "Hồ Chí Minh",
+              logoUrl: "/companies/tech.png",
+            },
+            {
+              id: 2,
+              name: "NextGen Solutions",
+              city: "Hà Nội",
+              logoUrl: "/companies/nextgen.png",
+            },
+            {
+              id: 3,
+              name: "AI Vision Corp",
+              city: "Đà Nẵng",
+              logoUrl: "/companies/aivision.png",
+            },
+          ]);
+        }
       } catch (err) {
         console.error("Lỗi tải công ty:", err);
       }
@@ -65,42 +93,47 @@ export default function HomePage() {
     fetchTopCompanies();
   }, []);
 
- 
+  // 💼 JobCard
   const JobCard = ({ job }) => {
     const [hovered, setHovered] = useState(false);
 
     return (
       <motion.div
-        whileHover={{ scale: 1.02 }}
+        whileHover={{ scale: 1.03, y: -3 }}
         onMouseEnter={() => setHovered(true)}
         onMouseLeave={() => setHovered(false)}
-        transition={{ type: "spring", stiffness: 180, damping: 15 }}
-        className="relative bg-white border border-gray-100 rounded-2xl p-5 shadow-sm hover:shadow-xl transition-all duration-300 overflow-hidden group"
+        transition={{ type: "spring", stiffness: 200, damping: 15 }}
+        className="job-card relative border border-gray-100 rounded-2xl p-6 shadow-sm bg-white overflow-hidden group"
       >
-        {/* Logo + tiêu đề */}
+        <button className="job-save-btn" title="Lưu việc làm">
+          <FaRegHeart />
+        </button>
+
         <div className="flex items-center gap-4 mb-4">
           <img
             src={job.company?.logoUrl || "/default-company.png"}
             alt={job.company?.name || "Công ty"}
-            className="w-14 h-14 rounded-xl border object-cover bg-gray-50"
+            className="job-logo"
           />
           <div className="flex-1">
-            <h3 className="text-lg font-semibold text-gray-800 group-hover:text-[#00b14f] transition line-clamp-1">
+            <h3 className="text-lg font-semibold text-gray-800 group-hover:text-[#00b14f] line-clamp-1 transition-colors">
               {job.title}
             </h3>
-            <p className="text-sm text-gray-500 line-clamp-1">
+            <p className="text-sm text-gray-500 line-clamp-1 job-company">
               {job.company?.name || "Công ty chưa xác định"}
             </p>
           </div>
         </div>
 
-        {/* Thông tin việc làm */}
-        <div className="flex flex-col gap-2 text-sm text-gray-600">
+        <div className="space-y-2 text-sm text-gray-600">
           <div className="flex items-center gap-1">
             <FaMapMarkerAlt className="text-[#00b14f]" />
             <span>{job.location || "Không rõ địa điểm"}</span>
           </div>
-
+          <div className="flex items-center gap-1">
+            <FaBriefcase className="text-[#00b14f]" />
+            <span>{job.jobType || "Full-time"}</span>
+          </div>
           {job.salaryMin && job.salaryMax ? (
             <p className="text-[#00b14f] font-semibold">
               💰 {job.salaryMin.toLocaleString("vi-VN")}₫ –{" "}
@@ -111,9 +144,8 @@ export default function HomePage() {
           )}
         </div>
 
-        {/* Footer */}
-        <div className="flex justify-between items-center mt-5">
-          <span className="text-xs text-gray-400">
+        <div className="flex justify-between items-center mt-5 text-xs text-gray-400">
+          <span>
             Cập nhật:{" "}
             {new Date(job.createdAt || Date.now()).toLocaleDateString("vi-VN")}
           </span>
@@ -125,42 +157,23 @@ export default function HomePage() {
           </Link>
         </div>
 
-        {/* Ribbon */}
-        <div className="absolute top-0 right-0 bg-[#00b14f] text-white text-xs font-semibold px-3 py-1 rounded-bl-xl rounded-tr-2xl shadow">
-          {job.jobType || "Full-time"}
-        </div>
-
-        {/* ❤️ Nút lưu việc */}
-        <button
-          className="absolute top-3 right-3 text-gray-300 hover:text-[#00b14f] transition z-10"
-          title="Lưu việc làm"
-        >
-          <i className="fa-regular fa-heart text-lg"></i>
-        </button>
-
-        {/* 🌟 Hiệu ứng hover overlay + nút Ứng tuyển */}
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: hovered ? 1 : 0 }}
           transition={{ duration: 0.3 }}
-          className="absolute inset-0 bg-gradient-to-t from-[#00b14f]/90 via-[#00b14f]/60 to-transparent flex items-end justify-center p-5"
+          className="job-overlay"
         >
-          <Link
-            to={`/jobs/${job.id}`}
-            className="bg-white text-[#00b14f] font-semibold px-6 py-2 rounded-full shadow-lg hover:bg-[#00b14f] hover:text-white transition"
-          >
+          <Link to={`/jobs/${job.id}`} className="job-apply-btn">
             Ứng tuyển ngay
           </Link>
         </motion.div>
       </motion.div>
     );
   };
-  // 🎨 Company card
+
+  // 🏢 CompanyCard
   const CompanyCard = ({ company }) => (
-    <motion.div
-      whileHover={{ scale: 1.03 }}
-      className="bg-white border border-gray-100 rounded-2xl p-5 shadow-sm hover:shadow-lg transition text-center"
-    >
+    <motion.div whileHover={{ scale: 1.03 }} className="company-card">
       <img
         src={company.logoUrl || "/default-company.png"}
         alt={company.name}
@@ -186,22 +199,18 @@ export default function HomePage() {
 
   return (
     <div className="bg-gray-50 min-h-screen pb-20">
-      {/* 🌟 Hero Section */}
+      {/* 🌟 Hero */}
       <div className="relative left-1/2 right-1/2 w-screen -mx-[50vw]">
         <section
           ref={heroRef}
-          className="relative h-[480px] sm:h-[520px] bg-cover bg-center bg-no-repeat flex flex-col items-center justify-center text-center"
+          className="relative h-[480px] sm:h-[520px] bg-cover bg-center flex flex-col items-center justify-center text-center"
           style={{
             backgroundImage: "url('/hero-banner.jpg')",
             paddingTop: `${headerHeight}px`,
             marginTop: "-1px",
           }}
         >
-          {/* Overlay */}
           <div className="absolute inset-0 bg-black/40"></div>
-          <div className="absolute bottom-0 left-0 right-0 h-40 bg-gradient-to-t from-gray-50 via-transparent"></div>
-
-          {/* Nội dung chính */}
           <motion.div
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
@@ -222,7 +231,6 @@ export default function HomePage() {
         </section>
       </div>
 
-      {/* Nội dung tiếp theo */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6">
         <RecommendedCarousel />
 
@@ -230,29 +238,24 @@ export default function HomePage() {
         <motion.section
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
+          viewport={{ once: true, amount: 0.2 }}
           className="mt-16"
         >
           <h2 className="text-2xl font-bold text-green-600 mb-8 text-center">
             Khám phá việc làm theo ngành nghề
           </h2>
           <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-5 text-center">
-            {[
-              "CNTT - Phần mềm",
-              "Kinh doanh",
-              "Marketing",
-              "Thiết kế",
-              "Kế toán",
-              "Nhân sự",
-            ].map((cat) => (
-              <motion.div
-                key={cat}
-                whileHover={{ scale: 1.05 }}
-                className="bg-white p-4 rounded-xl shadow-sm hover:shadow-md border border-gray-100 transition"
-              >
-                <p className="font-medium text-gray-700">{cat}</p>
-              </motion.div>
-            ))}
+            {["CNTT - Phần mềm", "Kinh doanh", "Marketing", "Thiết kế", "Kế toán", "Nhân sự"].map(
+              (cat) => (
+                <motion.div
+                  key={cat}
+                  whileHover={{ scale: 1.05 }}
+                  className="bg-white p-4 rounded-xl shadow-sm hover:shadow-md border border-gray-100 transition"
+                >
+                  <p className="font-medium text-gray-700">{cat}</p>
+                </motion.div>
+              )
+            )}
           </div>
         </motion.section>
 
@@ -260,7 +263,7 @@ export default function HomePage() {
         <motion.section
           initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
+          viewport={{ once: true, amount: 0.2 }}
           className="mt-16"
         >
           <div className="flex justify-between items-center mb-5">
@@ -272,24 +275,24 @@ export default function HomePage() {
               Xem tất cả <FaArrowRight size={12} />
             </Link>
           </div>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
             {latest.map((job) => (
               <JobCard key={job.id} job={job} />
             ))}
           </div>
         </motion.section>
 
-        {/* 💻 Việc làm Java */}
+        {/* 💻 Việc làm Java nổi bật */}
         <motion.section
           initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
+          viewport={{ once: true, amount: 0.2 }}
           className="mt-16"
         >
           <h2 className="text-2xl font-bold text-green-600 mb-5">
             Việc làm Java nổi bật
           </h2>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
             {javaJobs.map((job) => (
               <JobCard key={job.id} job={job} />
             ))}
@@ -300,7 +303,7 @@ export default function HomePage() {
         <motion.section
           initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
+          viewport={{ once: true, amount: 0.2 }}
           className="mt-16"
         >
           <h2 className="text-2xl font-bold text-green-600 mb-5">Công ty nổi bật</h2>
@@ -315,7 +318,7 @@ export default function HomePage() {
         <motion.section
           initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
+          viewport={{ once: true, amount: 0.2 }}
           className="mt-20"
         >
           <h2 className="text-2xl font-bold text-green-600 mb-8">
@@ -358,11 +361,12 @@ export default function HomePage() {
             ))}
           </div>
         </motion.section>
-        {/* 📰 Tin tức & Cẩm nang nghề nghiệp */}
+
+        {/* 📰 Tin tức & Cẩm nang */}
         <motion.section
           initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
+          viewport={{ once: true, amount: 0.2 }}
           className="mt-20"
         >
           <h2 className="text-2xl font-bold text-green-600 mb-8 text-center">
@@ -414,11 +418,12 @@ export default function HomePage() {
             ))}
           </div>
         </motion.section>
-        {/* 📊 Thống kê hệ thống */}
+
+        {/* 📊 Thống kê */}
         <motion.section
           initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
+          viewport={{ once: true, amount: 0.2 }}
           className="mt-20"
         >
           <div className="bg-green-50 rounded-3xl py-12 px-6 text-center">

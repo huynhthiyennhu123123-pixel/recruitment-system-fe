@@ -211,15 +211,28 @@ export default function JobDetailPage() {
                   <Link
                     key={rj.id}
                     to={`/jobs/${rj.id}`}
-                    className="p-4 border border-gray-200 rounded-xl transition-all duration-300 hover:border-[#00b14f] hover:shadow-lg hover:-translate-y-1 bg-white"
+                    className="p-5 bg-white rounded-2xl shadow-sm hover:shadow-lg border border-transparent hover:border-[#00b14f]/30 hover:-translate-y-[3px] transition-all duration-300"
                   >
-                    <h3 className="font-semibold text-gray-800 mb-1 line-clamp-1">
-                      {rj.title}
-                    </h3>
-                    <p className="text-sm text-gray-600 line-clamp-1">
-                      {rj.company?.name}
-                    </p>
-                    <p className="text-sm text-gray-500 mt-1">{rj.location}</p>
+                    <div className="flex items-start gap-3 mb-2">
+                      <img
+                        src={rj.company?.logoUrl || "/default-company.png"}
+                        alt={rj.company?.name}
+                        className="w-10 h-10 rounded-lg object-cover bg-gray-50"
+                      />
+                      <div>
+                        <h3 className="font-semibold text-gray-800 mb-1 line-clamp-1 hover:text-[#00b14f] transition">
+                          {rj.title}
+                        </h3>
+                        <p className="text-sm text-gray-500 line-clamp-1">
+                          {rj.company?.name || "Công ty chưa xác định"}
+                        </p>
+                      </div>
+                    </div>
+
+                    <div className="text-sm text-gray-600 flex items-center gap-1">
+                      <FaMapMarkerAlt className="text-[#00b14f]" />
+                      <span>{rj.location || "Không rõ địa điểm"}</span>
+                    </div>
                   </Link>
                 ))}
               </div>
@@ -235,7 +248,7 @@ export default function JobDetailPage() {
                 <img
                   src={company.logoUrl || "/default-company.png"}
                   alt={company.name}
-                  className="w-16 h-16 rounded-md object-cover border transition-transform duration-300 hover:scale-105"
+                  className="w-16 h-16 rounded-md object-cover bg-gray-50 transition-transform duration-300 hover:scale-105"
                 />
                 <div>
                   <h3 className="font-semibold text-gray-800 hover:text-[#00b14f] transition">
