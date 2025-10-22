@@ -17,6 +17,7 @@ import CompanyDetailPage from "../pages/public/CompanyDetailPage";
 import AboutPage from "../pages/public/AboutPage";
 
 
+
 // Pages Auth
 import LoginPage from "../pages/auth/LoginPage";
 import RegisterPage from "../pages/auth/RegisterPage";
