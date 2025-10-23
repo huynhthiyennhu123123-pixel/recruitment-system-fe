@@ -50,7 +50,7 @@ import JobPostEdit from "../pages/employer/JobPostEdit";
 import CompanyProfileEdit from "../pages/employer/CompanyProfileEdit";
 import EmployerJobDetail from "../pages/employer/EmployerJobDetail";
 import InterviewDetailPage from "../pages/employer/InterviewDetailPage";
-
+import SavedJobsFloatingButton from "../components/common/SavedJobsFloatingButton";
 
 // Pages Admin
 import AdminDashboard from "../pages/admin/DashboardPage";
@@ -159,6 +159,8 @@ function App() {
           </Route>
         </Route>
       </Routes>
+      
+      <SavedJobsFloatingButton />
     </BrowserRouter>
   );
 }

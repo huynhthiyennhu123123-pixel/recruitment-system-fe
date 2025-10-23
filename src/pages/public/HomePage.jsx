@@ -2,6 +2,9 @@ import React, { useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import JobSearchSection from "../../layout/JobSearchSection";
 import { latestJobs, searchJobs } from "../../services/jobService";
+import { saveJob, unsaveJob, getJobDetailWithSave } from "../../services/savedJobService";
+import { toast } from "react-toastify";
+import { FaHeart} from "react-icons/fa";
 import axios from "axios";
 import {
   FaMapMarkerAlt,
@@ -95,81 +98,144 @@ export default function HomePage() {
 
   // 💼 JobCard
   const JobCard = ({ job }) => {
-    const [hovered, setHovered] = useState(false);
+  const [hovered, setHovered] = useState(false);
+  const [isSaved, setIsSaved] = useState(job.isSaved || false);
+  const [saving, setSaving] = useState(false);
 
-    return (
-      <motion.div
-        whileHover={{ scale: 1.03, y: -3 }}
-        onMouseEnter={() => setHovered(true)}
-        onMouseLeave={() => setHovered(false)}
-        transition={{ type: "spring", stiffness: 200, damping: 15 }}
-        className="job-card relative border border-gray-100 rounded-2xl p-6 shadow-sm bg-white overflow-hidden group"
-      >
-        <button className="job-save-btn" title="Lưu việc làm">
-          <FaRegHeart />
-        </button>
+  const token =
+    localStorage.getItem("token") || localStorage.getItem("accessToken");
 
-        <div className="flex items-center gap-4 mb-4">
-          <img
-            src={job.company?.logoUrl || "/default-company.png"}
-            alt={job.company?.name || "Công ty"}
-            className="job-logo"
-          />
-          <div className="flex-1">
-            <h3 className="text-lg font-semibold text-gray-800 group-hover:text-[#00b14f] line-clamp-1 transition-colors">
-              {job.title}
-            </h3>
-            <p className="text-sm text-gray-500 line-clamp-1 job-company">
-              {job.company?.name || "Công ty chưa xác định"}
-            </p>
-          </div>
-        </div>
+  // ✅ Kiểm tra xem job này đã được lưu chưa (nếu user đăng nhập)
+  useEffect(() => {
+    const checkSaved = async () => {
+      if (!token) return;
+      try {
+        const res = await getJobDetailWithSave(job.id);
+        const data = res?.data?.data || res?.data;
+        if (data && data.isSaved !== undefined) {
+          setIsSaved(data.isSaved);
+        }
+      } catch (err) {
+        console.warn("Không kiểm tra được trạng thái lưu:", err);
+      }
+    };
+    checkSaved();
+  }, [job.id, token]);
 
-        <div className="space-y-2 text-sm text-gray-600">
-          <div className="flex items-center gap-1">
-            <FaMapMarkerAlt className="text-[#00b14f]" />
-            <span>{job.location || "Không rõ địa điểm"}</span>
-          </div>
-          <div className="flex items-center gap-1">
-            <FaBriefcase className="text-[#00b14f]" />
-            <span>{job.jobType || "Full-time"}</span>
-          </div>
-          {job.salaryMin && job.salaryMax ? (
-            <p className="text-[#00b14f] font-semibold">
-              💰 {job.salaryMin.toLocaleString("vi-VN")}₫ –{" "}
-              {job.salaryMax.toLocaleString("vi-VN")}₫
-            </p>
-          ) : (
-            <p className="text-gray-500 italic">Mức lương thỏa thuận</p>
-          )}
-        </div>
+  // ✅ Toggle lưu / bỏ lưu
+  const toggleSave = async (e) => {
+    e.preventDefault();
+    if (!token) {
+      toast.warning("Vui lòng đăng nhập để lưu việc làm!");
+      return;
+    }
 
-        <div className="flex justify-between items-center mt-5 text-xs text-gray-400">
-          <span>
-            Cập nhật:{" "}
-            {new Date(job.createdAt || Date.now()).toLocaleDateString("vi-VN")}
-          </span>
-          <Link
-            to={`/jobs/${job.id}`}
-            className="text-sm font-medium text-[#00b14f] hover:text-[#008f3f] flex items-center gap-1"
-          >
-            Xem chi tiết <FaArrowRight size={12} />
-          </Link>
-        </div>
-
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: hovered ? 1 : 0 }}
-          transition={{ duration: 0.3 }}
-          className="job-overlay"
-        >
-          <Link to={`/jobs/${job.id}`} className="job-apply-btn">
-            Ứng tuyển ngay
-          </Link>
-        </motion.div>
-      </motion.div>
-    );
+    setSaving(true);
+    try {
+      if (isSaved) {
+        await unsaveJob(job.id);
+        setIsSaved(false);
+        toast.info("Đã bỏ lưu việc làm");
+      } else {
+        await saveJob(job.id);
+        setIsSaved(true);
+        toast.success("Đã lưu việc làm thành công");
+      }
+    } catch (err) {
+      console.error("❌ Lỗi khi lưu việc làm:", err);
+      toast.error("Không thể lưu việc làm!");
+    } finally {
+      setSaving(false);
+    }
   };
+
+  return (
+    <motion.div
+      whileHover={{ scale: 1.03, y: -3 }}
+      onMouseEnter={() => setHovered(true)}
+      onMouseLeave={() => setHovered(false)}
+      transition={{ type: "spring", stiffness: 200, damping: 15 }}
+      className="job-card relative border border-gray-100 rounded-2xl p-6 shadow-sm bg-white overflow-hidden group"
+    >
+      {/* ❤️ Nút lưu việc */}
+      <button
+        onClick={toggleSave}
+        disabled={saving}
+        className={`job-save-btn transition-all ${
+          isSaved
+            ? "!text-red-500 hover:text-red-400"
+            : "text-gray-400 hover:text-[#00b14f]"
+        }`}
+        title={isSaved ? "Bỏ lưu việc làm" : "Lưu việc làm"}
+      >
+        {isSaved ? <FaHeart /> : <FaRegHeart />}
+      </button>
+
+      {/* Logo + Tiêu đề */}
+      <div className="flex items-center gap-4 mb-4">
+        <img
+          src={job.company?.logoUrl || "/default-company.png"}
+          alt={job.company?.name || "Công ty"}
+          className="job-logo"
+        />
+        <div className="flex-1">
+          <h3 className="text-lg font-semibold text-gray-800 group-hover:text-[#00b14f] line-clamp-1 transition-colors">
+            {job.title}
+          </h3>
+          <p className="text-sm text-gray-500 line-clamp-1 job-company">
+            {job.company?.name || "Công ty chưa xác định"}
+          </p>
+        </div>
+      </div>
+
+      {/* Thông tin việc làm */}
+      <div className="space-y-2 text-sm text-gray-600">
+        <div className="flex items-center gap-1">
+          <FaMapMarkerAlt className="text-[#00b14f]" />
+          <span>{job.location || "Không rõ địa điểm"}</span>
+        </div>
+        <div className="flex items-center gap-1">
+          <FaBriefcase className="text-[#00b14f]" />
+          <span>{job.jobType || "Full-time"}</span>
+        </div>
+        {job.salaryMin && job.salaryMax ? (
+          <p className="text-[#00b14f] font-semibold">
+            💰 {job.salaryMin.toLocaleString("vi-VN")}₫ –{" "}
+            {job.salaryMax.toLocaleString("vi-VN")}₫
+          </p>
+        ) : (
+          <p className="text-gray-500 italic">Mức lương thỏa thuận</p>
+        )}
+      </div>
+
+      {/* Footer */}
+      <div className="flex justify-between items-center mt-5 text-xs text-gray-400">
+        <span>
+          Cập nhật:{" "}
+          {new Date(job.createdAt || Date.now()).toLocaleDateString("vi-VN")}
+        </span>
+        <Link
+          to={`/jobs/${job.id}`}
+          className="text-sm font-medium text-[#00b14f] hover:text-[#008f3f] flex items-center gap-1"
+        >
+          Xem chi tiết <FaArrowRight size={12} />
+        </Link>
+      </div>
+
+      {/* 🌿 Overlay xanh + nút “Ứng tuyển ngay” */}
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: hovered ? 1 : 0 }}
+        transition={{ duration: 0.3 }}
+        className="job-overlay"
+      >
+        <Link to={`/jobs/${job.id}`} className="job-apply-btn">
+          Ứng tuyển ngay
+        </Link>
+      </motion.div>
+    </motion.div>
+  );
+};
 
   // 🏢 CompanyCard
   const CompanyCard = ({ company }) => (
@@ -448,6 +514,8 @@ export default function HomePage() {
           </div>
         </motion.section>
       </div>
+      
+
     </div>
   );
 }
