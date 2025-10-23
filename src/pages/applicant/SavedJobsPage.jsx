@@ -18,20 +18,17 @@ export default function SavedJobsPage() {
   const [loading, setLoading] = useState(true);
   const [removing, setRemoving] = useState(null);
 
-  // 🔹 Lấy danh sách job đã lưu
+  // ✅ Lấy danh sách job đã lưu
   const fetchSavedJobs = async () => {
     setLoading(true);
     try {
       const res = await getSavedJobs();
-      // ✅ backend trả về { data: [...] } hoặc { data: { data: [...] } }
-      const data = res?.data?.data || res?.data || [];
-      // Một số API trả về object có "job" -> cần unwrap
-      const normalized = Array.isArray(data)
-        ? data.map((item) => item.job || item)
-        : [];
+      // Backend trả về { data: { content: [ {id, title, company, ...} ] } }
+      const content = res?.data?.data?.content || [];
+      const normalized = Array.isArray(content) ? content : [];
       setJobs(normalized);
     } catch (err) {
-      console.error("Lỗi tải job đã lưu:", err);
+      console.error("❌ Lỗi tải job đã lưu:", err);
       toast.error("Không tải được danh sách công việc đã lưu!");
     } finally {
       setLoading(false);
@@ -42,7 +39,7 @@ export default function SavedJobsPage() {
     fetchSavedJobs();
   }, []);
 
-  // 🔹 Bỏ lưu job
+  // ✅ Bỏ lưu job
   const handleUnsave = async (jobId) => {
     setRemoving(jobId);
     try {
@@ -50,13 +47,14 @@ export default function SavedJobsPage() {
       setJobs((prev) => prev.filter((j) => j.id !== jobId));
       toast.info("Đã bỏ lưu công việc");
     } catch (err) {
-      console.error("Lỗi khi bỏ lưu:", err);
+      console.error("❌ Lỗi khi bỏ lưu:", err);
       toast.error("Không thể bỏ lưu công việc!");
     } finally {
       setRemoving(null);
     }
   };
 
+  // ✅ Loading hiển thị
   if (loading)
     return (
       <div className="flex justify-center items-center h-60 text-gray-500">
@@ -116,8 +114,23 @@ export default function SavedJobsPage() {
                     <FaMapMarkerAlt className="text-gray-400" />
                     {job.location || "Không rõ địa điểm"}
                   </p>
+
+                  {/* ✅ Thời gian lưu */}
+                  {job.savedAt && (
+                    <p className="text-xs text-gray-400 mt-2">
+                      Lưu lúc:{" "}
+                      {new Date(job.savedAt).toLocaleString("vi-VN", {
+                        day: "2-digit",
+                        month: "2-digit",
+                        year: "numeric",
+                        hour: "2-digit",
+                        minute: "2-digit",
+                      })}
+                    </p>
+                  )}
                 </div>
 
+                {/* Nút bỏ lưu */}
                 <button
                   onClick={() => handleUnsave(job.id)}
                   disabled={removing === job.id}

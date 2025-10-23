@@ -1,3 +1,4 @@
+// src/pages/applicant/JobDetailPage.jsx
 import React, { useEffect, useState } from "react";
 import { useParams, Link, useNavigate } from "react-router-dom";
 import {
@@ -8,9 +9,12 @@ import {
   FaRegHeart,
   FaGlobe,
 } from "react-icons/fa";
-import { getJobDetail } from "../../services/jobService";
 import { getCompanyById } from "../../services/companyService";
-import { saveJob, unsaveJob } from "../../services/savedJobService";
+import {
+  getJobDetailWithSave,
+  saveJob,
+  unsaveJob,
+} from "../../services/savedJobService";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
@@ -25,10 +29,10 @@ export default function JobDetailPage() {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
 
-  const token = localStorage.getItem("accessToken") || localStorage.getItem("token");
+  const token =
+    localStorage.getItem("accessToken") || localStorage.getItem("token");
 
-
-  // ✅ Load job + company
+  // ✅ Load job detail (có isSaved) + company + related jobs
   useEffect(() => {
     window.scrollTo(0, 0);
     setLoading(true);
@@ -38,17 +42,22 @@ export default function JobDetailPage() {
 
     const fetchData = async () => {
       try {
-        const res = await getJobDetail(id);
-        const jobData = res?.data || res;
+        // 🔹 Lấy job detail kèm trạng thái isSaved
+        const res = await getJobDetailWithSave(id);
+        const jobData = res?.data?.data || res?.data || res;
         setJob(jobData);
+        setIsSaved(jobData?.isSaved || false);
 
+        // 🔹 Lấy thông tin công ty
         if (jobData?.company?.id) {
           const compRes = await getCompanyById(jobData.company.id);
           setCompany(compRes?.data?.company || compRes?.data);
         }
 
+        // 🔹 Lấy việc làm liên quan
         fetchRelatedJobs(jobData?.title);
       } catch (err) {
+        console.error("❌ Lỗi khi tải chi tiết job:", err);
         toast.error("Không thể tải chi tiết công việc.");
       } finally {
         setLoading(false);
@@ -58,7 +67,7 @@ export default function JobDetailPage() {
     fetchData();
   }, [id]);
 
-  // ✅ Việc làm liên quan
+  // ✅ Lấy việc làm liên quan
   const fetchRelatedJobs = async (title) => {
     try {
       const res = await fetch(
@@ -73,7 +82,7 @@ export default function JobDetailPage() {
     }
   };
 
-  // ✅ Lưu / Bỏ lưu
+  // ✅ Lưu / Bỏ lưu job
   const toggleSave = async () => {
     if (!token) {
       toast.warning("Vui lòng đăng nhập để lưu việc làm!");
@@ -90,13 +99,15 @@ export default function JobDetailPage() {
         setIsSaved(true);
         toast.success("Đã lưu việc làm thành công");
       }
-    } catch {
+    } catch (err) {
+      console.error("❌ Lỗi khi lưu việc làm:", err);
       toast.error("Có lỗi khi lưu việc làm");
     } finally {
       setSaving(false);
     }
   };
 
+  // ✅ Loading
   if (loading)
     return (
       <div className="flex justify-center items-center h-[60vh] text-gray-600">
@@ -104,6 +115,7 @@ export default function JobDetailPage() {
       </div>
     );
 
+  // ✅ Không tìm thấy job
   if (!job)
     return (
       <div className="text-center text-gray-600 py-10">
