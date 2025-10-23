@@ -25,7 +25,7 @@ export default function PublicLayout() {
       >
         <Outlet />
       </main>
-
+    
       <Footer />
     </div>
   )

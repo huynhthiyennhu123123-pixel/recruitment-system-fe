@@ -5,13 +5,19 @@ import {
   FaChevronLeft,
   FaChevronRight,
   FaSpinner,
+  FaHeart,
+  FaRegHeart,
 } from "react-icons/fa";
-import JobCard from "./job/JobCard"; 
+import JobCard from "./job/JobCard";
+import { saveJob, unsaveJob } from "../services/savedJobService";
+import { toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 export default function RecommendedCarousel() {
   const [jobs, setJobs] = useState([]);
   const [index, setIndex] = useState(0);
   const [loading, setLoading] = useState(true);
+  const [savingId, setSavingId] = useState(null);
 
   const token =
     localStorage.getItem("accessToken") || localStorage.getItem("token");
@@ -36,6 +42,33 @@ export default function RecommendedCarousel() {
     };
     fetchRecommended();
   }, [token]);
+
+  // 🔹 Lưu / Bỏ lưu công việc
+  const toggleSave = async (job) => {
+    if (!token) {
+      toast.info("Vui lòng đăng nhập để lưu việc làm!");
+      return;
+    }
+    setSavingId(job.id);
+    try {
+      if (job.isSaved) {
+        await unsaveJob(job.id);
+        toast.info("Đã bỏ lưu công việc");
+      } else {
+        await saveJob(job.id);
+        toast.success("Đã lưu công việc");
+      }
+      // Cập nhật lại danh sách
+      setJobs((prev) =>
+        prev.map((j) => (j.id === job.id ? { ...j, isSaved: !j.isSaved } : j))
+      );
+    } catch (err) {
+      console.error("❌ Lỗi lưu job:", err);
+      toast.error("Không thể xử lý yêu cầu!");
+    } finally {
+      setSavingId(null);
+    }
+  };
 
   // 🔹 Điều hướng slide
   const nextSlide = () => {
@@ -78,7 +111,10 @@ export default function RecommendedCarousel() {
               transition={{ duration: 0.4 }}
             >
               {jobs.slice(index, index + 3).map((job) => (
-                <div key={job.id} className="flex-shrink-0 w-[330px]">
+                <div key={job.id} className="relative flex-shrink-0 w-[330px]">
+                  {/* ❤️ Nút lưu giống TopCV */}
+            
+                  {/* Card công việc */}
                   <JobCard job={job} />
                 </div>
               ))}
