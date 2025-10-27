@@ -35,8 +35,9 @@ import { getManagedApplications } from "../../services/employerService"
 import ScheduleModal from "./ScheduleModal"
 import RescheduleModal from "./RescheduleModal"
 import ParticipantModal from "./ParticipantModal"
+import { Grid, Card } from "@mui/material"
 
-// 🗺️ Mapping tiếng Việt
+//  Mapping tiếng Việt
 const interviewTypeMap = {
   VIDEO: "Phỏng vấn trực tuyến",
   ONSITE: "Phỏng vấn trực tiếp",
@@ -46,7 +47,7 @@ const interviewTypeMap = {
 const statusMap = {
   SCHEDULED: { label: "Đã lên lịch", color: "info" },
   COMPLETED: { label: "Đã hoàn tất", color: "success" },
-  CANCELED: { label: "Đã hủy", color: "error" },
+  CANCELLED: { label: "Đã hủy", color: "error" },
   WAITING: { label: "Đang chờ xác nhận", color: "warning" },
 }
 
@@ -58,8 +59,18 @@ export default function InterviewPage() {
   const [openParticipants, setOpenParticipants] = useState(null)
   const [openCalendar, setOpenCalendar] = useState(false)
   const [selectedInterview, setSelectedInterview] = useState(null)
+  const [filter, setFilter] = useState("ALL");
 
-  // 🔹 Lấy danh sách phỏng vấn
+  const waitingCount = interviews.filter(i => i.status === "WAITING").length;
+  const scheduledCount = interviews.filter(i => i.status === "SCHEDULED").length;
+  const completedCount = interviews.filter(i => i.status === "COMPLETED").length;
+  const cancelledCount = interviews.filter(i => i.status === "CANCELLED").length;
+
+  const filteredInterviews = filter === "ALL"
+  ? interviews
+  : interviews.filter(i => i.status === filter);
+
+  //  Lấy danh sách phỏng vấn
   const fetchData = async () => {
     setLoading(true);
     try {
@@ -77,18 +88,47 @@ export default function InterviewPage() {
   }, []);
 
   const handleComplete = async (row) => {
-    const notes = prompt("Nhập ghi chú hoàn tất:");
-    if (!notes) return;
-    await completeInterview(row.id, { notes });
-    fetchData();
-  };
+  const notes = prompt("Nhập ghi chú hoàn tất:");
+  if (!notes) return;
+  try {
+    const res = await completeInterview(row.id, { notes });
 
-  const handleCancel = async (row) => {
-    const reason = prompt("Nhập lý do hủy lịch:");
-    if (!reason) return;
-    await cancelInterview(row.id, { reason });
-    fetchData();
-  };
+    if (res?.data?.success) {
+      setInterviews((prev) =>
+        prev.map((i) =>
+          i.id === row.id
+            ? { ...i, status: "COMPLETED", notes }
+            : i
+        )
+      );
+    }
+
+  } catch (err) {
+    console.error(" Lỗi khi hoàn tất phỏng vấn:", err);
+  }
+};
+
+const handleCancel = async (row) => {
+  const reason = prompt("Nhập lý do hủy lịch:");
+  if (!reason) return;
+  try {
+    const res = await cancelInterview(row.id, { reason });
+
+    if (res?.data?.success) {
+      setInterviews((prev) =>
+        prev.map((i) =>
+          i.id === row.id
+            ? { ...i, status: "CANCELLED", cancelReason: reason }
+            : i
+        )
+      );
+    }
+
+  } catch (err) {
+    console.error(" Lỗi khi hủy phỏng vấn:", err);
+  }
+};
+
 
   const handleOpenParticipants = (interview) => {
     const jobPostingId =
@@ -251,7 +291,54 @@ export default function InterviewPage() {
         </Box>
       </Box>
 
-      {/* 📋 Bảng danh sách phỏng vấn */}
+      {/*  Thống kê nhanh */}
+      <Grid container spacing={2} mb={3}>
+        {[
+          { label: "Đã lên lịch", value: scheduledCount, color: "#42a5f5", status: "SCHEDULED" },
+          { label: "Đã hoàn tất", value: completedCount, color: "#66bb6a", status: "COMPLETED" },
+          { label: "Đã hủy", value: cancelledCount, color: "#ef5350", status: "CANCELLED" },
+        ].map((item, idx) => (
+          <Grid item xs={12} sm={6} md={3} key={idx}>
+            <Card
+              onClick={() => setFilter(item.status)}
+              sx={{
+                p: 2.5,
+                borderRadius: 3,
+                textAlign: "center",
+                color: "#fff",
+                fontWeight: "bold",
+                cursor: "pointer",
+                background: item.color,
+                boxShadow: filter === item.status
+                  ? "0 6px 16px rgba(0,0,0,0.25)"
+                  : "0 3px 8px rgba(0,0,0,0.15)",
+                transform: filter === item.status ? "scale(1.04)" : "scale(1)",
+                transition: "all 0.2s ease-in-out",
+                "&:hover": { transform: "scale(1.05)" },
+              }}
+            >
+              <Typography variant="h4" fontWeight="bold">{item.value}</Typography>
+              <Typography>{item.label}</Typography>
+            </Card>
+          </Grid>
+        ))}
+      </Grid>
+
+      {/*  Nút hiển thị tất cả */}
+      {filter !== "ALL" && (
+        <Box textAlign="right" mb={1}>
+          <Button
+            variant="outlined"
+            color="primary"
+            size="small"
+            onClick={() => setFilter("ALL")}
+          >
+            Hiển thị tất cả
+          </Button>
+        </Box>
+      )}
+
+      {/* Bảng danh sách phỏng vấn */}
       <Paper elevation={2} sx={{ borderRadius: 2, overflow: "hidden" }}>
         {loading ? (
           <Box textAlign="center" mt={4} mb={4}>
@@ -260,7 +347,7 @@ export default function InterviewPage() {
         ) : (
           <DataGrid
             className="interview-grid"
-            rows={interviews}
+            rows={filteredInterviews}
             columns={columns}
             getRowId={(r) => r.id}
             autoHeight
@@ -291,7 +378,7 @@ export default function InterviewPage() {
         )}
       </Paper>
 
-      {/* 📅 Modal xem lịch phỏng vấn */}
+      {/*  Modal xem lịch phỏng vấn */}
       <Dialog
         open={openCalendar}
         onClose={() => setOpenCalendar(false)}
@@ -383,7 +470,7 @@ export default function InterviewPage() {
         </DialogContent>
       </Dialog>
 
-      {/* 🗓️ Popup chi tiết buổi phỏng vấn */}
+      {/* Popup chi tiết buổi phỏng vấn */}
       {selectedInterview && (
         <Dialog
           open={!!selectedInterview}
@@ -475,7 +562,7 @@ export default function InterviewPage() {
               />
             </Box>
 
-            {/* 🎯 Hành động nhanh */}
+            {/*  Hành động nhanh */}
             <Box mt={3} display="flex" justifyContent="flex-end" gap={1}>
               <Button
                 variant="outlined"
@@ -515,7 +602,7 @@ export default function InterviewPage() {
         </Dialog>
       )}
 
-      {/* 🗓️ Modal: Tạo lịch */}
+      {/* Modal: Tạo lịch */}
       {openSchedule && (
         <ScheduleModal
           open={openSchedule}
@@ -524,7 +611,7 @@ export default function InterviewPage() {
         />
       )}
 
-      {/* 🔁 Modal: Đổi lịch */}
+      {/*  Modal: Đổi lịch */}
       {openReschedule && (
         <RescheduleModal
           open={!!openReschedule}
@@ -534,7 +621,7 @@ export default function InterviewPage() {
         />
       )}
 
-      {/* 👥 Modal: Quản lý ứng viên */}
+      {/*  Modal: Quản lý ứng viên */}
       {openParticipants && (
         <ParticipantModal
           open={!!openParticipants}

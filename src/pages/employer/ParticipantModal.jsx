@@ -114,7 +114,7 @@ export default function ParticipantModal({
         ]);
       }
 
-      // ⚠️ Nếu không còn ứng viên nào → hủy phỏng vấn
+      //  Nếu không còn ứng viên nào → hủy phỏng vấn
       if (newList.length === 0) {
         await cancelInterview(interview.id, {
           reason: "Không còn ứng viên nào tham gia",
@@ -138,7 +138,7 @@ export default function ParticipantModal({
       </DialogTitle>
 
       <DialogContent dividers>
-        {/* 🧍 Ứng viên hiện tại */}
+        {/*  Ứng viên hiện tại */}
         <Typography variant="subtitle1" sx={{ mb: 1, fontWeight: 600 }}>
           Ứng viên hiện tại:
         </Typography>
@@ -180,7 +180,7 @@ export default function ParticipantModal({
 
         <Divider sx={{ my: 2 }} />
 
-        {/* ➕ Ứng viên có thể thêm */}
+        {/*  Ứng viên có thể thêm */}
         <Typography variant="subtitle1" sx={{ mb: 1, fontWeight: 600 }}>
           Thêm ứng viên cùng công việc (trạng thái INTERVIEW):
         </Typography>

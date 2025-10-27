@@ -26,8 +26,8 @@ import dayjs from "dayjs"
 import Slide from "@mui/material/Slide"
 
 const INTERVIEW_METHODS = [
-  { value: "VIDEO", label: "Phỏng vấn trực tuyến (Video)" },
   { value: "ONSITE", label: "Phỏng vấn trực tiếp tại công ty" },
+  { value: "VIDEO", label: "Phỏng vấn trực tuyến (Video)" },
   { value: "PHONE", label: "Phỏng vấn qua điện thoại" },
 ];
 
@@ -45,7 +45,7 @@ export default function ScheduleModal({ open, onClose, onSuccess }) {
     applicationId: "",
     scheduledAt: dayjs().add(1, "hour").format("YYYY-MM-DDTHH:mm"),
     durationMinutes: 60,
-    interviewType: "VIDEO",
+    interviewType: "ONSITE",
     location: "",
     meetingLink: "",
     notes: "",
@@ -175,7 +175,7 @@ export default function ScheduleModal({ open, onClose, onSuccess }) {
                   value={form.applicationId}
                   onChange={handleChange}
                   fullWidth
-                  sx={{ marginInlineEnd: 70 }}
+                  sx={{ marginInlineEnd: 100 }}
                   required
                   error={!!errors.applicationId}
                   helperText={errors.applicationId}
@@ -253,7 +253,7 @@ export default function ScheduleModal({ open, onClose, onSuccess }) {
                       </InputAdornment>
                     ),
                   }}
-                  sx={{ marginInlineEnd: 8 }}
+                  sx={{ marginInlineEnd: 10 }}
                 >
                   {INTERVIEW_METHODS.map((m) => (
                     <MenuItem key={m.value} value={m.value}>
