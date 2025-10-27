@@ -358,6 +358,7 @@ export default function CompanyProfileEdit() {
                     value={form.companySize}
                     onChange={handleChange}
                     fullWidth
+                    sx={{ marginInlineEnd: 3 }}
                     InputLabelProps={{
                       sx: {
                         color: "#26a751ff",
@@ -448,7 +449,7 @@ export default function CompanyProfileEdit() {
                     value={form.phoneNumber}
                     onChange={handleChange}
                     fullWidth
-                    sx={{ marginInlineEnd: -10 }}
+                    sx={{ marginInlineEnd: -7 }}
                     InputLabelProps={{
                       sx: {
                         color: "#26a751ff",
@@ -495,6 +496,27 @@ export default function CompanyProfileEdit() {
                     }}
                   />
                 </Grid>
+                <Grid item xs={12} sm={6} md={3}>
+                  <Autocomplete
+                    options={provinces.map((p) => p.ProvinceName)}
+                    value={form.city}
+                    onChange={(_, val) => setForm({ ...form, city: val || "" })}
+                    renderInput={(params) => (
+                      <TextField
+                        {...params}
+                        label="Tỉnh / Thành phố"
+                        sx={{ marginInlineEnd: 19 }}
+                        InputLabelProps={{
+                          sx: {
+                            color: "#26a751ff",
+                            fontWeight: "bold",
+                            fontSize: 20,
+                          },
+                        }}
+                      />
+                    )}
+                  />
+                </Grid>
 
                 <Grid item xs={12} sm={6} md={3}>
                   <Autocomplete
@@ -506,7 +528,7 @@ export default function CompanyProfileEdit() {
                     renderInput={(params) => (
                       <TextField
                         {...params}
-                        sx={{ marginInlineEnd: 10 }}
+                        sx={{ marginInlineEnd: 5 }}
                         label="Quốc gia"
                         InputLabelProps={{
                           sx: {
@@ -519,27 +541,7 @@ export default function CompanyProfileEdit() {
                     )}
                   />
                 </Grid>
-                <Grid item xs={12} sm={6} md={3}>
-                  <Autocomplete
-                    options={provinces.map((p) => p.ProvinceName)}
-                    value={form.city}
-                    onChange={(_, val) => setForm({ ...form, city: val || "" })}
-                    renderInput={(params) => (
-                      <TextField
-                        {...params}
-                        label="Tỉnh / Thành phố"
-                        sx={{ marginInlineEnd: 11 }}
-                        InputLabelProps={{
-                          sx: {
-                            color: "#26a751ff",
-                            fontWeight: "bold",
-                            fontSize: 20,
-                          },
-                        }}
-                      />
-                    )}
-                  />
-                </Grid>
+                
                 {/* --- PHÚC LỢI --- */}
                 <Grid item xs={12}>
                   <MuiChipsInput
@@ -547,7 +549,7 @@ export default function CompanyProfileEdit() {
                     value={form.benefits}
                     onChange={(chips) => setForm({ ...form, benefits: chips })}
                     fullWidth
-                    sx={{ marginInlineEnd: 110 }}
+                    sx={{ marginInlineEnd: 100 }}
                     InputLabelProps={{
                       sx: {
                         color: "#26a751ff",
@@ -600,7 +602,7 @@ export default function CompanyProfileEdit() {
                     <Typography
                       color="#264653"
                       fontSize={15}
-                      sx={{ marginInlineEnd: 57 }}
+                      sx={{ marginInlineEnd: 60 }}
                     >
                       {isDragActive
                         ? "Thả ảnh vào đây..."
