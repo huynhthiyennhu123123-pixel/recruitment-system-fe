@@ -3,6 +3,7 @@ import {
   getMyDocuments,
   deleteDocument,
 } from "../../../services/documentService";
+import { getProfile } from "../../../services/applicantService";
 import { Link } from "react-router-dom";
 import {
   FaTrash,
@@ -10,19 +11,44 @@ import {
   FaFileAlt,
   FaPlus,
   FaFileUpload,
+  FaSpinner,
+  FaExclamationTriangle,
 } from "react-icons/fa";
 import toast, { Toaster } from "react-hot-toast";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 
 export default function DocumentListPage() {
   const [docs, setDocs] = useState({});
   const [loading, setLoading] = useState(false);
+  const [deleting, setDeleting] = useState(false);
+  const [showConfirm, setShowConfirm] = useState(false);
+  const [selectedId, setSelectedId] = useState(null);
 
   const fetchDocs = async () => {
     setLoading(true);
     try {
-      const res = await getMyDocuments();
-      setDocs(res?.data?.data || {});
+      const [docsRes, profileRes] = await Promise.all([
+        getMyDocuments(),
+        getProfile(),
+      ]);
+
+      const docsData = docsRes?.data?.data || {};
+      const profile = profileRes?.data?.data || profileRes?.data || {};
+      if (profile.resumeUrl) {
+        const profileResume = {
+          id: "profile-resume",
+          filename: "CV chính",
+          size: 0,
+          uploadedAt: profile.updatedAt || new Date().toISOString(),
+          downloadUrl: profile.resumeUrl,
+        };
+
+        docsData.RESUME = docsData.RESUME
+          ? [profileResume, ...docsData.RESUME]
+          : [profileResume];
+      }
+
+      setDocs(docsData);
     } catch (err) {
       console.error("Lỗi khi tải danh sách tài liệu:", err);
       toast.error("Không thể tải danh sách tài liệu.");
@@ -31,21 +57,27 @@ export default function DocumentListPage() {
     }
   };
 
-  const handleDelete = async (id) => {
-    if (!window.confirm("Bạn có chắc muốn xóa tài liệu này?")) return;
+  const handleDelete = async () => {
+    if (!selectedId) return;
+    if (selectedId === "profile-resume") {
+      toast.warning("CV chính không thể xóa — hãy upload CV mới để thay thế.");
+      setShowConfirm(false);
+      return;
+    }
 
-    const deletePromise = deleteDocument(id)
-      .then(() => fetchDocs())
-      .catch((err) => {
-        console.error("Lỗi khi xóa tài liệu:", err);
-        throw err;
-      });
-
-    toast.promise(deletePromise, {
-      loading: "Đang xóa tài liệu...",
-      success: "Xóa tài liệu thành công!",
-      error: "Không thể xóa tài liệu.",
-    });
+    setDeleting(true);
+    try {
+      await deleteDocument(selectedId);
+      toast.success("Xóa tài liệu thành công!");
+      await fetchDocs();
+    } catch (err) {
+      console.error("Lỗi khi xóa tài liệu:", err);
+      toast.error("Không thể xóa tài liệu.");
+    } finally {
+      setDeleting(false);
+      setShowConfirm(false);
+      setSelectedId(null);
+    }
   };
 
   useEffect(() => {
@@ -67,7 +99,7 @@ export default function DocumentListPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 py-10 px-4">
+    <div className="min-h-screen bg-gray-50 py-10 px-4 relative">
       <Toaster position="top-right" reverseOrder={false} />
 
       <motion.div
@@ -76,7 +108,6 @@ export default function DocumentListPage() {
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
       >
-        {/* Header */}
         <div className="flex flex-col sm:flex-row justify-between items-center mb-10 gap-4">
           <h2 className="text-3xl font-bold text-gray-800 flex items-center gap-2">
             <FaFileAlt className="text-green-500" /> Tài liệu của tôi
@@ -96,14 +127,11 @@ export default function DocumentListPage() {
             </Link>
           </div>
         </div>
-
-        {/* Danh sách tài liệu */}
         {Object.keys(docs).length === 0 && (
           <p className="text-gray-500 text-center italic mt-10">
             Chưa có tài liệu nào. Hãy tải lên để hoàn thiện hồ sơ của bạn!
           </p>
         )}
-
         {Object.keys(docs).map((type) => (
           <div key={type} className="mb-10">
             <h3 className="text-lg font-semibold mb-4 uppercase text-gray-700">
@@ -120,21 +148,38 @@ export default function DocumentListPage() {
                     transition={{ duration: 0.2 }}
                   >
                     <div className="flex items-center gap-3 mb-3">
-                      <FaFileAlt className="text-green-500 text-2xl" />
+                      <FaFileAlt
+                        className={`${
+                          file.id === "profile-resume"
+                            ? "text-blue-500"
+                            : "text-green-500"
+                        } text-2xl`}
+                      />
                       <div>
                         <p className="font-semibold text-gray-800 truncate">
                           {file.filename}
                         </p>
                         <p className="text-gray-500 text-sm">
-                          {(file.size / 1024).toFixed(1)} KB •{" "}
+                          {file.size > 0
+                            ? `${(file.size / 1024).toFixed(1)} KB • `
+                            : ""}
                           {new Date(file.uploadedAt).toLocaleString("vi-VN")}
                         </p>
+                        {file.id === "profile-resume" && (
+                          <p className="text-xs text-gray-400 italic mt-1">
+                            (Đây là CV chính — có thể thay thế bằng cách upload mới.)
+                          </p>
+                        )}
                       </div>
                     </div>
 
                     <div className="flex justify-between items-center mt-3">
                       <a
-                        href={`http://localhost:8081${file.downloadUrl}`}
+                        href={
+                          file.downloadUrl?.startsWith("http")
+                            ? file.downloadUrl
+                            : `http://localhost:8081${file.downloadUrl}`
+                        }
                         target="_blank"
                         rel="noreferrer"
                         className="flex items-center gap-2 text-green-600 hover:text-green-700 font-medium transition"
@@ -142,13 +187,19 @@ export default function DocumentListPage() {
                       >
                         <FaDownload /> Tải xuống
                       </a>
-                      <button
-                        onClick={() => handleDelete(file.id)}
-                        className="text-red-500 hover:text-red-700 transition"
-                        title="Xóa"
-                      >
-                        <FaTrash />
-                      </button>
+
+                      {file.id !== "profile-resume" && (
+                        <button
+                          onClick={() => {
+                            setSelectedId(file.id);
+                            setShowConfirm(true);
+                          }}
+                          className="text-red-500 hover:text-red-700 transition"
+                          title="Xóa"
+                        >
+                          <FaTrash />
+                        </button>
+                      )}
                     </div>
                   </motion.div>
                 ))}
@@ -162,6 +213,53 @@ export default function DocumentListPage() {
           </div>
         ))}
       </motion.div>
+
+      <AnimatePresence>
+        {showConfirm && (
+          <motion.div
+            className="fixed inset-0 bg-black/40 flex justify-center items-center z-50"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+          >
+            <motion.div
+              className="bg-white rounded-2xl p-6 w-80 text-center shadow-lg"
+              initial={{ scale: 0.8, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.8, opacity: 0 }}
+            >
+              <FaExclamationTriangle className="text-yellow-500 text-4xl mx-auto mb-3" />
+              <h2 className="text-lg font-semibold mb-2">
+                Xác nhận xóa tài liệu?
+              </h2>
+              <p className="text-gray-600 text-sm mb-5">
+                Hành động này không thể hoàn tác. Tài liệu sẽ bị xóa vĩnh viễn khỏi hệ thống.
+              </p>
+
+              <div className="flex justify-center gap-3">
+                <button
+                  onClick={() => setShowConfirm(false)}
+                  className="px-4 py-2 rounded-lg border border-gray-300 text-gray-600 hover:bg-gray-100 transition"
+                >
+                  Hủy
+                </button>
+                <button
+                  onClick={handleDelete}
+                  disabled={deleting}
+                  className={`px-4 py-2 rounded-lg text-white flex items-center justify-center gap-2 ${
+                    deleting
+                      ? "bg-gray-400 cursor-not-allowed"
+                      : "bg-red-500 hover:bg-red-600"
+                  }`}
+                >
+                  {deleting && <FaSpinner className="animate-spin" />}
+                  {deleting ? "Đang xóa..." : "Xóa"}
+                </button>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }

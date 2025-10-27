@@ -23,7 +23,7 @@ const ApplicationDetailPage = () => {
   const [application, setApplication] = useState(null);
   const [loading, setLoading] = useState(true);
   const [withdrawing, setWithdrawing] = useState(false);
-  const [showConfirm, setShowConfirm] = useState(false); // ✅ modal state
+  const [showConfirm, setShowConfirm] = useState(false);
 
   const fetchData = async () => {
     setLoading(true);
@@ -46,11 +46,25 @@ const ApplicationDetailPage = () => {
   };
 
   const handleWithdraw = async () => {
+    if (!application) return;
+    const status = application.status;
+    if (["HIRED", "REJECTED", "WITHDRAWN", "CANCELLED"].includes(status)) {
+      const statusMessages = {
+        HIRED: "Bạn đã được tuyển dụng, không thể rút đơn.",
+        REJECTED: "Đơn này đã bị từ chối, không thể rút.",
+        WITHDRAWN: "Bạn đã rút đơn này trước đó rồi.",
+        CANCELLED: "Đơn này đã bị hủy, không thể rút.",
+      };
+      toast.warning(statusMessages[status] || "Không thể rút đơn ở trạng thái hiện tại.");
+      setShowConfirm(false);
+      return;
+    }
+
     setWithdrawing(true);
     try {
       await withdrawApplication(id);
-      toast.success("🎉 Rút đơn thành công!");
-      setTimeout(() => navigate("/applicant/applications"), 1500);
+      toast.success("Rút đơn thành công!");
+      await fetchData();
     } catch (err) {
       console.error("Rút đơn thất bại:", err);
       toast.error("Rút đơn thất bại, vui lòng thử lại!");
@@ -100,7 +114,6 @@ const ApplicationDetailPage = () => {
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
       >
-        {/* Nút quay lại */}
         <button
           onClick={() => navigate(-1)}
           className="mb-6 flex items-center gap-2 text-gray-600 hover:text-[#00b14f] transition"
@@ -108,8 +121,6 @@ const ApplicationDetailPage = () => {
           <FaArrowLeft />
           <span>Quay lại</span>
         </button>
-
-        {/* Thông tin đơn */}
         <div className="flex flex-col sm:flex-row justify-between sm:items-center mb-6">
           <div>
             <h1 className="text-2xl font-bold text-[#00b14f] mb-1">
@@ -120,26 +131,21 @@ const ApplicationDetailPage = () => {
               {job?.location || "Không rõ địa điểm"}
             </p>
           </div>
-
-          {/* Nút rút đơn */}
-          {application.status !== "WITHDRAWN" &&
-            application.status !== "CANCELLED" && (
-              <button
-                onClick={() => setShowConfirm(true)} // ✅ mở modal
-                disabled={withdrawing}
-                className={`mt-4 sm:mt-0 px-5 py-2.5 rounded-lg text-white font-medium flex items-center gap-2 transition shadow-sm ${
-                  withdrawing
-                    ? "bg-gray-400 cursor-not-allowed"
-                    : "bg-red-500 hover:bg-red-600"
-                }`}
-              >
-                {withdrawing && <FaSpinner className="animate-spin" />}
-                {withdrawing ? "Đang rút..." : "Rút đơn"}
-              </button>
-            )}
+          {!["WITHDRAWN", "CANCELLED", "HIRED", "REJECTED"].includes(application.status) && (
+            <button
+              onClick={() => setShowConfirm(true)}
+              disabled={withdrawing}
+              className={`mt-4 sm:mt-0 px-5 py-2.5 rounded-lg text-white font-medium flex items-center gap-2 transition shadow-sm ${
+                withdrawing
+                  ? "bg-gray-400 cursor-not-allowed"
+                  : "bg-red-500 hover:bg-red-600"
+              }`}
+            >
+              {withdrawing && <FaSpinner className="animate-spin" />}
+              {withdrawing ? "Đang rút..." : "Rút đơn"}
+            </button>
+          )}
         </div>
-
-        {/* Chi tiết đơn */}
         <div className="space-y-4 text-gray-700 leading-relaxed">
           <p className="flex items-center gap-2">
             <FaClipboardCheck className="text-[#00b14f]" />
@@ -182,8 +188,6 @@ const ApplicationDetailPage = () => {
           )}
         </div>
       </motion.div>
-
-      {/* ✅ Modal xác nhận hiện đại */}
       <AnimatePresence>
         {showConfirm && (
           <motion.div
@@ -199,11 +203,13 @@ const ApplicationDetailPage = () => {
               exit={{ scale: 0.8, opacity: 0 }}
             >
               <FaExclamationTriangle className="text-yellow-500 text-4xl mx-auto mb-3" />
-              <h2 className="text-lg font-semibold mb-2">
-                Xác nhận rút đơn?
-              </h2>
+              <h2 className="text-lg font-semibold mb-2">Xác nhận rút đơn?</h2>
               <p className="text-gray-600 text-sm mb-5">
-                Sau khi rút, bạn sẽ không thể ứng tuyển lại công việc này trừ khi nhà tuyển dụng mở lại.
+                Bạn có chắc muốn rút đơn ứng tuyển cho vị trí{" "}
+                <span className="font-semibold text-[#00b14f]">
+                  {job?.title}
+                </span>
+                ?<br />Hành động này không thể hoàn tác.
               </p>
 
               <div className="flex justify-center gap-3">

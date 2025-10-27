@@ -21,7 +21,7 @@ export default function CompanyDetailPage() {
         const res = await getCompanyById(id);
         setCompanyData(res?.data);
       } catch (err) {
-        console.error("❌ Lỗi khi lấy chi tiết công ty:", err);
+        console.error("Lỗi khi lấy chi tiết công ty:", err);
       } finally {
         setLoading(false);
       }
@@ -42,18 +42,16 @@ export default function CompanyDetailPage() {
         Không tìm thấy công ty.
       </div>
     );
-
   const { company, jobs } = companyData;
 
   const coverImage =
     company.coverUrl ||
-    "/default-cover.jpg"; // ảnh bìa mặc định
+    "/default-cover.jpg"; 
   const logoImage =
-    company.logoUrl || "/default-company.png"; // ảnh logo mặc định
+    company.logoUrl || "/default-company.png"; 
 
   return (
     <div className="bg-gray-50 min-h-screen">
-      {/* 🔹 Cover Header */}
       <div
         className="relative w-full h-60 bg-center bg-cover"
         style={{
@@ -76,11 +74,8 @@ export default function CompanyDetailPage() {
           </h1>
         </div>
       </div>
-
-      {/* 🔹 Nội dung chính */}
       <div className="max-w-6xl mx-auto px-4 pt-20 pb-10">
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          {/* Giới thiệu công ty */}
           <div className="lg:col-span-2 bg-white p-6 rounded-xl shadow-sm border border-gray-100">
             <h2 className="text-lg font-semibold text-gray-800 mb-3 border-b border-gray-200 pb-2">
               Giới thiệu công ty
@@ -89,8 +84,6 @@ export default function CompanyDetailPage() {
               {company.description || "Chưa có mô tả công ty."}
             </p>
           </div>
-
-          {/* Thông tin chung */}
           <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
             <h2 className="text-lg font-semibold text-gray-800 mb-3 border-b border-gray-200 pb-2">
               Thông tin chung
@@ -159,8 +152,6 @@ export default function CompanyDetailPage() {
             </ul>
           </div>
         </div>
-
-        {/* Hình ảnh công ty */}
         {company.companyPhotos && company.companyPhotos.length > 0 && (
           <div className="mt-10 bg-white p-6 rounded-xl shadow-sm border border-gray-100">
             <h2 className="text-lg font-semibold text-gray-800 mb-3 border-b border-gray-200 pb-2">
@@ -178,13 +169,10 @@ export default function CompanyDetailPage() {
             </div>
           </div>
         )}
-
-        {/* Việc làm đang tuyển */}
         <div className="mt-10 bg-white p-6 rounded-xl shadow-sm border border-gray-100">
           <h2 className="text-lg font-semibold text-gray-800 mb-4 border-b border-gray-200 pb-2">
             Việc làm đang tuyển
           </h2>
-
           {jobs && jobs.length > 0 ? (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
               {jobs.map((job) => (

@@ -41,7 +41,6 @@ export default function ProfilePage() {
     if (!profile) return;
     setLoading(true);
 
-    // ✅ Chuẩn hóa dữ liệu gửi đúng format backend
     const {
       dateOfBirth,
       gender,
@@ -144,7 +143,6 @@ export default function ProfilePage() {
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.6 }}
       >
-        {/* 🧍 Thông tin cá nhân */}
         <motion.div
           className="bg-white rounded-2xl shadow-lg border border-green-100 p-6 flex items-center gap-6 hover:shadow-xl transition"
           whileHover={{ scale: 1.02 }}
@@ -167,7 +165,6 @@ export default function ProfilePage() {
           </div>
         </motion.div>
 
-        {/* 📝 Form hồ sơ */}
         <motion.div
           className="bg-white rounded-2xl shadow-lg border border-green-100 p-8"
           initial={{ opacity: 0, y: 20 }}
@@ -192,7 +189,6 @@ export default function ProfilePage() {
               />
             </div>
 
-            {/* Nơi mong muốn làm việc */}
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
                 Nơi mong muốn làm việc
@@ -205,7 +201,6 @@ export default function ProfilePage() {
               />
             </div>
 
-            {/* Giới thiệu */}
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
                 Giới thiệu bản thân
@@ -219,10 +214,9 @@ export default function ProfilePage() {
               />
             </div>
 
-            {/* Kỹ năng */}
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
-                Kỹ năng (cách nhau bởi dấu phẩy)
+                Kỹ năng
               </label>
               <textarea
                 name="skills"
@@ -237,7 +231,6 @@ export default function ProfilePage() {
               />
             </div>
 
-            {/* Kinh nghiệm */}
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
                 Kinh nghiệm làm việc
@@ -251,7 +244,6 @@ export default function ProfilePage() {
               />
             </div>
 
-            {/* Học vấn */}
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
                 Học vấn
@@ -265,7 +257,6 @@ export default function ProfilePage() {
               />
             </div>
 
-            {/* Nút lưu */}
             <motion.button
               type="submit"
               disabled={loading}

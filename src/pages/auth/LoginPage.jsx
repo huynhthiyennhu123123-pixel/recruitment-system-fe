@@ -22,8 +22,6 @@ export default function LoginPage() {
     try {
       const res = await login(form);
       const user = res?.user;
-
-      // Kiểm tra xác thực email
       if (user && user.emailVerified === false) {
         toast.warn("Tài khoản của bạn chưa xác thực email!");
         setLoading(false);
@@ -82,7 +80,6 @@ export default function LoginPage() {
 
   return (
     <div className="flex min-h-screen">
-      {/* Bên trái - Form (65%) */}
       <motion.div
         initial={{ opacity: 0, x: -40 }}
         animate={{ opacity: 1, x: 0 }}
@@ -90,7 +87,6 @@ export default function LoginPage() {
         className="w-full md:w-[65%] flex items-center justify-center bg-white px-8 lg:px-16"
       >
         <div className="w-full max-w-md">
-          {/* Logo + tiêu đề */}
           <div className="text-center mb-8">
             <img src={logo} alt="Logo" className="h-14 mx-auto mb-3" />
             <h1 className="text-2xl font-bold text-gray-800 mb-2">
@@ -101,8 +97,6 @@ export default function LoginPage() {
               Đăng nhập để tiếp tục hành trình nghề nghiệp của bạn.
             </p>
           </div>
-
-          {/* Form đăng nhập */}
           <form onSubmit={handleSubmit} className="space-y-4">
             <input
               type="email"
@@ -141,8 +135,6 @@ export default function LoginPage() {
               {loading ? "Đang xử lý..." : "Đăng nhập"}
             </button>
           </form>
-
-          {/* Liên kết phụ */}
           <div className="mt-5 flex flex-col items-center gap-2 text-sm text-gray-600">
             <Link to="/auth/forgot-password" className="hover:underline">
               Quên mật khẩu?
@@ -155,8 +147,6 @@ export default function LoginPage() {
               Gửi lại email xác nhận
             </button>
           </div>
-
-          {/* Mạng xã hội */}
           <div className="mt-6 text-center text-gray-500 text-sm">
             <p className="mb-3">Hoặc đăng nhập bằng</p>
             <div className="flex justify-center gap-3">
@@ -177,8 +167,6 @@ export default function LoginPage() {
           </p>
         </div>
       </motion.div>
-
-      {/* Bên phải - Banner (35%) */}
       <motion.div
         initial={{ opacity: 0, x: 40 }}
         animate={{ opacity: 1, x: 0 }}

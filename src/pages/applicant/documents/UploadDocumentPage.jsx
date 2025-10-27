@@ -54,7 +54,6 @@ export default function UploadDocumentPage() {
         </h1>
 
         <form onSubmit={handleSubmit} className="space-y-5">
-          {/* Chọn loại tài liệu */}
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
               Loại tài liệu
@@ -70,8 +69,6 @@ export default function UploadDocumentPage() {
               <option value="CERTIFICATE">Chứng chỉ</option>
             </select>
           </div>
-
-          {/* Chọn file */}
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
               Chọn file
@@ -88,8 +85,6 @@ export default function UploadDocumentPage() {
               </p>
             )}
           </div>
-
-          {/* Nút tải lên */}
           <button
             type="submit"
             disabled={loading}

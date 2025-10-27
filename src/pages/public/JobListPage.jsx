@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { searchJobs } from "../../services/jobService";
 import { FaSpinner } from "react-icons/fa";
-import JobCard from "../../components/job/JobCard"; // ✅ dùng JobCard chung
+import JobCard from "../../components/job/JobCard";
 import { motion } from "framer-motion";
 
 export default function JobListPage() {
@@ -23,9 +23,6 @@ export default function JobListPage() {
     salaryMax: queryParams.get("salaryMax") || "",
   });
 
-  // =============================
-  // Gọi API
-  // =============================
   const fetchJobs = async () => {
     setLoading(true);
     try {
@@ -50,7 +47,6 @@ export default function JobListPage() {
     }
   };
 
-  // Cập nhật URL & gọi lại
   useEffect(() => {
     const handler = setTimeout(() => {
       const params = new URLSearchParams();
@@ -85,9 +81,6 @@ export default function JobListPage() {
     setPage(0);
   };
 
-  // =============================
-  // Render
-  // =============================
   if (loading)
     return (
       <div className="flex justify-center items-center h-80 text-gray-500">
@@ -98,7 +91,6 @@ export default function JobListPage() {
   return (
     <div className="bg-[#f9fafb] min-h-screen py-10">
       <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-4 gap-8 px-4">
-        {/* Sidebar filter */}
         <aside className="bg-white rounded-2xl border border-gray-200 p-6 h-fit shadow-sm hover:shadow-md transition-all duration-300">
           <h2 className="text-lg font-bold mb-4 text-[#00b14f]">Bộ lọc tìm kiếm</h2>
 
@@ -154,7 +146,6 @@ export default function JobListPage() {
           </button>
         </aside>
 
-        {/* Danh sách việc làm */}
         <section className="lg:col-span-3">
           <h1 className="text-2xl font-bold text-gray-800 mb-6">
             Kết quả tìm kiếm

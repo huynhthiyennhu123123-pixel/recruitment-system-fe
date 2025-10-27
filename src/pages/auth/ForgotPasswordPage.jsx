@@ -9,7 +9,7 @@ export default function ForgotPasswordPage() {
   const [email, setEmail] = useState("");
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState("");
-  const [success, setSuccess] = useState(null); // true | false
+  const [success, setSuccess] = useState(null);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -44,7 +44,6 @@ export default function ForgotPasswordPage() {
 
   return (
     <div className="flex min-h-screen">
-      {/* Bên trái: form (65%) */}
       <motion.div
         initial={{ opacity: 0, x: -40 }}
         animate={{ opacity: 1, x: 0 }}
@@ -52,7 +51,6 @@ export default function ForgotPasswordPage() {
         className="w-full md:w-[65%] flex items-center justify-center bg-white px-8 lg:px-16"
       >
         <div className="w-full max-w-md">
-          {/* Logo + tiêu đề */}
           <div className="text-center mb-8">
             <img src={logo} alt="Logo" className="h-14 mx-auto mb-3" />
             <h1 className="text-2xl font-bold text-gray-800 mb-2">
@@ -62,8 +60,6 @@ export default function ForgotPasswordPage() {
               Nhập email của bạn để nhận liên kết đặt lại mật khẩu.
             </p>
           </div>
-
-          {/* Form */}
           <form onSubmit={handleSubmit} className="space-y-4">
             <input
               type="email"
@@ -82,8 +78,6 @@ export default function ForgotPasswordPage() {
               {loading ? "Đang gửi..." : "Gửi email đặt lại mật khẩu"}
             </button>
           </form>
-
-          {/* Thông báo */}
           {message && (
             <p
               className={`mt-4 text-center ${
@@ -93,8 +87,6 @@ export default function ForgotPasswordPage() {
               {message}
             </p>
           )}
-
-          {/* Liên kết quay lại */}
           <div className="mt-6 text-center">
             <Link
               to="/auth/login"
@@ -105,8 +97,6 @@ export default function ForgotPasswordPage() {
           </div>
         </div>
       </motion.div>
-
-      {/* Bên phải: banner (35%) */}
       <motion.div
         initial={{ opacity: 0, x: 40 }}
         animate={{ opacity: 1, x: 0 }}

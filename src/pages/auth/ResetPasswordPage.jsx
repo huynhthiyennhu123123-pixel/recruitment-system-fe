@@ -61,7 +61,6 @@ export default function ResetPasswordPage() {
 
   return (
     <div className="flex min-h-screen">
-      {/* Bên trái: Form (65%) */}
       <motion.div
         initial={{ opacity: 0, x: -40 }}
         animate={{ opacity: 1, x: 0 }}
@@ -69,7 +68,6 @@ export default function ResetPasswordPage() {
         className="w-full md:w-[65%] flex items-center justify-center bg-white px-8 lg:px-16"
       >
         <div className="w-full max-w-md">
-          {/* Logo + Tiêu đề */}
           <div className="text-center mb-8">
             <img src={logo} alt="Logo" className="h-14 mx-auto mb-3" />
             <h1 className="text-2xl font-bold text-gray-800 mb-2">
@@ -79,8 +77,6 @@ export default function ResetPasswordPage() {
               Nhập mật khẩu mới để truy cập lại tài khoản của bạn.
             </p>
           </div>
-
-          {/* Form */}
           <form onSubmit={handleSubmit} className="space-y-4">
             <input
               type="password"
@@ -98,8 +94,6 @@ export default function ResetPasswordPage() {
               {loading ? "Đang xử lý..." : "Đặt lại mật khẩu"}
             </button>
           </form>
-
-          {/* Thông báo */}
           {message && (
             <p
               className={`mt-4 text-center ${
@@ -109,8 +103,6 @@ export default function ResetPasswordPage() {
               {message}
             </p>
           )}
-
-          {/* Liên kết quay lại */}
           <div className="mt-6 text-center">
             <Link
               to="/auth/login"
@@ -121,8 +113,6 @@ export default function ResetPasswordPage() {
           </div>
         </div>
       </motion.div>
-
-      {/* Bên phải: Banner (35%) */}
       <motion.div
         initial={{ opacity: 0, x: 40 }}
         animate={{ opacity: 1, x: 0 }}

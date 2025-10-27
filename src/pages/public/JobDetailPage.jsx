@@ -1,4 +1,4 @@
-// src/pages/applicant/JobDetailPage.jsx
+
 import React, { useEffect, useState } from "react";
 import { useParams, Link, useNavigate } from "react-router-dom";
 import {
@@ -32,7 +32,6 @@ export default function JobDetailPage() {
   const token =
     localStorage.getItem("accessToken") || localStorage.getItem("token");
 
-  // ✅ Load job detail (có isSaved) + company + related jobs
   useEffect(() => {
     window.scrollTo(0, 0);
     setLoading(true);
@@ -42,22 +41,19 @@ export default function JobDetailPage() {
 
     const fetchData = async () => {
       try {
-        // 🔹 Lấy job detail kèm trạng thái isSaved
         const res = await getJobDetailWithSave(id);
         const jobData = res?.data?.data || res?.data || res;
         setJob(jobData);
         setIsSaved(jobData?.isSaved || false);
 
-        // 🔹 Lấy thông tin công ty
         if (jobData?.company?.id) {
           const compRes = await getCompanyById(jobData.company.id);
           setCompany(compRes?.data?.company || compRes?.data);
         }
 
-        // 🔹 Lấy việc làm liên quan
         fetchRelatedJobs(jobData?.title);
       } catch (err) {
-        console.error("❌ Lỗi khi tải chi tiết job:", err);
+        console.error("Lỗi khi tải chi tiết job:", err);
         toast.error("Không thể tải chi tiết công việc.");
       } finally {
         setLoading(false);
@@ -67,7 +63,6 @@ export default function JobDetailPage() {
     fetchData();
   }, [id]);
 
-  // ✅ Lấy việc làm liên quan
   const fetchRelatedJobs = async (title) => {
     try {
       const res = await fetch(
@@ -78,11 +73,10 @@ export default function JobDetailPage() {
       const data = await res.json();
       setRelatedJobs(data?.data?.content || []);
     } catch (err) {
-      console.error("❌ Lỗi việc liên quan:", err);
+      console.error("Lỗi việc liên quan:", err);
     }
   };
 
-  // ✅ Lưu / Bỏ lưu job
   const toggleSave = async () => {
     if (!token) {
       toast.warning("Vui lòng đăng nhập để lưu việc làm!");
@@ -100,14 +94,13 @@ export default function JobDetailPage() {
         toast.success("Đã lưu việc làm thành công");
       }
     } catch (err) {
-      console.error("❌ Lỗi khi lưu việc làm:", err);
+      console.error("Lỗi khi lưu việc làm:", err);
       toast.error("Có lỗi khi lưu việc làm");
     } finally {
       setSaving(false);
     }
   };
 
-  // ✅ Loading
   if (loading)
     return (
       <div className="flex justify-center items-center h-[60vh] text-gray-600">
@@ -115,7 +108,6 @@ export default function JobDetailPage() {
       </div>
     );
 
-  // ✅ Không tìm thấy job
   if (!job)
     return (
       <div className="text-center text-gray-600 py-10">
@@ -127,7 +119,6 @@ export default function JobDetailPage() {
     <div className="bg-[#f9fafb] min-h-screen pb-20">
       <ToastContainer position="top-right" autoClose={2000} />
 
-      {/* ==== Header Job ==== */}
       <div className="bg-white rounded-xl shadow-sm border border-gray-100 max-w-5xl mx-auto mt-10 p-8 transition-all duration-300">
         <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
           <div className="flex-1">
@@ -175,11 +166,8 @@ export default function JobDetailPage() {
         </div>
       </div>
 
-      {/* ==== Nội dung chính ==== */}
       <div className="max-w-5xl mx-auto grid grid-cols-1 lg:grid-cols-3 gap-8 mt-8 px-2">
-        {/* Bên trái */}
         <div className="lg:col-span-2 flex flex-col gap-6">
-          {/* Mô tả */}
           <div className="bg-[#f9fffb] rounded-xl shadow-sm border border-gray-100 p-6 hover:shadow-md transition-all duration-300">
             <h2 className="text-lg font-semibold text-[#00b14f] mb-3">
               Mô tả công việc
@@ -189,7 +177,6 @@ export default function JobDetailPage() {
             </p>
           </div>
 
-          {/* Yêu cầu */}
           {job.requirements && (
             <div className="bg-[#f9fffb] rounded-xl shadow-sm border border-gray-100 p-6 hover:shadow-md transition-all duration-300">
               <h2 className="text-lg font-semibold text-[#00b14f] mb-3">
@@ -201,7 +188,6 @@ export default function JobDetailPage() {
             </div>
           )}
 
-          {/* Quyền lợi */}
           {job.benefits && (
             <div className="bg-[#f9fffb] rounded-xl shadow-sm border border-gray-100 p-6 hover:shadow-md transition-all duration-300">
               <h2 className="text-lg font-semibold text-[#00b14f] mb-3">
@@ -213,7 +199,6 @@ export default function JobDetailPage() {
             </div>
           )}
 
-          {/* Việc làm liên quan */}
           {relatedJobs.length > 0 && (
             <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
               <h2 className="text-lg font-semibold text-[#00b14f] mb-5">
@@ -253,7 +238,6 @@ export default function JobDetailPage() {
           )}
         </div>
 
-        {/* Bên phải */}
         <aside className="space-y-6">
           {company && (
             <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">

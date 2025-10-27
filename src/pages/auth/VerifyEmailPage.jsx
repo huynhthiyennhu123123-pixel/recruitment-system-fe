@@ -8,11 +8,10 @@ import logo from "../../assets/images/logo.png";
 export default function VerifyEmailPage() {
   const location = useLocation();
   const navigate = useNavigate();
-  const [status, setStatus] = useState("loading"); // loading | success | error
+  const [status, setStatus] = useState("loading");
   const [message, setMessage] = useState("");
-  const hasRun = useRef(false); // ✅ Chặn chạy 2 lần trong Strict Mode
+  const hasRun = useRef(false);
 
-  // Lấy token từ query ?token=...
   const searchParams = new URLSearchParams(location.search);
   const token = searchParams.get("token");
 
@@ -57,7 +56,6 @@ export default function VerifyEmailPage() {
 
   return (
     <div className="flex min-h-screen">
-      {/* Bên trái: nội dung (65%) */}
       <motion.div
         initial={{ opacity: 0, x: -40 }}
         animate={{ opacity: 1, x: 0 }}
@@ -66,8 +64,6 @@ export default function VerifyEmailPage() {
       >
         <div className="w-full max-w-md text-center">
           <img src={logo} alt="Logo" className="h-14 mx-auto mb-4" />
-
-          {/* Loading */}
           {status === "loading" && (
             <div className="space-y-3">
               <div className="text-gray-600 text-lg animate-pulse">
@@ -75,8 +71,6 @@ export default function VerifyEmailPage() {
               </div>
             </div>
           )}
-
-          {/* Success */}
           {status === "success" && (
             <motion.div
               initial={{ opacity: 0, scale: 0.9 }}
@@ -92,8 +86,6 @@ export default function VerifyEmailPage() {
               </p>
             </motion.div>
           )}
-
-          {/* Error */}
           {status === "error" && (
             <motion.div
               initial={{ opacity: 0, scale: 0.9 }}
@@ -122,8 +114,6 @@ export default function VerifyEmailPage() {
           )}
         </div>
       </motion.div>
-
-      {/* Bên phải: banner (35%) */}
       <motion.div
         initial={{ opacity: 0, x: 40 }}
         animate={{ opacity: 1, x: 0 }}

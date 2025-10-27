@@ -9,7 +9,7 @@ export default function CheckEmailPage() {
   const [email, setEmail] = useState("");
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState("");
-  const [success, setSuccess] = useState(null); // true | false
+  const [success, setSuccess] = useState(null);
 
   const handleResend = async (e) => {
     e.preventDefault();
@@ -43,7 +43,6 @@ export default function CheckEmailPage() {
 
   return (
     <div className="flex min-h-screen">
-      {/* Bên trái: form (65%) */}
       <motion.div
         initial={{ opacity: 0, x: -40 }}
         animate={{ opacity: 1, x: 0 }}
@@ -51,7 +50,6 @@ export default function CheckEmailPage() {
         className="w-full md:w-[65%] flex items-center justify-center bg-white px-8 lg:px-16"
       >
         <div className="w-full max-w-md">
-          {/* Logo + tiêu đề */}
           <div className="text-center mb-8">
             <img src={logo} alt="Logo" className="h-14 mx-auto mb-3" />
             <h1 className="text-2xl font-bold text-gray-800 mb-2">
@@ -61,8 +59,6 @@ export default function CheckEmailPage() {
               Nhập email bạn đã dùng để đăng ký để nhận lại liên kết xác minh.
             </p>
           </div>
-
-          {/* Form */}
           <form onSubmit={handleResend} className="space-y-4">
             <input
               type="email"
@@ -80,8 +76,6 @@ export default function CheckEmailPage() {
               {loading ? "Đang gửi..." : "Gửi lại email xác nhận"}
             </button>
           </form>
-
-          {/* Thông báo */}
           {message && (
             <p
               className={`mt-4 text-center ${
@@ -91,8 +85,6 @@ export default function CheckEmailPage() {
               {message}
             </p>
           )}
-
-          {/* Quay lại đăng nhập */}
           <div className="mt-6 text-center">
             <Link
               to="/auth/login"
@@ -103,8 +95,6 @@ export default function CheckEmailPage() {
           </div>
         </div>
       </motion.div>
-
-      {/* Bên phải: banner (35%) */}
       <motion.div
         initial={{ opacity: 0, x: 40 }}
         animate={{ opacity: 1, x: 0 }}
