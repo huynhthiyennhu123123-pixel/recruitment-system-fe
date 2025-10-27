@@ -3,7 +3,7 @@ import { register } from "../../services/authService";
 import { useNavigate, Link } from "react-router-dom";
 import { FaEye, FaEyeSlash, FaGoogle, FaFacebook } from "react-icons/fa";
 import { toast } from "react-toastify";
-import logo from "../../assets/images/logo.png"; // 👈 giữ logo cũ của bạn
+import logo from "../../assets/images/logo.png";
 import { motion } from "framer-motion";
 
 export default function RegisterPage() {
@@ -47,7 +47,6 @@ export default function RegisterPage() {
 
   return (
     <div className="flex min-h-screen">
-      {/* Bên trái: Form (65%) */}
       <motion.div
         initial={{ opacity: 0, x: -50 }}
         animate={{ opacity: 1, x: 0 }}
@@ -55,7 +54,6 @@ export default function RegisterPage() {
         className="w-full md:w-[65%] flex items-center justify-center bg-white px-8 lg:px-16"
       >
         <div className="w-full max-w-md">
-          {/* Logo & Tiêu đề */}
           <div className="text-center mb-8">
             <img src={logo} alt="Logo" className="h-14 mx-auto mb-3" />
             <h1 className="text-2xl font-bold text-gray-800 mb-2">
@@ -65,8 +63,6 @@ export default function RegisterPage() {
               Đăng ký để xây dựng hồ sơ nổi bật và nhận được cơ hội nghề nghiệp lý tưởng.
             </p>
           </div>
-
-          {/* Form đăng ký */}
           <form onSubmit={handleSubmit} className="space-y-4">
             <div className="grid grid-cols-2 gap-3">
               <input
@@ -152,8 +148,6 @@ export default function RegisterPage() {
               {loading ? "Đang xử lý..." : "Đăng ký"}
             </button>
           </form>
-
-          {/* Đăng ký bằng MXH */}
           <div className="mt-6 text-center text-gray-500 text-sm">
             <p className="mb-3">Hoặc đăng ký bằng</p>
             <div className="flex justify-center gap-3">
@@ -174,8 +168,6 @@ export default function RegisterPage() {
           </p>
         </div>
       </motion.div>
-
-      {/* Bên phải: Banner (35%) */}
       <motion.div
         initial={{ opacity: 0, x: 50 }}
         animate={{ opacity: 1, x: 0 }}

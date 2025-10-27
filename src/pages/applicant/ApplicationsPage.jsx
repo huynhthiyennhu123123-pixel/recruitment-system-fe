@@ -10,7 +10,6 @@ import {
 } from "react-icons/fa";
 import { motion } from "framer-motion";
 
-// Màu trạng thái
 const STATUS_COLOR = {
   RECEIVED: "bg-yellow-100 text-yellow-700 border-yellow-200",
   REVIEWED: "bg-blue-100 text-blue-700 border-blue-200",
@@ -21,7 +20,6 @@ const STATUS_COLOR = {
   WITHDRAWN: "bg-gray-100 text-gray-700 border-gray-200",
 };
 
-// Text tiếng Việt tương ứng
 const STATUS_TEXT = {
   RECEIVED: "Đã tiếp nhận",
   REVIEWED: "Đang xem xét",
@@ -62,13 +60,11 @@ export default function ApplicationsPage() {
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
       >
-        {/* Tiêu đề */}
         <h1 className="text-3xl font-bold text-gray-800 mb-8 flex items-center gap-2">
           <FaBriefcase className="text-[#00b14f]" />
           Danh sách đơn ứng tuyển
         </h1>
 
-        {/* Nội dung */}
         {loading ? (
           <p className="text-gray-500 italic text-center mt-6 animate-pulse">
             Đang tải danh sách đơn ứng tuyển...
@@ -107,7 +103,6 @@ export default function ApplicationsPage() {
                     </span>
                   </p>
 
-                  {/* Trạng thái */}
                   <span
                     className={`inline-block mt-3 px-3 py-1 text-xs font-semibold border rounded-full ${
                       STATUS_COLOR[app.status] || "bg-gray-100 text-gray-700"

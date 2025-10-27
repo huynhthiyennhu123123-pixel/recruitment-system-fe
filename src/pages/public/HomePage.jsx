@@ -27,13 +27,11 @@ export default function HomePage() {
   const heroRef = useRef(null);
   const baseUrl = "http://localhost:8081";
 
-  // 🔹 Lấy chiều cao header
   useEffect(() => {
     const header = document.querySelector("header");
     if (header) setHeaderHeight(header.offsetHeight);
   }, []);
 
-  // 🔹 Load jobs
   useEffect(() => {
     const loadData = async () => {
       setLoading(true);
@@ -59,7 +57,6 @@ export default function HomePage() {
     loadData();
   }, []);
 
-  // 🔹 Load công ty (mock nếu API trống)
   useEffect(() => {
     const fetchTopCompanies = async () => {
       try {
@@ -97,7 +94,7 @@ export default function HomePage() {
     fetchTopCompanies();
   }, []);
 
-  // 💼 JobCard
+  // JobCard
   const JobCard = ({ job }) => {
     const [hovered, setHovered] = useState(false);
     const [isSaved, setIsSaved] = useState(job.isSaved || false);
@@ -106,7 +103,6 @@ export default function HomePage() {
     const token =
       localStorage.getItem("token") || localStorage.getItem("accessToken");
 
-    // ✅ Kiểm tra xem job này đã được lưu chưa (nếu user đăng nhập)
     useEffect(() => {
       const checkSaved = async () => {
         if (!token) return;
@@ -123,7 +119,6 @@ export default function HomePage() {
       checkSaved();
     }, [job.id, token]);
 
-    // ✅ Toggle lưu / bỏ lưu
     const toggleSave = async (e) => {
       e.preventDefault();
       if (!token) {
@@ -143,7 +138,7 @@ export default function HomePage() {
           toast.success("Đã lưu việc làm thành công");
         }
       } catch (err) {
-        console.error("❌ Lỗi khi lưu việc làm:", err);
+        console.error("Lỗi khi lưu việc làm:", err);
         toast.error("Không thể lưu việc làm!");
       } finally {
         setSaving(false);
@@ -158,7 +153,7 @@ export default function HomePage() {
         transition={{ type: "spring", stiffness: 200, damping: 15 }}
         className="job-card relative border border-gray-100 rounded-2xl p-6 shadow-sm bg-white overflow-hidden group"
       >
-        {/* ❤️ Nút lưu việc */}
+        {/*  Nút lưu việc */}
         <button
           onClick={toggleSave}
           disabled={saving}
@@ -200,7 +195,7 @@ export default function HomePage() {
           </div>
           {job.salaryMin && job.salaryMax ? (
             <p className="text-[#00b14f] font-semibold">
-              💰 {job.salaryMin.toLocaleString("vi-VN")}₫ –{" "}
+               {job.salaryMin.toLocaleString("vi-VN")}₫ –{" "}
               {job.salaryMax.toLocaleString("vi-VN")}₫
             </p>
           ) : (
@@ -222,7 +217,7 @@ export default function HomePage() {
           </Link>
         </div>
 
-        {/* 🌿 Overlay xanh + nút “Ứng tuyển ngay” */}
+        {/* Overlay xanh + nút “Ứng tuyển ngay” */}
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: hovered ? 1 : 0 }}
@@ -237,7 +232,7 @@ export default function HomePage() {
     );
   };
 
-  // 🏢 CompanyCard
+  // CompanyCard
   const CompanyCard = ({ company }) => (
     <motion.div whileHover={{ scale: 1.03 }} className="company-card">
       <img
@@ -265,7 +260,7 @@ export default function HomePage() {
 
   return (
     <div className="bg-gray-50 min-h-screen pb-20">
-      {/* 🌟 Hero */}
+      {/* Hero */}
       <div className="relative left-1/2 right-1/2 w-screen -mx-[50vw]">
         <section
           ref={heroRef}
@@ -300,7 +295,7 @@ export default function HomePage() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6">
         <RecommendedCarousel />
 
-        {/* 🧭 Ngành nghề */}
+        {/* Ngành nghề */}
         <motion.section
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -325,7 +320,7 @@ export default function HomePage() {
           </div>
         </motion.section>
 
-        {/* 🆕 Việc làm mới nhất */}
+        {/* Việc làm mới nhất */}
         <motion.section
           initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -348,7 +343,7 @@ export default function HomePage() {
           </div>
         </motion.section>
 
-        {/* 💻 Việc làm Java nổi bật */}
+        {/* Việc làm Java nổi bật */}
         <motion.section
           initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -365,7 +360,7 @@ export default function HomePage() {
           </div>
         </motion.section>
 
-        {/* 🏢 Công ty nổi bật */}
+        {/* Công ty nổi bật */}
         <motion.section
           initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -380,7 +375,7 @@ export default function HomePage() {
           </div>
         </motion.section>
 
-        {/* 👔 Dành cho nhà tuyển dụng */}
+        {/* Dành cho nhà tuyển dụng */}
         <motion.section
           initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -428,7 +423,7 @@ export default function HomePage() {
           </div>
         </motion.section>
 
-        {/* 📰 Tin tức & Cẩm nang */}
+        {/* Tin tức & Cẩm nang */}
         <motion.section
           initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -485,7 +480,7 @@ export default function HomePage() {
           </div>
         </motion.section>
 
-        {/* 📊 Thống kê */}
+        {/* Thống kê */}
         <motion.section
           initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}

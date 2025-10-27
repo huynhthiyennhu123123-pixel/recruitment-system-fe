@@ -1,12 +1,7 @@
-/* ==============================
- 🌟 Job & Company Card Styles
-============================== */
-
-/* === 🌿 JOB CARD === */
 .job-card {
   position: relative;
   border-radius: 1rem;
-  border: none; /* ✅ bỏ viền đen mặc định */
+  border: none; 
   background: white;
   transition: all 0.35s ease;
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.03);
@@ -17,7 +12,6 @@
   box-shadow: 0 10px 22px rgba(0, 177, 79, 0.15);
 }
 
-/* 💫 Gradient viền phát sáng */
 .job-card::before {
   content: "";
   position: absolute;
@@ -37,7 +31,6 @@
   opacity: 1;
 }
 
-/* 💚 Logo công ty */
 .job-logo {
   width: 60px;
   height: 60px;
@@ -53,7 +46,6 @@
   border-color: #00b14f;
 }
 
-/* ❤️ Nút lưu việc */
 .job-save-btn {
   position: absolute;
   top: 12px;
@@ -69,7 +61,6 @@
   transform: scale(1.1);
 }
 
-/* ✨ Overlay & nút ứng tuyển */
 .job-overlay {
   position: absolute;
   inset: 0;
@@ -108,7 +99,6 @@
   transform: translateY(-2px);
 }
 
-/* === 🏢 COMPANY CARD === */
 .company-card {
   position: relative;
   background: white;
@@ -125,7 +115,6 @@
   box-shadow: 0 8px 20px rgba(0, 177, 79, 0.15);
 }
 
-/* Gradient viền sáng khi hover */
 .company-card::before {
   content: "";
   position: absolute;
@@ -144,7 +133,6 @@
   opacity: 1;
 }
 
-/* Logo phóng nhẹ + sáng viền */
 .company-card img {
   transition: all 0.35s ease;
   border-radius: 50%;
@@ -156,13 +144,11 @@
   box-shadow: 0 0 10px rgba(0, 177, 79, 0.25);
 }
 
-/* Tên công ty đổi màu */
 .company-card:hover h3 {
   color: #00b14f;
   transition: color 0.3s ease;
 }
 
-/* Nút xem chi tiết */
 .company-card a {
   position: relative;
   transition: all 0.3s ease;
@@ -172,7 +158,6 @@
   text-decoration: underline;
 }
 
-/* === ⚙️ GLOBAL EFFECTS === */
 section {
   scroll-margin-top: 100px;
 }
@@ -182,8 +167,6 @@ h2 {
 p {
   line-height: 1.6;
 }
-
-/* Responsive */
 @media (max-width: 640px) {
   .job-card,
   .company-card {

@@ -12,7 +12,7 @@ import {
 import { toast } from "react-toastify";
 import { saveJob, unsaveJob, getJobDetailWithSave } from "../../services/savedJobService";
 import "react-toastify/dist/ReactToastify.css";
-import "../../styles/HomePage.css"; // ✅ dùng lại style của trang chủ
+import "../../styles/HomePage.css";
 
 export default function JobCard({ job }) {
   const [hovered, setHovered] = useState(false);
@@ -21,8 +21,6 @@ export default function JobCard({ job }) {
 
   const token =
     localStorage.getItem("token") || localStorage.getItem("accessToken");
-
-  // ✅ Kiểm tra trạng thái job đã lưu hay chưa
   useEffect(() => {
     const fetchSavedStatus = async () => {
       if (!token) return;
@@ -36,8 +34,6 @@ export default function JobCard({ job }) {
     };
     fetchSavedStatus();
   }, [job.id, token]);
-
-  // ✅ Click lưu / bỏ lưu
   const toggleSave = async (e) => {
     e.preventDefault();
     e.stopPropagation();
@@ -74,7 +70,6 @@ export default function JobCard({ job }) {
       transition={{ type: "spring", stiffness: 200, damping: 15 }}
       className="job-card relative rounded-2xl p-6 shadow-sm bg-white overflow-hidden group"
     >
-      {/* ❤️ Nút lưu việc làm */}
       <motion.button
         whileTap={{ scale: 0.8 }}
         onClick={toggleSave}
@@ -94,8 +89,6 @@ export default function JobCard({ job }) {
           <FaRegHeart />
         )}
       </motion.button>
-
-      {/* Logo + Tiêu đề */}
       <div className="flex items-center gap-4 mb-4">
         <img
           src={job.company?.logoUrl || "/default-company.png"}
@@ -111,8 +104,6 @@ export default function JobCard({ job }) {
           </p>
         </div>
       </div>
-
-      {/* Thông tin việc làm */}
       <div className="space-y-2 text-sm text-gray-600">
         <div className="flex items-center gap-1">
           <FaMapMarkerAlt className="text-[#00b14f]" />
@@ -131,8 +122,6 @@ export default function JobCard({ job }) {
           <p className="text-gray-500 italic">Mức lương thỏa thuận</p>
         )}
       </div>
-
-      {/* Footer */}
       <div className="flex justify-between items-center mt-5 text-xs text-gray-400">
         <span>
           Cập nhật:{" "}
@@ -145,8 +134,6 @@ export default function JobCard({ job }) {
           Xem chi tiết <FaArrowRight size={12} />
         </Link>
       </div>
-
-      {/* 🌿 Overlay xanh + nút “Ứng tuyển ngay” */}
       <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: hovered ? 1 : 0 }}

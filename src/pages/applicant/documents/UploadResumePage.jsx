@@ -23,8 +23,6 @@ export default function UploadResumePage() {
     }
 
     setLoading(true);
-
-    //  Gói promise để toast tự động hiển thị trạng thái
     const uploadPromise = uploadResume(file)
       .then(() => {
         navigate("/applicant/documents");
@@ -58,22 +56,17 @@ export default function UploadResumePage() {
         </p>
 
         <form onSubmit={handleUpload} className="space-y-5">
-          {/* Input chọn file */}
           <input
             type="file"
             accept="application/pdf"
             onChange={(e) => setFile(e.target.files[0])}
             className="border border-gray-300 rounded-lg p-2 w-full outline-none focus:ring-2 focus:ring-[#00b14f]"
           />
-
-          {/* Hiển thị tên file nếu đã chọn */}
           {file && (
             <p className="text-sm text-gray-600 mt-1">
               📄 {file.name} ({(file.size / 1024).toFixed(1)} KB)
             </p>
           )}
-
-          {/* Nút upload */}
           <button
             type="submit"
             disabled={loading}

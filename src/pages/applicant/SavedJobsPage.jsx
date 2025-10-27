@@ -1,4 +1,3 @@
-// src/pages/applicant/SavedJobsPage.jsx
 import React, { useEffect, useState } from "react";
 import { getSavedJobs, unsaveJob } from "../../services/savedJobService";
 import { Link } from "react-router-dom";
@@ -18,17 +17,15 @@ export default function SavedJobsPage() {
   const [loading, setLoading] = useState(true);
   const [removing, setRemoving] = useState(null);
 
-  // ✅ Lấy danh sách job đã lưu
   const fetchSavedJobs = async () => {
     setLoading(true);
     try {
       const res = await getSavedJobs();
-      // Backend trả về { data: { content: [ {id, title, company, ...} ] } }
       const content = res?.data?.data?.content || [];
       const normalized = Array.isArray(content) ? content : [];
       setJobs(normalized);
     } catch (err) {
-      console.error("❌ Lỗi tải job đã lưu:", err);
+      console.error("Lỗi tải job đã lưu:", err);
       toast.error("Không tải được danh sách công việc đã lưu!");
     } finally {
       setLoading(false);
@@ -39,7 +36,6 @@ export default function SavedJobsPage() {
     fetchSavedJobs();
   }, []);
 
-  // ✅ Bỏ lưu job
   const handleUnsave = async (jobId) => {
     setRemoving(jobId);
     try {
@@ -47,14 +43,13 @@ export default function SavedJobsPage() {
       setJobs((prev) => prev.filter((j) => j.id !== jobId));
       toast.info("Đã bỏ lưu công việc");
     } catch (err) {
-      console.error("❌ Lỗi khi bỏ lưu:", err);
+      console.error("Lỗi khi bỏ lưu:", err);
       toast.error("Không thể bỏ lưu công việc!");
     } finally {
       setRemoving(null);
     }
   };
 
-  // ✅ Loading hiển thị
   if (loading)
     return (
       <div className="flex justify-center items-center h-60 text-gray-500">
@@ -72,13 +67,12 @@ export default function SavedJobsPage() {
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
       >
-        {/* 🏷️ Tiêu đề */}
+
         <h1 className="text-3xl font-bold text-gray-800 mb-8 flex items-center gap-2">
           <FaHeart className="text-[#00b14f]" />
           Công việc đã lưu
         </h1>
 
-        {/* 🕳️ Nếu không có công việc */}
         {jobs.length === 0 ? (
           <div className="text-center bg-white border border-gray-200 shadow-sm rounded-2xl py-20 px-6">
             <FaHeart className="text-5xl text-gray-300 mx-auto mb-4" />
@@ -115,7 +109,6 @@ export default function SavedJobsPage() {
                     {job.location || "Không rõ địa điểm"}
                   </p>
 
-                  {/* ✅ Thời gian lưu */}
                   {job.savedAt && (
                     <p className="text-xs text-gray-400 mt-2">
                       Lưu lúc:{" "}
@@ -130,7 +123,6 @@ export default function SavedJobsPage() {
                   )}
                 </div>
 
-                {/* Nút bỏ lưu */}
                 <button
                   onClick={() => handleUnsave(job.id)}
                   disabled={removing === job.id}

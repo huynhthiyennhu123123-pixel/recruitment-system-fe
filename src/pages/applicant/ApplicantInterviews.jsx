@@ -25,7 +25,6 @@ export default function ApplicantInterviews() {
       minute: "2-digit",
     });
 
-  // Ánh xạ trạng thái sang tiếng Việt + màu
   const renderStatus = (status) => {
     const map = {
       SCHEDULED: { text: "Đã xác nhận", color: "bg-blue-100 text-blue-700" },
@@ -77,13 +76,10 @@ export default function ApplicantInterviews() {
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.4 }}
       >
-        {/* Tiêu đề */}
         <h1 className="text-3xl font-bold text-gray-800 mb-8 flex items-center gap-2">
           <FaCalendarAlt className="text-[#00b14f]" />
           Lịch phỏng vấn của tôi
         </h1>
-
-        {/* Loading */}
         {loading ? (
           <div className="flex justify-center items-center h-60 text-gray-500">
             <FaSpinner className="animate-spin mr-2" /> Đang tải lịch phỏng vấn...
@@ -102,7 +98,6 @@ export default function ApplicantInterviews() {
                 whileHover={{ y: -3 }}
                 transition={{ duration: 0.2 }}
               >
-                {/* Thông tin lịch */}
                 <div className="flex justify-between items-center mb-3">
                   <div className="flex items-center gap-2 text-gray-700">
                     <FaClock className="text-[#00b14f]" />

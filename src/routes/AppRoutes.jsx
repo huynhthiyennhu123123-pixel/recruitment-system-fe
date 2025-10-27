@@ -1,5 +1,4 @@
 
-// export default AppRoutes;
 import { BrowserRouter, Routes, Route, Navigate, useLocation } from "react-router-dom";
 
 // Layouts
@@ -9,14 +8,12 @@ import ApplicantLayout from "../layout/ApplicantLayout";
 import EmployerLayout from "../layout/EmployerLayout";
 import AdminLayout from "../layout/AdminLayout";
 
-// 🔹 Pages Public
+// Pages Public
 import HomePage from "../pages/public/HomePage";
 import JobListPage from "../pages/public/JobListPage";
 import JobDetailPage from "../pages/public/JobDetailPage";
 import CompanyDetailPage from "../pages/public/CompanyDetailPage";
 import AboutPage from "../pages/public/AboutPage";
-
-
 
 // Pages Auth
 import LoginPage from "../pages/auth/LoginPage";
@@ -37,7 +34,6 @@ import SavedJobsPage from "../pages/applicant/SavedJobsPage";
 import DocumentListPage from "../pages/applicant/documents/DocumentListPage";
 import UploadDocumentPage from "../pages/applicant/documents/UploadDocumentPage";
 import UploadResumePage from "../pages/applicant/documents/UploadResumePage";
-
 
 // Pages Employer
 import EmployerDashboard from "../pages/employer/DashboardPage";
@@ -62,7 +58,6 @@ import AdminProfilePage from "../pages/admin/AdminProfilePage";
 // Route Guard
 import PrivateRoute from "../components/common/PrivateRoute";
 
-// 🔄 Redirect giữ nguyên query (?token=...)
 function RedirectVerifyEmail() {
   const location = useLocation();
   return <Navigate to={`/auth/verify-email${location.search}`} replace />;
@@ -78,7 +73,6 @@ function App() {
     <BrowserRouter>
       <Routes>
         {/* Public */}
-
         <Route element={<PublicLayout />}>
           <Route index element={<HomePage />} />
           <Route path="jobs" element={<JobListPage />} />
@@ -95,8 +89,6 @@ function App() {
         <Route path="/auth/verify-email" element={<VerifyEmailPage />} />
         <Route path="/auth/forgot-password" element={<ForgotPasswordPage />} />
         <Route path="/auth/reset-password" element={<ResetPasswordPage />} />
-
-
         {/* Redirect khi BE trả link trực tiếp */}
         <Route path="/verify-email" element={<RedirectVerifyEmail />} />
         <Route path="/reset-password" element={<RedirectResetPassword />} />

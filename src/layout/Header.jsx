@@ -11,8 +11,6 @@ export default function Header() {
   const [user, setUser] = useState(null);
   const navigate = useNavigate();
   const location = useLocation();
-
-  // 🔹 Xử lý scroll để đổi màu header
   useEffect(() => {
     const storedUser = JSON.parse(localStorage.getItem("user") || "null");
     setUser(storedUser);
@@ -37,8 +35,6 @@ export default function Header() {
   const isEmployer = location.pathname.startsWith("/employer");
   const isApplicant = location.pathname.startsWith("/applicant");
   const isAdmin = location.pathname.startsWith("/admin");
-
-  // 🎨 Màu nền header khi cuộn hoặc ở dashboard
   const bgColor =
     scrolled || isEmployer || isApplicant || isAdmin
       ? "bg-white shadow-sm"
@@ -53,7 +49,6 @@ export default function Header() {
       }}
     >
       <div className="max-w-7xl mx-auto flex items-center justify-between px-6 h-[60px]">
-        {/* 🔹 Logo */}
         <Link
           to="/"
           className="flex items-center gap-2 font-extrabold text-[#00b14f] text-xl hover:scale-105 transition-transform"
@@ -62,8 +57,6 @@ export default function Header() {
           <span className="tracking-tight">Job</span>
           <span className="text-gray-900 font-extrabold">Recruit</span>
         </Link>
-
-        {/* 🔹 Menu chính */}
         {!token || role === "APPLICANT" ? (
           <nav className="hidden md:flex items-center gap-6 text-gray-800 font-semibold">
             <Link to="/" className="hover:text-[#00b14f] transition-colors">
@@ -119,8 +112,6 @@ export default function Header() {
             </Link>
           </nav>
         ) : null}
-
-        {/* 🔹 Menu phải */}
         <div className="flex items-center gap-4">
           {!token ? (
             <>
@@ -157,8 +148,6 @@ export default function Header() {
                     `${user?.firstName || "Người"} ${user?.lastName || ""}`}
                 </span>
               </button>
-
-              {/* 🔹 Dropdown menu */}
               {menuOpen && (
                 <div className="absolute right-0 top-12 w-56 bg-white border border-gray-100 shadow-lg rounded-xl overflow-hidden animate-fadeIn">
                   {role === "APPLICANT" && (
@@ -242,8 +231,6 @@ export default function Header() {
           )}
         </div>
       </div>
-
-      {/* 🔹 Modal đăng ký */}
       <RegisterModal
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}

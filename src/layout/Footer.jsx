@@ -6,9 +6,7 @@ export default function Footer() {
   return (
     <footer className="bg-gradient-to-r from-[#00a86b] to-[#00915d] text-white">
       <div className="max-w-7xl mx-auto px-6 py-12">
-        {/* Grid chính */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-10">
-          {/* Cột 1 - Giới thiệu */}
           <div>
             <h3 className="text-2xl font-bold mb-4 tracking-wide">
               JobRecruit
@@ -19,8 +17,6 @@ export default function Footer() {
               tìm việc làm và nhân tài nhanh chóng, chuyên nghiệp.
             </p>
           </div>
-
-          {/* Cột 2 - Ứng viên */}
           <div>
             <h4 className="text-lg font-semibold mb-4">Ứng viên</h4>
             <ul className="space-y-2 text-sm">
@@ -50,8 +46,6 @@ export default function Footer() {
               </li>
             </ul>
           </div>
-
-          {/* Cột 3 - Nhà tuyển dụng */}
           <div>
             <h4 className="text-lg font-semibold mb-4">Nhà tuyển dụng</h4>
             <ul className="space-y-2 text-sm">
@@ -81,8 +75,6 @@ export default function Footer() {
               </li>
             </ul>
           </div>
-
-          {/* Cột 4 - Liên hệ */}
           <div>
             <h4 className="text-lg font-semibold mb-4">Liên hệ</h4>
             <ul className="space-y-3 text-sm text-white/90">
@@ -96,13 +88,11 @@ export default function Footer() {
               </li>
               <li className="flex items-center gap-2">
                 <FaMapMarkerAlt className="text-white/80" />
-                TP. Hồ Chí Minh, Việt Nam
+                TP. Cần Thơ, Việt Nam
               </li>
             </ul>
           </div>
         </div>
-
-        {/* Đường kẻ + dòng bản quyền */}
         <div className="border-t border-white/20 mt-10 pt-6 text-center text-white/80 text-sm">
           <p>
             © {new Date().getFullYear()}{" "}

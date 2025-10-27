@@ -68,7 +68,7 @@ export default function ApplyJobPage() {
     let resumeUrl = form.resumeUrl?.trim() || "";
 
     if (!resumeUrl) {
-      toast.warning("📄 Bạn cần upload CV trước khi nộp đơn!");
+      toast.warning("Bạn cần upload CV trước khi nộp đơn!");
       navigate("/applicant/profile");
       return;
     }
@@ -109,7 +109,7 @@ export default function ApplyJobPage() {
 
       if (res.success) {
         toast.update(toastId, {
-          render: res.message || "🎉 Nộp đơn thành công!",
+          render: res.message || "Nộp đơn thành công!",
           type: "success",
           isLoading: false,
           autoClose: 2000,
@@ -117,7 +117,7 @@ export default function ApplyJobPage() {
         setTimeout(() => navigate("/applicant/applications"), 1500);
       } else {
         toast.update(toastId, {
-          render: res.message || "❌ Có lỗi xảy ra khi nộp đơn!",
+          render: res.message || "Có lỗi xảy ra khi nộp đơn!",
           type: "error",
           isLoading: false,
           autoClose: 2000,
@@ -126,7 +126,7 @@ export default function ApplyJobPage() {
     } catch (err) {
       console.error("Apply job error:", err.response?.data || err.message);
       toast.update(toastId, {
-        render: "Nộp đơn thất bại!",
+        render: "Đã nộp đơn ứng tuyển!",
         type: "error",
         isLoading: false,
         autoClose: 2000,
@@ -146,7 +146,6 @@ export default function ApplyJobPage() {
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
       >
-        {/* Tiêu đề */}
         <div className="flex items-center gap-3 mb-6">
           <FaFileAlt className="text-[#00b14f] text-2xl" />
           <h1 className="text-2xl font-bold text-gray-800">
@@ -155,7 +154,6 @@ export default function ApplyJobPage() {
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-6">
-          {/* Thư xin việc */}
           <div>
             <label className="block text-gray-700 font-medium mb-2">
               Thư xin việc
@@ -171,7 +169,6 @@ export default function ApplyJobPage() {
             />
           </div>
 
-          {/* CV hiển thị */}
           {form.resumeUrl ? (
             <p className="text-sm text-gray-600 bg-gray-50 p-3 rounded-lg border border-gray-200">
               <FaRegSmile className="inline text-[#00b14f] mr-1" />
@@ -186,22 +183,29 @@ export default function ApplyJobPage() {
               </a>
             </p>
           ) : (
-            <p className="text-sm text-red-500">
-              ⚠️ Bạn chưa có CV — vui lòng upload trong hồ sơ!
-            </p>
+            <div className="bg-yellow-50 border border-yellow-200 text-yellow-700 rounded-lg p-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+              <div className="flex items-center gap-2">
+                <FaFileAlt className="text-yellow-600 text-lg" />
+                <span>Bạn chưa có CV — vui lòng upload trước khi nộp đơn!</span>
+              </div>
+              <button
+                type="button"
+                onClick={() => navigate("/applicant/documents/resume")}
+                className="bg-[#00b14f] hover:bg-green-600 text-white text-sm font-medium px-4 py-2 rounded-lg transition"
+              >
+                Upload CV ngay
+              </button>
+            </div>
           )}
-
-          {/* Nút nộp đơn */}
           <motion.button
             type="submit"
             disabled={loading}
             whileHover={{ scale: !loading ? 1.02 : 1 }}
             whileTap={{ scale: 0.98 }}
-            className={`w-full flex justify-center items-center gap-2 px-4 py-3 rounded-xl font-semibold text-white transition-all shadow-sm ${
-              loading
+            className={`w-full flex justify-center items-center gap-2 px-4 py-3 rounded-xl font-semibold text-white transition-all shadow-sm ${loading
                 ? "bg-gray-400 cursor-not-allowed"
                 : "bg-[#00b14f] hover:bg-green-600"
-            }`}
+              }`}
           >
             {loading ? (
               <>

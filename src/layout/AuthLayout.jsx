@@ -20,7 +20,6 @@ export default function AuthLayout() {
           duration-300
         `}
       >
-        {/* Logo + tiêu đề */}
         <div className="text-center mb-6">
           <Link to="/" className="inline-block">
             <img src={logo} alt="Logo" className="h-12 mx-auto mb-2" />
@@ -32,8 +31,6 @@ export default function AuthLayout() {
               : "Đăng nhập hoặc đăng ký để tiếp tục"}
           </p>
         </div>
-
-        {/* Trang con */}
         <div className="w-full">
           <Outlet />
         </div>
