@@ -41,7 +41,7 @@ export default function JobPostCreate() {
     educationRequired: "",
     location: "",
     applicationDeadline: "",
-    status: "DRAFT",
+    status: "ACTIVE",
   });
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
@@ -80,7 +80,7 @@ export default function JobPostCreate() {
 
       const res = await createJob(payload);
       if (res?.success) {
-        setSuccessMsg("✅ Tạo tin tuyển dụng thành công!");
+        setSuccessMsg(" Tạo tin tuyển dụng thành công!");
         setTimeout(() => navigate("/employer/jobs"), 1500);
       } else setErrorMsg(res?.message || "Không thể tạo tin tuyển dụng.");
     } catch (err) {
@@ -293,8 +293,9 @@ export default function JobPostCreate() {
                 fullWidth
                 sx={{ marginInlineEnd: 4 }}
               >
-                <MenuItem value="DRAFT">Bản nháp</MenuItem>
                 <MenuItem value="ACTIVE">Đang hiển thị</MenuItem>
+                <MenuItem value="DRAFT">Bản nháp</MenuItem>
+                
               </TextField>
             </Grid>
             {/* Hàng 4 */}
