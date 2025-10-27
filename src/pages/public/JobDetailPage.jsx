@@ -25,7 +25,7 @@ export default function JobDetailPage() {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
 
-  const token = localStorage.getItem("token");
+  const token = localStorage.getItem("accessToken");
 
   // ✅ Load job + company
   useEffect(() => {
