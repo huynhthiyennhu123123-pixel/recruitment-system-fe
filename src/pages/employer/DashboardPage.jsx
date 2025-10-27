@@ -78,7 +78,7 @@ export default function EmployerDashboardPage() {
       </Typography>
     )
 
-  /* 🧩 Thẻ tổng quan nhanh */
+  /*  Thẻ tổng quan nhanh */
   const summaryCards = [
     {
       title: "Tin tuyển dụng",
@@ -110,7 +110,7 @@ export default function EmployerDashboardPage() {
     },
   ]
 
-  /* 📈 Biểu đồ xu hướng */
+  /*  Biểu đồ xu hướng */
   const hiringTrendData = {
     labels: data.hiringTrend.map((t) => t.date || "—"),
     datasets: [
@@ -126,7 +126,7 @@ export default function EmployerDashboardPage() {
     ],
   }
 
-  /* 🧭 Biểu đồ top jobs */
+  /*  Biểu đồ top jobs */
   const topJobsData = {
     labels: data.topPerformingJobs.map((j) => j.jobTitle),
     datasets: [
@@ -148,7 +148,7 @@ export default function EmployerDashboardPage() {
     ],
   }
 
-  /* 🧾 Bảng top job */
+  /*  Bảng top job */
   const columns = [
     {
       field: "jobTitle",
@@ -180,7 +180,7 @@ export default function EmployerDashboardPage() {
 
   return (
     <Box sx={{ p: 3, backgroundColor: "#f9fff9", minHeight: "100vh" }}>
-      {/* 🧭 Tiêu đề */}
+      {/*  Tiêu đề */}
       <Box display="flex" alignItems="center" mb={3} gap={1}>
         <TrendingUpOutlined sx={{ fontSize: 32, color: "#2e7d32" }} />
         <Typography
@@ -196,7 +196,7 @@ export default function EmployerDashboardPage() {
         </Typography>
       </Box>
 
-      {/* 1️⃣ Cards */}
+      {/*  Cards */}
       <Grid container spacing={3} mb={4}>
         {summaryCards.map((card, idx) => (
           <Grid item xs={12} sm={6} md={3} key={idx}>
@@ -241,7 +241,7 @@ export default function EmployerDashboardPage() {
         ))}
       </Grid>
 
-      {/* 2️⃣ Biểu đồ xu hướng */}
+      {/* Biểu đồ xu hướng */}
       <Paper
         sx={{
           p: 3,
@@ -274,7 +274,7 @@ export default function EmployerDashboardPage() {
         )}
       </Paper>
 
-      {/* 3️⃣ Biểu đồ top jobs */}
+      {/*  Biểu đồ top jobs */}
       <Paper
         sx={{
           p: 3,
@@ -301,7 +301,7 @@ export default function EmployerDashboardPage() {
         />
       </Paper>
 
-      {/* 4️⃣ Bảng chi tiết */}
+      {/* Bảng chi tiết */}
       <Paper
         sx={{
           p: 3,

@@ -109,7 +109,7 @@ export default function CompanyProfileEdit() {
 
   //  Load quốc gia và tỉnh/thành
   useEffect(() => {
-    // 🌍 Lấy danh sách quốc gia
+    // Lấy danh sách quốc gia
     axios
       .get("https://restcountries.com/v3.1/all?fields=name")
       .then((res) => {

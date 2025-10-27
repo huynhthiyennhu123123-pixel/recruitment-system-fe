@@ -40,7 +40,7 @@ export default function JobManagePage() {
 
   const handleCloseSnackbar = () => setSnackbar({ ...snackbar, open: false });
 
-  // 🔹 Lấy danh sách tin và tự kiểm tra hết hạn
+  //  Lấy danh sách tin và tự kiểm tra hết hạn
   const fetchJobs = async () => {
     setLoading(true);
     try {
@@ -57,7 +57,7 @@ export default function JobManagePage() {
 
       setJobs(jobsWithExpiry);
     } catch (err) {
-      console.error("❌ Lỗi khi tải danh sách tin tuyển dụng:", err);
+      console.error(" Lỗi khi tải danh sách tin tuyển dụng:", err);
     } finally {
       setLoading(false);
     }
@@ -104,7 +104,7 @@ export default function JobManagePage() {
           message: res.message,
           severity: "success",
         });
-        // 🔹 Cập nhật tại FE không cần reload toàn bộ
+        //  Cập nhật tại FE không cần reload toàn bộ
         setJobs((prev) =>
           prev.map((j) =>
             j.id === job.id ? { ...j, status: newStatus } : j
@@ -118,7 +118,7 @@ export default function JobManagePage() {
         });
       }
     } catch (err) {
-      console.error("❌ Lỗi cập nhật trạng thái:", err);
+      console.error(" Lỗi cập nhật trạng thái:", err);
       setSnackbar({
         open: true,
         message: "Lỗi khi cập nhật trạng thái",
@@ -127,7 +127,7 @@ export default function JobManagePage() {
     }
   };
 
-  // 🔹 Hàm xác định màu chip
+  //  Hàm xác định màu chip
   const getStatusColor = (job) => {
     if (job.isExpired) return "warning";
     switch (job.status) {
@@ -142,7 +142,7 @@ export default function JobManagePage() {
     }
   };
 
-  // 🔹 Cấu hình các cột DataGrid
+  //  Cấu hình các cột DataGrid
   const columns = [
     {
       field: "title",
@@ -274,7 +274,7 @@ export default function JobManagePage() {
     },
   ];
 
-  // 🔹 Tính số lượng từng loại tin
+  //  Tính số lượng từng loại tin
   const activeCount = jobs.filter(
     (j) => j.status === "ACTIVE" && !j.isExpired
   ).length;

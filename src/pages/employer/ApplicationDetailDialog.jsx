@@ -67,7 +67,7 @@ export default function ApplicationDetailDialog({ open, id, onClose }) {
 
   return (
     <Dialog open={open} fullWidth maxWidth="md" onClose={onClose}>
-      {/* 🟩 Header */}
+      {/*  Header */}
       <DialogTitle
         sx={{
           background: "linear-gradient(45deg,#2e7d32,#81c784)",
@@ -89,7 +89,7 @@ export default function ApplicationDetailDialog({ open, id, onClose }) {
           </Box>
         ) : (
           <>
-            {/* 🧑‍💼 Thông tin ứng viên */}
+            {/*  Thông tin ứng viên */}
             <Paper
               sx={{
                 p: 2,
@@ -133,7 +133,7 @@ export default function ApplicationDetailDialog({ open, id, onClose }) {
               </Box>
             </Paper>
 
-            {/* 📄 Thông tin thêm */}
+            {/*  Thông tin thêm */}
             <Typography variant="subtitle2" fontWeight="bold" gutterBottom>
               Trạng thái hiện tại:
             </Typography>
@@ -160,7 +160,7 @@ export default function ApplicationDetailDialog({ open, id, onClose }) {
               </Typography>
             </Paper>
 
-            {/* ⚙️ Form cập nhật */}
+            {/*  Form cập nhật */}
             <Typography
               variant="subtitle2"
               fontWeight="bold"
@@ -211,7 +211,7 @@ export default function ApplicationDetailDialog({ open, id, onClose }) {
 
             <Divider sx={{ my: 2 }} />
 
-            {/* ⏳ Timeline */}
+            {/*  Timeline */}
             <Typography
               variant="subtitle2"
               fontWeight="bold"

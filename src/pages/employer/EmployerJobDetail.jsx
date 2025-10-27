@@ -63,7 +63,7 @@ export default function EmployerJobDetailModern() {
           <Grid item>
             <Avatar sx={{ width: 70, height: 70, bgcolor: "#2e7d32" }} src={
                     job.company?.logoUrl ||
-                    job.createdBy?.avatarUrl || // ✅ thêm dòng này
+                    job.createdBy?.avatarUrl || //  thêm dòng này
                     "/assets/default-logo.png"
                   }><WorkOutline /></Avatar>
           </Grid>

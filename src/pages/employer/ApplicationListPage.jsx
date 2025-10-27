@@ -27,7 +27,7 @@ export default function ApplicationListPage() {
   const [openDetail, setOpenDetail] = useState(false)
   const [selectedId, setSelectedId] = useState(null)
 
-  // 📦 Lấy danh sách công việc
+  //  Lấy danh sách công việc
   useEffect(() => {
     const fetchJobs = async () => {
       try {
@@ -40,7 +40,7 @@ export default function ApplicationListPage() {
     fetchJobs()
   }, [])
 
-  // 📄 Lấy danh sách ứng viên
+  //  Lấy danh sách ứng viên
   const fetchApplications = async () => {
     setLoading(true)
     try {
@@ -66,7 +66,7 @@ export default function ApplicationListPage() {
     fetchApplications()
   }, [status, jobId])
 
-  // 🎨 Map trạng thái
+  //  Map trạng thái
   const statusLabelMap = {
     RECEIVED: "Đã nhận",
     REVIEWED: "Đã xem",
@@ -85,7 +85,7 @@ export default function ApplicationListPage() {
     REJECTED: "linear-gradient(45deg,#ef9a9a,#e53935)",
   }
 
-  // ⚙️ Cấu hình DataGrid
+  //  Cấu hình DataGrid
   const columns = [
     {
       field: "stt",

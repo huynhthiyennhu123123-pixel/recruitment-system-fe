@@ -37,7 +37,7 @@ import RescheduleModal from "./RescheduleModal"
 import ParticipantModal from "./ParticipantModal"
 import { Grid, Card } from "@mui/material"
 
-// 🗺️ Mapping tiếng Việt
+//  Mapping tiếng Việt
 const interviewTypeMap = {
   VIDEO: "Phỏng vấn trực tuyến",
   ONSITE: "Phỏng vấn trực tiếp",
@@ -70,7 +70,7 @@ export default function InterviewPage() {
   ? interviews
   : interviews.filter(i => i.status === filter);
 
-  // 🔹 Lấy danh sách phỏng vấn
+  //  Lấy danh sách phỏng vấn
   const fetchData = async () => {
     setLoading(true);
     try {
@@ -104,7 +104,7 @@ export default function InterviewPage() {
     }
 
   } catch (err) {
-    console.error("❌ Lỗi khi hoàn tất phỏng vấn:", err);
+    console.error(" Lỗi khi hoàn tất phỏng vấn:", err);
   }
 };
 
@@ -125,7 +125,7 @@ const handleCancel = async (row) => {
     }
 
   } catch (err) {
-    console.error("❌ Lỗi khi hủy phỏng vấn:", err);
+    console.error(" Lỗi khi hủy phỏng vấn:", err);
   }
 };
 
@@ -291,7 +291,7 @@ const handleCancel = async (row) => {
         </Box>
       </Box>
 
-      {/* 🔹 Thống kê nhanh */}
+      {/*  Thống kê nhanh */}
       <Grid container spacing={2} mb={3}>
         {[
           { label: "Đã lên lịch", value: scheduledCount, color: "#42a5f5", status: "SCHEDULED" },
@@ -324,7 +324,7 @@ const handleCancel = async (row) => {
         ))}
       </Grid>
 
-      {/* 🎯 Nút hiển thị tất cả */}
+      {/*  Nút hiển thị tất cả */}
       {filter !== "ALL" && (
         <Box textAlign="right" mb={1}>
           <Button
@@ -338,7 +338,7 @@ const handleCancel = async (row) => {
         </Box>
       )}
 
-      {/* 📋 Bảng danh sách phỏng vấn */}
+      {/* Bảng danh sách phỏng vấn */}
       <Paper elevation={2} sx={{ borderRadius: 2, overflow: "hidden" }}>
         {loading ? (
           <Box textAlign="center" mt={4} mb={4}>
@@ -378,7 +378,7 @@ const handleCancel = async (row) => {
         )}
       </Paper>
 
-      {/* 📅 Modal xem lịch phỏng vấn */}
+      {/*  Modal xem lịch phỏng vấn */}
       <Dialog
         open={openCalendar}
         onClose={() => setOpenCalendar(false)}
@@ -470,7 +470,7 @@ const handleCancel = async (row) => {
         </DialogContent>
       </Dialog>
 
-      {/* 🗓️ Popup chi tiết buổi phỏng vấn */}
+      {/* Popup chi tiết buổi phỏng vấn */}
       {selectedInterview && (
         <Dialog
           open={!!selectedInterview}
@@ -562,7 +562,7 @@ const handleCancel = async (row) => {
               />
             </Box>
 
-            {/* 🎯 Hành động nhanh */}
+            {/*  Hành động nhanh */}
             <Box mt={3} display="flex" justifyContent="flex-end" gap={1}>
               <Button
                 variant="outlined"
@@ -602,7 +602,7 @@ const handleCancel = async (row) => {
         </Dialog>
       )}
 
-      {/* 🗓️ Modal: Tạo lịch */}
+      {/* Modal: Tạo lịch */}
       {openSchedule && (
         <ScheduleModal
           open={openSchedule}
@@ -611,7 +611,7 @@ const handleCancel = async (row) => {
         />
       )}
 
-      {/* 🔁 Modal: Đổi lịch */}
+      {/*  Modal: Đổi lịch */}
       {openReschedule && (
         <RescheduleModal
           open={!!openReschedule}
@@ -621,7 +621,7 @@ const handleCancel = async (row) => {
         />
       )}
 
-      {/* 👥 Modal: Quản lý ứng viên */}
+      {/*  Modal: Quản lý ứng viên */}
       {openParticipants && (
         <ParticipantModal
           open={!!openParticipants}
