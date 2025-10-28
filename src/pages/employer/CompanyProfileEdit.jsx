@@ -93,7 +93,7 @@ export default function CompanyProfileEdit() {
             if (end) setEndTime(dayjs(end, "HH:mm"));
           }
 
-          // 🖼 Ảnh công ty
+          //  Ảnh công ty
           if (c.companyPhotos?.length > 0) {
             setImages(c.companyPhotos.map((url) => ({ preview: url })));
           }
@@ -109,92 +109,107 @@ export default function CompanyProfileEdit() {
 
   //  Load quốc gia và tỉnh/thành
   useEffect(() => {
-    // Lấy danh sách quốc gia
-    axios
-      .get("https://restcountries.com/v3.1/all?fields=name")
-      .then((res) => {
-        const sorted = res.data.map((c) => c.name.common).sort();
-        setCountries(sorted);
-      })
-      .catch((err) => {
-        console.error(" Lỗi tải quốc gia:", err);
-        // fallback demo
-        setCountries(["Việt Nam", "Thailand", "Singapore", "Malaysia"]);
-      });
+  const controller = new AbortController();
+
+  const fetchProvinces = async () => {
+    //  Tải danh sách quốc gia
+    try {
+      const countryRes = await axios.get(
+        "https://restcountries.com/v3.1/all?fields=name",
+        { signal: controller.signal }
+      );
+      const sorted = countryRes.data.map((c) => c.name.common).sort();
+      setCountries(sorted);
+      console.log("Quốc gia loaded:", sorted.length);
+    } catch (err) {
+      if (err.name === "CanceledError" || err.code === "ERR_CANCELED") return;
+      console.error("Lỗi tải quốc gia:", err);
+      setCountries(["Việt Nam", "Thailand", "Singapore", "Malaysia"]);
+    }
 
     // Lấy danh sách tỉnh/thành
     const ghnToken = import.meta.env.VITE_GHN_TOKEN || "YOUR_GHN_TOKEN";
 
-    //  Nếu chưa cấu hình GHN Token → dùng OpenAPI thay thế
+    // Nếu chưa có token GHN → fallback OpenAPI
     if (!ghnToken || ghnToken === "YOUR_GHN_TOKEN") {
-      console.warn("GHN token chưa được cấu hình → dùng OpenAPI fallback.");
-      axios
-        .get("https://provinces.open-api.vn/api/v1/provinces")
-        .then((res) => {
-          const provincesData = res.data || [];
-          setProvinces(
-            provincesData.map((p) => ({
-              ProvinceID: p.code || p.id,
-              ProvinceName: p.name,
-            }))
-          );
-          console.log("Provinces loaded từ OpenAPI:", provincesData.length);
-        })
-        .catch((err) => {
-          console.error("Lỗi tải tỉnh từ OpenAPI:", err);
-          // fallback demo cứng
-          setProvinces([
-            { ProvinceID: 1, ProvinceName: "Hà Nội" },
-            { ProvinceID: 2, ProvinceName: "TP. Hồ Chí Minh" },
-            { ProvinceID: 3, ProvinceName: "Đà Nẵng" },
-            { ProvinceID: 4, ProvinceName: "Cần Thơ" },
-            { ProvinceID: 5, ProvinceName: "Bình Dương" },
-          ]);
+      console.warn("GHN token chưa cấu hình → dùng OpenAPI fallback.");
+      try {
+        const res = await axios.get("https://provinces.open-api.vn/api/p/", {
+          signal: controller.signal,
         });
+        const provincesData = res.data || [];
+        setProvinces(
+          provincesData.map((p) => ({
+            ProvinceID: p.code,
+            ProvinceName: p.name,
+          }))
+        );
+        console.log(" Provinces loaded từ OpenAPI:", provincesData.length);
+      } catch (err) {
+        if (err.name === "CanceledError" || err.code === "ERR_CANCELED") return;
+        console.error(" Lỗi tải tỉnh từ OpenAPI:", err);
+        // fallback demo cứng
+        setProvinces([
+          { ProvinceID: 1, ProvinceName: "Hà Nội" },
+          { ProvinceID: 2, ProvinceName: "TP. Hồ Chí Minh" },
+          { ProvinceID: 3, ProvinceName: "Đà Nẵng" },
+          { ProvinceID: 4, ProvinceName: "Cần Thơ" },
+          { ProvinceID: 5, ProvinceName: "Bình Dương" },
+        ]);
+      }
       return;
     }
 
-    //  Nếu có token GHN → ưu tiên gọi API GHN
-    axios
-      .get(
+    // Nếu có GHN token → ưu tiên gọi GHN API
+    try {
+      const res = await axios.get(
         "https://online-gateway.ghn.vn/shiip/public-api/master-data/province",
         {
           headers: { token: ghnToken },
+          signal: controller.signal,
         }
-      )
-      .then((res) => {
-        const data = res.data?.data || [];
+      );
+      const data = res.data?.data || [];
+      setProvinces(
+        data.map((p) => ({
+          ProvinceID: p.ProvinceID,
+          ProvinceName: p.ProvinceName,
+        }))
+      );
+      console.log(" Provinces loaded từ GHN:", data.length);
+    } catch (err) {
+      if (err.name === "CanceledError" || err.code === "ERR_CANCELED") return;
+      console.error("Lỗi tải tỉnh từ GHN:", err);
+      // fallback sang OpenAPI nếu GHN lỗi
+      try {
+        const res = await axios.get("https://provinces.open-api.vn/api/p/", {
+          signal: controller.signal,
+        });
+        const provincesData = res.data || [];
         setProvinces(
-          data.map((p) => ({
-            ProvinceID: p.ProvinceID,
-            ProvinceName: p.ProvinceName,
+          provincesData.map((p) => ({
+            ProvinceID: p.code,
+            ProvinceName: p.name,
           }))
         );
-        console.log("Provinces loaded từ GHN:", data.length);
-      })
-      .catch((err) => {
-        console.error("Lỗi tải tỉnh từ GHN:", err);
-        // fallback qua OpenAPI khi GHN lỗi
-        axios
-          .get("https://provinces.open-api.vn/api/v1/provinces")
-          .then((res) => {
-            const provincesData = res.data || [];
-            setProvinces(
-              provincesData.map((p) => ({
-                ProvinceID: p.code || p.id,
-                ProvinceName: p.name,
-              }))
-            );
-          })
-          .catch(() => {
-            setProvinces([
-              { ProvinceID: 1, ProvinceName: "Hà Nội" },
-              { ProvinceID: 2, ProvinceName: "TP. Hồ Chí Minh" },
-              { ProvinceID: 3, ProvinceName: "Đà Nẵng" },
-            ]);
-          });
-      });
-  }, []);
+        console.log(" Provinces loaded từ OpenAPI fallback:", provincesData.length);
+      } catch (err2) {
+        if (err2.name === "CanceledError" || err2.code === "ERR_CANCELED") return;
+        console.error(" Lỗi tải tỉnh từ OpenAPI fallback:", err2);
+        setProvinces([
+          { ProvinceID: 1, ProvinceName: "Hà Nội" },
+          { ProvinceID: 2, ProvinceName: "TP. Hồ Chí Minh" },
+          { ProvinceID: 3, ProvinceName: "Đà Nẵng" },
+        ]);
+      }
+    }
+  };
+
+  fetchProvinces();
+
+  //  Cleanup khi component bị unmount hoặc reload
+  return () => controller.abort();
+}, []);
 
   //  Xóa ảnh khỏi danh sách
   const handleRemoveImage = (index) => {
