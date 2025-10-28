@@ -78,11 +78,6 @@ export async function getEmployerJobById(jobId) {
   const found = res.data.content.find((job) => job.id === Number(jobId))
   return found || null
 }
-
-/* ======================
- * HỒ SƠ CÔNG TY
- * ====================== */
-
 export async function getPublicCompanyById(id) {
   const res = await fetch(`${API_URL}/companies/${id}/public`, {
     headers: { "Content-Type": "application/json" },
@@ -99,7 +94,7 @@ export async function getEmployerCompanyId() {
     const res = await getEmployerJobs(0, 1, "createdAt", "DESC")
     const firstJob = res?.data?.content?.[0]
     if (firstJob?.company?.id) {
-      localStorage.setItem("companyId", firstJob.company.id) // Lưu tạm để tái sử dụng
+      localStorage.setItem("companyId", firstJob.company.id)
       return firstJob.company.id
     }
 
@@ -119,9 +114,6 @@ export async function updateCompanyProfile(data) {
   return res.json()
 }
 
-/* ======================
- *  PHỎNG VẤN
- * ====================== */
 export async function getApplicants() {
   const res = await fetch(`${API_URL}/applications/my-company`, {
     headers: getAuthHeaders(),
@@ -134,9 +126,6 @@ export async function getInterviews() {
   return res.json()
 }
 
-/* ======================
- *  QUẢN LÝ ỨNG VIÊN
- * ====================== */
 export async function getManagedApplications(page = 0, size = 50, status, jobPostingId) {
   try {
     const params = new URLSearchParams({ page, size })
@@ -178,10 +167,6 @@ export async function getManagedApplications(page = 0, size = 50, status, jobPos
   }
 }
 
-
-/**
- *  Lấy chi tiết đơn ứng tuyển theo ID
- */
 export async function getApplicationById(id) {
   const res = await fetch(`${API_URL}/applications/manage/${id}`, {
     headers: getAuthHeaders(),
@@ -189,9 +174,6 @@ export async function getApplicationById(id) {
   return res.json()
 }
 
-/**
- *  Cập nhật trạng thái đơn ứng tuyển
- */
 export async function updateApplicationStatus(id, status, notes = "") {
   const res = await fetch(`${API_URL}/applications/manage/${id}/status`, {
     method: "PATCH",
@@ -200,9 +182,7 @@ export async function updateApplicationStatus(id, status, notes = "") {
   })
   return res.json()
 }
-/* ======================
- *  NGƯỜI PHỎNG VẤN
- * ====================== */
+
 export async function addParticipants(interviewId, body) {
   const res = await fetch(`${API_URL}/interviews/${interviewId}/participants`, {
     method: "POST",
