@@ -3,8 +3,8 @@ import { createTheme } from "@mui/material/styles";
 const theme = createTheme({
   palette: {
     mode: "light",
-    primary: { main: "#058551" }, // xanh chủ đạo bạn đang dùng
-    secondary: { main: "#2a9d8f" }, // xanh phụ (nếu muốn)
+    primary: { main: "#058551" }, 
+    secondary: { main: "#2a9d8f" }, 
     background: {
       default: "#f7faf9",
       paper: "#ffffff",
@@ -15,7 +15,6 @@ const theme = createTheme({
     },
   },
   typography: {
-    // Quan trọng: đặt font cho toàn bộ MUI components
     fontFamily: `"Nunito", system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji"`,
     h1: { fontWeight: 700 },
     h2: { fontWeight: 700 },

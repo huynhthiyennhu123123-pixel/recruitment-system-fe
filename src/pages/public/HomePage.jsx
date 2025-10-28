@@ -93,8 +93,6 @@ export default function HomePage() {
     };
     fetchTopCompanies();
   }, []);
-
-  // JobCard
   const JobCard = ({ job }) => {
     const [hovered, setHovered] = useState(false);
     const [isSaved, setIsSaved] = useState(job.isSaved || false);
@@ -153,7 +151,6 @@ export default function HomePage() {
         transition={{ type: "spring", stiffness: 200, damping: 15 }}
         className="job-card relative border border-gray-100 rounded-2xl p-6 shadow-sm bg-white overflow-hidden group"
       >
-        {/*  Nút lưu việc */}
         <button
           onClick={toggleSave}
           disabled={saving}
@@ -165,8 +162,6 @@ export default function HomePage() {
         >
           {isSaved ? <FaHeart /> : <FaRegHeart />}
         </button>
-
-        {/* Logo + Tiêu đề */}
         <div className="flex items-center gap-4 mb-4">
           <img
             src={job.company?.logoUrl || "/default-company.png"}
@@ -182,8 +177,6 @@ export default function HomePage() {
             </p>
           </div>
         </div>
-
-        {/* Thông tin việc làm */}
         <div className="space-y-2 text-sm text-gray-600">
           <div className="flex items-center gap-1">
             <FaMapMarkerAlt className="text-[#00b14f]" />
@@ -202,8 +195,6 @@ export default function HomePage() {
             <p className="text-gray-500 italic">Mức lương thỏa thuận</p>
           )}
         </div>
-
-        {/* Footer */}
         <div className="flex justify-between items-center mt-5 text-xs text-gray-400">
           <span>
             Cập nhật:{" "}
@@ -216,8 +207,6 @@ export default function HomePage() {
             Xem chi tiết <FaArrowRight size={12} />
           </Link>
         </div>
-
-        {/* Overlay xanh + nút “Ứng tuyển ngay” */}
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: hovered ? 1 : 0 }}
@@ -231,8 +220,6 @@ export default function HomePage() {
       </motion.div>
     );
   };
-
-  // CompanyCard
   const CompanyCard = ({ company }) => (
     <motion.div whileHover={{ scale: 1.03 }} className="company-card">
       <img
@@ -260,7 +247,6 @@ export default function HomePage() {
 
   return (
     <div className="bg-gray-50 min-h-screen pb-20">
-      {/* Hero */}
       <div className="relative left-1/2 right-1/2 w-screen -mx-[50vw]">
         <section
           ref={heroRef}
@@ -294,8 +280,6 @@ export default function HomePage() {
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6">
         <RecommendedCarousel />
-
-        {/* Ngành nghề */}
         <motion.section
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -319,8 +303,6 @@ export default function HomePage() {
             )}
           </div>
         </motion.section>
-
-        {/* Việc làm mới nhất */}
         <motion.section
           initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -342,8 +324,6 @@ export default function HomePage() {
             ))}
           </div>
         </motion.section>
-
-        {/* Việc làm Java nổi bật */}
         <motion.section
           initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -359,8 +339,6 @@ export default function HomePage() {
             ))}
           </div>
         </motion.section>
-
-        {/* Công ty nổi bật */}
         <motion.section
           initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -374,8 +352,6 @@ export default function HomePage() {
             ))}
           </div>
         </motion.section>
-
-        {/* Dành cho nhà tuyển dụng */}
         <motion.section
           initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -422,8 +398,6 @@ export default function HomePage() {
             ))}
           </div>
         </motion.section>
-
-        {/* Tin tức & Cẩm nang */}
         <motion.section
           initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -479,8 +453,6 @@ export default function HomePage() {
             ))}
           </div>
         </motion.section>
-
-        {/* Thống kê */}
         <motion.section
           initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}

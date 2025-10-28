@@ -1,12 +1,6 @@
 import axiosClient from "../utils/axiosClient";
-
-// ✅ Lấy danh sách tài liệu
 export const getMyDocuments = () => axiosClient.get("/profiles/my/documents");
-
-// ✅ Xóa tài liệu
 export const deleteDocument = (id) => axiosClient.delete(`/profiles/my/documents/${id}`);
-
-// ✅ Upload tài liệu (pdf, doc, docx)
 export const uploadDocument = (file, documentType) => {
   const formData = new FormData();
   formData.append("file", file);
@@ -15,8 +9,6 @@ export const uploadDocument = (file, documentType) => {
     headers: { "Content-Type": "multipart/form-data" },
   });
 };
-
-// ✅ Upload CV (PDF)
 export const uploadResume = (file) => {
   const formData = new FormData();
   formData.append("file", file);

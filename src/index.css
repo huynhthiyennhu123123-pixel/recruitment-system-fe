@@ -1,5 +1,5 @@
+@import url("https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700&display=swap");
 @import "tailwindcss";
-/* === FIX HEADER DATAGRID MUI 8 + TAILWIND === */
 .MuiDataGrid-columnHeaders {
   background-color: #2a9d8f !important;
   color: white !important;
@@ -12,20 +12,15 @@
   font-size: 17px !important;
 
 }
-
-
 .MuiDataGrid-columnHeaderTitleContainer {
   background-color: #ffffff !important;
   justify-content: center;
   
 }
-
-@import url("https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700&display=swap");
-
 @layer base {
   body {
     font-family: "Nunito", sans-serif;
-    color: #1f2937; /* text-gray-800 */
+    color: #1f2937;
   }
 }
 .custom-shadow {
