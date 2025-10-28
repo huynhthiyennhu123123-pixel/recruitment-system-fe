@@ -4,13 +4,11 @@ import { FaHeart } from "react-icons/fa";
 
 export default function SavedJobsFloatingButton() {
   const location = useLocation();
-
-  // Ẩn nút nếu người dùng đang ở trang applicant / employer
   const isPrivateRoute =
     location.pathname.startsWith("/applicant") ||
     location.pathname.startsWith("/employer");
 
-  if (isPrivateRoute) return null; // ❌ Không hiển thị trên trang nội bộ
+  if (isPrivateRoute) return null; 
 
   return (
     <Link

@@ -1,110 +1,194 @@
-import React, { useState, useEffect } from 'react';
-import applicantService from '../../services/applicantService';
+import React, { useState } from "react";
+import axiosClient from "../../utils/axiosClient";
+import { FaLock, FaEnvelope, FaSpinner, FaSave } from "react-icons/fa";
+import { toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import { motion } from "framer-motion";
 
-const SettingsPage = () => {
-  const [settings, setSettings] = useState({
-    emailNotifications: true,
-    jobAlerts: true,
-    newsletter: false,
-    privacy: 'public'
+export default function SettingsPage() {
+  const [form, setForm] = useState({
+    currentPassword: "",
+    newPassword: "",
+    confirmPassword: "",
   });
-  const [message, setMessage] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [email, setEmail] = useState("");
+  const [sendingEmail, setSendingEmail] = useState(false);
 
-  useEffect(() => {
-    fetchSettings();
-  }, []);
+  // 🧩 Đổi mật khẩu trực tiếp (nếu backend có /api/auth/change-password)
+  const handleChangePassword = async (e) => {
+    e.preventDefault();
 
-  const fetchSettings = async () => {
+    if (!form.currentPassword || !form.newPassword) {
+      toast.error("Vui lòng nhập đầy đủ thông tin.");
+      return;
+    }
+
+    if (form.newPassword !== form.confirmPassword) {
+      toast.error("Mật khẩu xác nhận không khớp!");
+      return;
+    }
+
+    setLoading(true);
     try {
-      const settingsData = await applicantService.getSettings();
-      setSettings(settingsData);
-    } catch (error) {
-      console.error('Error fetching settings:', error);
+      const res = await axiosClient.patch("/api/auth/change-password", {
+        oldPassword: form.currentPassword,
+        newPassword: form.newPassword,
+      });
+
+      if (res.data?.success) {
+        toast.success("Đổi mật khẩu thành công!");
+        setForm({ currentPassword: "", newPassword: "", confirmPassword: "" });
+      } else {
+        toast.error(res.data?.message || "Không thể đổi mật khẩu.");
+      }
+    } catch (err) {
+      console.error(err);
+      toast.error("Lỗi khi đổi mật khẩu!");
+    } finally {
+      setLoading(false);
     }
   };
 
-  const handleSave = async () => {
+  // 🧩 Gửi email reset mật khẩu (nếu quên)
+  const handleForgotPassword = async (e) => {
+    e.preventDefault();
+
+    if (!email) {
+      toast.error("Vui lòng nhập email!");
+      return;
+    }
+
+    setSendingEmail(true);
     try {
-      await applicantService.updateSettings(settings);
-      setMessage('Đã lưu cài đặt thành công!');
-    } catch (error) {
-      setMessage('Lỗi khi lưu cài đặt');
+      const res = await axiosClient.post("/api/auth/forgot-password", {
+        email,
+      });
+      if (res.data?.success) {
+        toast.success("Đã gửi email đặt lại mật khẩu!");
+      } else {
+        toast.error(res.data?.message || "Không gửi được email!");
+      }
+    } catch (err) {
+      console.error(err);
+      toast.error("Lỗi khi gửi email!");
+    } finally {
+      setSendingEmail(false);
     }
   };
 
   return (
-    <div className="space-y-6">
-      <h1 className="text-2xl font-bold text-gray-900">Cài đặt</h1>
+    <div className="max-w-3xl mx-auto py-10 px-5">
+      <ToastContainer />
+      <h2 className="text-2xl font-bold mb-6 text-gray-800">
+        ⚙️ Cài đặt tài khoản
+      </h2>
 
-      {message && (
-        <div className="bg-green-100 text-green-700 p-3 rounded">{message}</div>
-      )}
+      {/* ĐỔI MẬT KHẨU */}
+      <motion.div
+        className="bg-white shadow-lg rounded-2xl p-6 mb-8 border border-gray-100"
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+      >
+        <h3 className="text-lg font-semibold mb-4 flex items-center gap-2">
+          <FaLock /> Đổi mật khẩu
+        </h3>
 
-      <div className="bg-white rounded-lg shadow-sm p-6 space-y-6">
-        {/* Thông báo email */}
-        <div>
-          <h3 className="text-lg font-medium mb-4">Thông báo qua email</h3>
-          <div className="space-y-3">
-            <label className="flex items-center">
-              <input
-                type="checkbox"
-                checked={settings.emailNotifications}
-                onChange={(e) => setSettings(prev => ({
-                  ...prev, emailNotifications: e.target.checked 
-                }))}
-                className="rounded"
-              />
-              <span className="ml-2">Thông báo chung</span>
+        <form onSubmit={handleChangePassword} className="space-y-4">
+          <div>
+            <label className="block font-medium mb-1 text-gray-700">
+              Mật khẩu hiện tại
             </label>
-            <label className="flex items-center">
-              <input
-                type="checkbox"
-                checked={settings.jobAlerts}
-                onChange={(e) => setSettings(prev => ({
-                  ...prev, jobAlerts: e.target.checked 
-                }))}
-                className="rounded"
-              />
-              <span className="ml-2">Cảnh báo việc làm phù hợp</span>
-            </label>
+            <input
+              type="password"
+              className="w-full border border-gray-300 rounded-lg p-2"
+              value={form.currentPassword}
+              onChange={(e) =>
+                setForm({ ...form, currentPassword: e.target.value })
+              }
+            />
           </div>
-        </div>
 
-        {/* Quyền riêng tư */}
-        <div>
-          <h3 className="text-lg font-medium mb-4">Quyền riêng tư</h3>
-          <select
-            value={settings.privacy}
-            onChange={(e) => setSettings(prev => ({ ...prev, privacy: e.target.value }))}
-            className="border rounded p-2"
+          <div>
+            <label className="block font-medium mb-1 text-gray-700">
+              Mật khẩu mới
+            </label>
+            <input
+              type="password"
+              className="w-full border border-gray-300 rounded-lg p-2"
+              value={form.newPassword}
+              onChange={(e) =>
+                setForm({ ...form, newPassword: e.target.value })
+              }
+            />
+          </div>
+
+          <div>
+            <label className="block font-medium mb-1 text-gray-700">
+              Xác nhận mật khẩu mới
+            </label>
+            <input
+              type="password"
+              className="w-full border border-gray-300 rounded-lg p-2"
+              value={form.confirmPassword}
+              onChange={(e) =>
+                setForm({ ...form, confirmPassword: e.target.value })
+              }
+            />
+          </div>
+
+          <button
+            type="submit"
+            disabled={loading}
+            className="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition"
           >
-            <option value="public">Hiển thị với nhà tuyển dụng</option>
-            <option value="private">Chỉ mình tôi</option>
-          </select>
-        </div>
+            {loading ? (
+              <FaSpinner className="animate-spin inline mr-2" />
+            ) : (
+              <FaSave className="inline mr-2" />
+            )}
+            Lưu thay đổi
+          </button>
+        </form>
+      </motion.div>
 
-        {/* Tài khoản */}
-        <div>
-          <h3 className="text-lg font-medium mb-4">Tài khoản</h3>
-          <div className="space-y-2">
-            <button className="text-red-600 hover:text-red-700">
-              Xóa tài khoản
-            </button>
-            <p className="text-sm text-gray-500">
-              Khi xóa tài khoản, mọi dữ liệu sẽ bị mất vĩnh viễn
-            </p>
+      {/* QUÊN MẬT KHẨU */}
+      <motion.div
+        className="bg-white shadow-lg rounded-2xl p-6 border border-gray-100"
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+      >
+        <h3 className="text-lg font-semibold mb-4 flex items-center gap-2">
+          <FaEnvelope /> Quên mật khẩu
+        </h3>
+        <form onSubmit={handleForgotPassword} className="space-y-4">
+          <div>
+            <label className="block font-medium mb-1 text-gray-700">
+              Email
+            </label>
+            <input
+              type="email"
+              className="w-full border border-gray-300 rounded-lg p-2"
+              placeholder="user@example.com"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+            />
           </div>
-        </div>
 
-        <button
-          onClick={handleSave}
-          className="bg-blue-600 text-white px-6 py-2 rounded hover:bg-blue-700"
-        >
-          Lưu cài đặt
-        </button>
-      </div>
+          <button
+            type="submit"
+            disabled={sendingEmail}
+            className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition"
+          >
+            {sendingEmail ? (
+              <FaSpinner className="animate-spin inline mr-2" />
+            ) : (
+              <FaEnvelope className="inline mr-2" />
+            )}
+            Gửi email đặt lại mật khẩu
+          </button>
+        </form>
+      </motion.div>
     </div>
   );
-};
-
-export default SettingsPage;
+}

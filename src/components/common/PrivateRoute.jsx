@@ -6,7 +6,6 @@ export default function PrivateRoute({ roles }) {
   const location = useLocation();
 
   if (!token || !user) {
-    // chưa đăng nhập → quay về login
     return (
       <Navigate
         to="/auth/login"
@@ -17,10 +16,8 @@ export default function PrivateRoute({ roles }) {
   }
 
   if (roles && roles.length > 0 && !roles.includes(user.role)) {
-    // đăng nhập rồi nhưng không đúng quyền
     return <Navigate to="/" replace />;
   }
 
-  // hợp lệ → render các route con
   return <Outlet />;
 }
