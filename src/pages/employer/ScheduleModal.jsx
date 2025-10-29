@@ -253,7 +253,7 @@ export default function ScheduleModal({ open, onClose, onSuccess }) {
                       </InputAdornment>
                     ),
                   }}
-                  sx={{ marginInlineEnd: 10 }}
+                  sx={{ marginInlineEnd: 8 }}
                 >
                   {INTERVIEW_METHODS.map((m) => (
                     <MenuItem key={m.value} value={m.value}>
