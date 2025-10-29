@@ -45,20 +45,13 @@ const ApplicationDetailPage = () => {
     }
   };
 
+  // ✅ Cho phép rút đơn ở các trạng thái này
+  const canWithdraw = (status) => {
+    return ["RECEIVED", "UNDER_REVIEW", "SHORTLISTED"].includes(status);
+  };
+
   const handleWithdraw = async () => {
     if (!application) return;
-    const status = application.status;
-    if (["HIRED", "REJECTED", "WITHDRAWN", "CANCELLED"].includes(status)) {
-      const statusMessages = {
-        HIRED: "Bạn đã được tuyển dụng, không thể rút đơn.",
-        REJECTED: "Đơn này đã bị từ chối, không thể rút.",
-        WITHDRAWN: "Bạn đã rút đơn này trước đó rồi.",
-        CANCELLED: "Đơn này đã bị hủy, không thể rút.",
-      };
-      toast.warning(statusMessages[status] || "Không thể rút đơn ở trạng thái hiện tại.");
-      setShowConfirm(false);
-      return;
-    }
 
     setWithdrawing(true);
     try {
@@ -121,6 +114,8 @@ const ApplicationDetailPage = () => {
           <FaArrowLeft />
           <span>Quay lại</span>
         </button>
+
+        {/* --- Thông tin công việc --- */}
         <div className="flex flex-col sm:flex-row justify-between sm:items-center mb-6">
           <div>
             <h1 className="text-2xl font-bold text-[#00b14f] mb-1">
@@ -131,7 +126,9 @@ const ApplicationDetailPage = () => {
               {job?.location || "Không rõ địa điểm"}
             </p>
           </div>
-          {!["WITHDRAWN", "CANCELLED", "HIRED", "REJECTED"].includes(application.status) && (
+
+          {/* --- Chỉ hiện nút nếu được phép rút --- */}
+          {canWithdraw(application.status) && (
             <button
               onClick={() => setShowConfirm(true)}
               disabled={withdrawing}
@@ -146,6 +143,8 @@ const ApplicationDetailPage = () => {
             </button>
           )}
         </div>
+
+        {/* --- Nội dung chi tiết --- */}
         <div className="space-y-4 text-gray-700 leading-relaxed">
           <p className="flex items-center gap-2">
             <FaClipboardCheck className="text-[#00b14f]" />
@@ -188,6 +187,8 @@ const ApplicationDetailPage = () => {
           )}
         </div>
       </motion.div>
+
+      {/* --- Hộp xác nhận rút đơn --- */}
       <AnimatePresence>
         {showConfirm && (
           <motion.div

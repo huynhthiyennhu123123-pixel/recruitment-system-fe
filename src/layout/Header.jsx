@@ -3,6 +3,7 @@ import { Link, useNavigate, useLocation } from "react-router-dom";
 import RegisterModal from "../pages/auth/RegisterModal";
 import { FaUserCircle, FaSignOutAlt, FaBriefcase } from "react-icons/fa";
 import NotificationMenu from "../components/common/NotificationMenu";
+import logo from "../assets/images/logo.png";
 
 export default function Header() {
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -48,14 +49,19 @@ export default function Header() {
         marginBottom: "-1px",
       }}
     >
-      <div className="max-w-7xl mx-auto flex items-center justify-between px-6 h-[60px]">
+      <div className="max-w-7xl mx-auto flex items-center justify-between px-6 h-[72px] md:h-[70px]">
         <Link
           to="/"
           className="flex items-center gap-2 font-extrabold text-[#00b14f] text-xl hover:scale-105 transition-transform"
         >
-          <FaBriefcase size={22} />
-          <span className="tracking-tight">Job</span>
-          <span className="text-gray-900 font-extrabold">Recruit</span>
+          <img
+            src={logo}
+            alt="JobRecruit Logo"
+            className="h-10 w-auto object-contain"
+          />
+          <span className="tracking-tight text-gray-900 font-extrabold">
+            Job<span className="text-[#00b14f]">Recruit</span>
+          </span>
         </Link>
         {!token || role === "APPLICANT" ? (
           <nav className="hidden md:flex items-center gap-6 text-gray-800 font-semibold">
