@@ -68,13 +68,6 @@ export default function AdminLayout() {
         <Toolbar>
           <Box sx={{ flexGrow: 1 }} />
 
-          {/* MAIL */}
-          <IconButton size="large" color="inherit" sx={{ mr: 1 }}>
-            <Badge badgeContent={4} color="error">
-              <MailIcon />
-            </Badge>
-          </IconButton>
-
           <NotificationMenu />
 
           {/* AVATAR NGƯỜI DÙNG */}
@@ -115,10 +108,7 @@ export default function AdminLayout() {
                 <SettingsIcon fontSize="small" sx={{ mr: 1 }} />
                 Thông tin tài khoản
               </ListItemButton>
-              <ListItemButton>
-                <PeopleIcon fontSize="small" sx={{ mr: 1 }} />
-                Đổi mật khẩu
-              </ListItemButton>
+
               <ListItemButton onClick={handleLogout}>
                 <LogoutIcon fontSize="small" sx={{ mr: 1 }} />
                 Đăng xuất
@@ -160,10 +150,9 @@ export default function AdminLayout() {
               icon: <DashboardIcon />,
               text: "Thống kê",
             },
-            { to: "/admin/users", icon: <PeopleIcon />, text: "Người dùng" },
+
             { to: "/admin/companies", icon: <BusinessIcon />, text: "Công ty" },
             { to: "/admin/jobs", icon: <WorkIcon />, text: "Tuyển dụng" },
-            { to: "/admin/roles", icon: <SettingsIcon />, text: "Roles" },
           ].map((item) => (
             <ListItem key={item.to} disablePadding>
               <ListItemButton
