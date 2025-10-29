@@ -71,24 +71,14 @@ export default function Header() {
             <Link to="/jobs" className="hover:text-[#00b14f] transition-colors">
               Việc làm
             </Link>
-            <Link
-              to="/companies"
-              className="hover:text-[#00b14f] transition-colors"
-            >
-              Công ty
-            </Link>
+            
             <Link
               to="/about"
               className="hover:text-[#00b14f] transition-colors"
             >
               Giới thiệu
             </Link>
-            <Link
-              to="/contact"
-              className="hover:text-[#00b14f] transition-colors"
-            >
-              Liên hệ
-            </Link>
+            
           </nav>
         ) : role === "EMPLOYER" ? (
           <nav className="hidden md:flex items-center gap-6 text-gray-800 font-semibold">
