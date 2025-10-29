@@ -20,7 +20,7 @@ import {
   Avatar,
   ListItemButton,
 } from "@mui/material";
-
+import LockResetIcon from "@mui/icons-material/LockReset";
 import DashboardIcon from "@mui/icons-material/Dashboard";
 import PeopleIcon from "@mui/icons-material/People";
 import MailIcon from "@mui/icons-material/Mail";
@@ -107,6 +107,14 @@ export default function AdminLayout() {
               <ListItemButton component={Link} to="/admin/profile">
                 <SettingsIcon fontSize="small" sx={{ mr: 1 }} />
                 Thông tin tài khoản
+              </ListItemButton>
+
+              <ListItemButton
+                component={Link}
+                to="/auth/forgot-password"
+                onClick={handleCloseUserMenu}
+              >
+                <LockResetIcon fontSize="small" sx={{ mr: 1 }} /> Đổi mật khẩu
               </ListItemButton>
 
               <ListItemButton onClick={handleLogout}>
