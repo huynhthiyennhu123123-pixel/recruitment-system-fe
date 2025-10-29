@@ -23,7 +23,7 @@ export default function AdminProfilePage() {
         const data = res?.data?.data;
         if (data) setProfile(data);
       } catch (err) {
-        console.error("❌ Lỗi khi tải thông tin người dùng:", err);
+        console.error("Lỗi khi tải thông tin người dùng:", err);
       } finally {
         setLoading(false);
       }

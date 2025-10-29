@@ -12,8 +12,11 @@ import {
   DialogTitle,
   DialogContent,
   Divider,
+  FormControl,
+  InputLabel,
+  Select,
+  MenuItem,
 } from "@mui/material";
-import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import {
@@ -22,37 +25,50 @@ import {
   updateJobStatus,
   getJobDetail,
 } from "../../services/jobService";
+import toast, { Toaster } from "react-hot-toast";
 
 export default function JobsPage() {
   const [jobs, setJobs] = useState([]);
   const [loading, setLoading] = useState(false);
   const [open, setOpen] = useState(false);
   const [selectedJob, setSelectedJob] = useState(null);
+  const [statusFilter, setStatusFilter] = useState(""); // ✅ trạng thái lọc hiện tại
 
-  const fetchJobs = async () => {
+  const fetchJobs = async (statusValue = "") => {
     try {
       setLoading(true);
-      const res = await getManagedJobs({ page: 0, size: 10 });
-      const jobList = res?.data?.content || [];
+      const params = { page: 0, size: 10 };
+      if (statusValue) params.status = statusValue;
+
+      const res = await getManagedJobs(params);
+      const jobList = res?.data?.data?.content || res?.data?.content || [];
       setJobs(jobList);
     } catch (err) {
-      console.error("Lỗi khi tải danh sách tin:", err.response || err);
+      console.error("Lỗi khi tải danh sách tin:", err);
+      toast.error("Không thể tải danh sách tin tuyển dụng.");
     } finally {
       setLoading(false);
     }
   };
 
   useEffect(() => {
-    fetchJobs();
-  }, []);
+    fetchJobs(statusFilter);
+  }, [statusFilter]); // ✅ gọi lại khi đổi trạng thái lọc
 
-  const handleDelete = async (id) => {
-    if (!window.confirm("Xác nhận xóa tin tuyển dụng này?")) return;
+  const handleDelete = async (id, status) => {
+    const confirmMsg =
+      status === "ACTIVE"
+        ? "Tin đang hoạt động. Bạn có chắc muốn xóa (đóng) không?"
+        : "Xác nhận xóa tin tuyển dụng này?";
+    if (!window.confirm(confirmMsg)) return;
+
     try {
       await deleteJobPosting(id, true);
-      fetchJobs();
+      toast.success("Đã xóa tin tuyển dụng thành công!");
+      fetchJobs(statusFilter);
     } catch (err) {
       console.error("Lỗi khi xóa tin:", err);
+      toast.error(err?.response?.data?.message || "Không thể xóa tin.");
     }
   };
 
@@ -64,19 +80,28 @@ export default function JobsPage() {
       setOpen(true);
     } catch (err) {
       console.error("Lỗi khi xem chi tiết job:", err);
-      const msg =
-        err?.response?.data?.message ||
-        "Không thể tải chi tiết job. Có thể tin đã hết hạn hoặc bị đóng.";
-      alert(msg);
+      toast.error("Không thể tải chi tiết job.");
     }
   };
 
-  const handleStatusChange = async (id, newStatus) => {
+  const handleStatusChange = async (id, newStatus, job) => {
+    if (newStatus === "ACTIVE") {
+      const deadline = new Date(job.applicationDeadline);
+      if (deadline < new Date()) {
+        toast.error("Hạn nộp đã quá hạn, không thể mở lại tin này.");
+        return;
+      }
+    }
+
     try {
       await updateJobStatus(id, newStatus);
-      fetchJobs();
+      toast.success("Cập nhật trạng thái thành công!");
+      fetchJobs(statusFilter);
     } catch (err) {
       console.error("Lỗi khi cập nhật trạng thái:", err);
+      toast.error(
+        err?.response?.data?.message || "Không thể cập nhật trạng thái."
+      );
     }
   };
 
@@ -101,19 +126,23 @@ export default function JobsPage() {
       width: 140,
       align: "center",
       headerAlign: "center",
-      renderCell: (params) => (
-        <Chip
-          label={params.value}
-          color={
-            params.value === "ACTIVE"
-              ? "success"
-              : params.value === "CLOSED"
-              ? "warning"
-              : "default"
-          }
-          size="small"
-        />
-      ),
+      renderCell: (params) => {
+        const status = params.value;
+        const colorMap = {
+          ACTIVE: "success",
+          CLOSED: "warning",
+          DRAFT: "default",
+          PAUSED: "info",
+          EXPIRED: "error",
+        };
+        return (
+          <Chip
+            label={status}
+            color={colorMap[status] || "default"}
+            size="small"
+          />
+        );
+      },
     },
     {
       field: "createdAt",
@@ -165,19 +194,21 @@ export default function JobsPage() {
             >
               <VisibilityIcon fontSize="small" />
             </IconButton>
+
             <IconButton
               size="small"
               color="error"
-              onClick={() => handleDelete(id)}
+              onClick={() => handleDelete(id, status)}
             >
               <DeleteIcon fontSize="small" />
             </IconButton>
+
             {status === "ACTIVE" ? (
               <Button
                 size="small"
                 variant="outlined"
                 color="warning"
-                onClick={() => handleStatusChange(id, "CLOSED")}
+                onClick={() => handleStatusChange(id, "CLOSED", params.row)}
               >
                 Đóng
               </Button>
@@ -186,7 +217,7 @@ export default function JobsPage() {
                 size="small"
                 variant="outlined"
                 color="success"
-                onClick={() => handleStatusChange(id, "ACTIVE")}
+                onClick={() => handleStatusChange(id, "ACTIVE", params.row)}
               >
                 Mở lại
               </Button>
@@ -199,11 +230,40 @@ export default function JobsPage() {
 
   return (
     <Box>
-      <Typography variant="h4" sx={{ mb: 2 }}>
-        Quản lý tin tuyển dụng
-      </Typography>
+      <Toaster position="top-right" />
+      <Box
+        sx={{
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "space-between",
+          mb: 2,
+        }}
+      >
+        <Typography variant="h4" sx={{ fontWeight: "bold", color: "#043927" }}>
+          Quản lý tin tuyển dụng
+        </Typography>
 
-      <Paper sx={{ height: 520, width: "100%" }}>
+        {/* ✅ Bộ lọc trạng thái */}
+        <FormControl size="small" sx={{ minWidth: 180 }}>
+          <InputLabel>Trạng thái</InputLabel>
+          <Select
+            label="Trạng thái"
+            value={statusFilter}
+            onChange={(e) => setStatusFilter(e.target.value)}
+          >
+            <MenuItem value="">Tất cả</MenuItem>
+            <MenuItem value="DRAFT">Nháp</MenuItem>
+            <MenuItem value="ACTIVE">Đang hoạt động</MenuItem>
+            <MenuItem value="PAUSED">Tạm dừng</MenuItem>
+            <MenuItem value="CLOSED">Đã đóng</MenuItem>
+            <MenuItem value="EXPIRED">Hết hạn</MenuItem>
+          </Select>
+        </FormControl>
+      </Box>
+
+      <Paper
+        sx={{ height: 520, width: "100%", borderRadius: 2, overflow: "hidden" }}
+      >
         <DataGrid
           rows={jobs}
           columns={columns}
@@ -238,6 +298,7 @@ export default function JobsPage() {
         />
       </Paper>
 
+      {/* Chi tiết công việc */}
       <Dialog
         open={open}
         onClose={() => setOpen(false)}
@@ -265,163 +326,176 @@ export default function JobsPage() {
         </DialogTitle>
 
         <DialogContent sx={{ p: 3 }}>
-          <Box
-            sx={{
-              display: "flex",
-              justifyContent: "space-between",
-              flexWrap: "wrap",
-              mb: 2,
-            }}
-          >
-            <Box sx={{ flex: "1 1 60%" }}>
-              <Typography variant="subtitle1" sx={{ mb: 1 }}>
-                <strong>Loại công việc:</strong> {selectedJob?.jobType || "—"}
-              </Typography>
-              <Typography variant="subtitle1" sx={{ mb: 1 }}>
-                <strong>Địa điểm:</strong> {selectedJob?.location || "—"}
-              </Typography>
-              <Typography variant="subtitle1" sx={{ mb: 1 }}>
-                <strong>Mức lương:</strong>{" "}
-                {selectedJob?.salaryMin?.toLocaleString("vi-VN")} -{" "}
-                {selectedJob?.salaryMax?.toLocaleString("vi-VN")}{" "}
-                {selectedJob?.salaryCurrency || "VND"}
-              </Typography>
-              <Typography variant="subtitle1" sx={{ mb: 1 }}>
-                <strong>Hạn nộp hồ sơ:</strong>{" "}
-                {selectedJob?.applicationDeadline
-                  ? new Date(
-                      selectedJob.applicationDeadline
-                    ).toLocaleDateString("vi-VN")
-                  : "—"}
-              </Typography>
-              <Typography variant="subtitle1" sx={{ mb: 1 }}>
-                <strong>Trạng thái:</strong>{" "}
-                <Chip
-                  label={selectedJob?.status || "Không xác định"}
-                  color={
-                    selectedJob?.status === "ACTIVE"
-                      ? "success"
-                      : selectedJob?.status === "CLOSED"
-                      ? "warning"
-                      : "default"
-                  }
-                  size="small"
-                />
-              </Typography>
-            </Box>
-
-            <Box
-              sx={{
-                flex: "1 1 35%",
-                backgroundColor: "#f9fafb",
-                borderRadius: 2,
-                p: 2,
-                border: "1px solid #e0e0e0",
-              }}
-            >
-              <Typography variant="h6" sx={{ fontWeight: 600, mb: 1 }}>
-                {selectedJob?.company?.name || "Công ty chưa xác định"}
-              </Typography>
-              <Typography variant="body2" sx={{ mb: 0.5 }}>
-                Ngành nghề: {selectedJob?.company?.industry || "—"}
-              </Typography>
-              <Typography variant="body2" sx={{ mb: 0.5 }}>
-                Thành phố: {selectedJob?.company?.city || "—"}
-              </Typography>
-              <Typography variant="body2" sx={{ mb: 0.5 }}>
-                Website:{" "}
-                {selectedJob?.company?.website ? (
-                  <a
-                    href={selectedJob.company.website}
-                    target="_blank"
-                    rel="noreferrer"
-                    style={{ color: "#058551ff", textDecoration: "none" }}
-                  >
-                    {selectedJob.company.website}
-                  </a>
-                ) : (
-                  "—"
-                )}
-              </Typography>
-              <Typography variant="body2" sx={{ mb: 0.5 }}>
-                Email: {selectedJob?.company?.contactEmail || "—"}
-              </Typography>
-            </Box>
-          </Box>
-
-          <Divider sx={{ my: 2 }} />
-
-          <Box sx={{ mb: 3 }}>
-            <Typography
-              variant="h6"
-              sx={{ color: "#058551ff", fontWeight: "bold", mb: 1 }}
-            >
-              Mô tả công việc
-            </Typography>
-            <Typography variant="body1" sx={{ whiteSpace: "pre-line" }}>
-              {selectedJob?.description || "Chưa có mô tả công việc."}
-            </Typography>
-          </Box>
-
-          <Box sx={{ mb: 3 }}>
-            <Typography
-              variant="h6"
-              sx={{ color: "#058551ff", fontWeight: "bold", mb: 1 }}
-            >
-              Yêu cầu công việc
-            </Typography>
-            <Typography variant="body1" sx={{ whiteSpace: "pre-line" }}>
-              {selectedJob?.requirements || "Không có thông tin yêu cầu."}
-            </Typography>
-          </Box>
-
-          {selectedJob?.skillsRequired && (
-            <Box sx={{ mb: 3 }}>
-              <Typography
-                variant="h6"
-                sx={{ color: "#058551ff", fontWeight: "bold", mb: 1 }}
-              >
-                Kỹ năng yêu cầu
-              </Typography>
-              <Stack direction="row" spacing={1} flexWrap="wrap">
-                {selectedJob.skillsRequired.split(",").map((skill, i) => (
-                  <Chip
-                    key={i}
-                    label={skill.trim()}
-                    variant="outlined"
-                    color="success"
-                    sx={{ borderRadius: "16px" }}
-                  />
-                ))}
-              </Stack>
-            </Box>
-          )}
-
-          {selectedJob?.benefits && (
-            <Box sx={{ mb: 3 }}>
-              <Typography
-                variant="h6"
-                sx={{ color: "#058551ff", fontWeight: "bold", mb: 1 }}
-              >
-                Quyền lợi
-              </Typography>
-              <Typography variant="body1">{selectedJob.benefits}</Typography>
-            </Box>
-          )}
-
-          {selectedJob?.company?.description && (
+          {selectedJob ? (
             <>
-              <Divider sx={{ my: 2 }} />
-              <Typography
-                variant="h6"
-                sx={{ color: "#058551ff", fontWeight: "bold", mb: 1 }}
+              <Box
+                sx={{
+                  display: "flex",
+                  justifyContent: "space-between",
+                  flexWrap: "wrap",
+                  mb: 2,
+                }}
               >
-                Giới thiệu công ty
-              </Typography>
-              <Typography variant="body1">
-                {selectedJob.company.description}
-              </Typography>
+                <Box sx={{ flex: "1 1 60%" }}>
+                  <Typography variant="subtitle1" sx={{ mb: 1 }}>
+                    <strong>Loại công việc:</strong>{" "}
+                    {selectedJob.jobType || "—"}
+                  </Typography>
+                  <Typography variant="subtitle1" sx={{ mb: 1 }}>
+                    <strong>Địa điểm:</strong> {selectedJob.location || "—"}
+                  </Typography>
+                  <Typography variant="subtitle1" sx={{ mb: 1 }}>
+                    <strong>Mức lương:</strong>{" "}
+                    {selectedJob.salaryMin?.toLocaleString("vi-VN")} -{" "}
+                    {selectedJob.salaryMax?.toLocaleString("vi-VN")}{" "}
+                    {selectedJob.salaryCurrency || "VND"}
+                  </Typography>
+                  <Typography variant="subtitle1" sx={{ mb: 1 }}>
+                    <strong>Hạn nộp hồ sơ:</strong>{" "}
+                    {selectedJob.applicationDeadline
+                      ? new Date(
+                          selectedJob.applicationDeadline
+                        ).toLocaleDateString("vi-VN")
+                      : "—"}
+                  </Typography>
+                  <Typography variant="subtitle1" sx={{ mb: 1 }}>
+                    <strong>Trạng thái:</strong>{" "}
+                    <Chip
+                      label={selectedJob.status || "Không xác định"}
+                      color={
+                        selectedJob.status === "ACTIVE"
+                          ? "success"
+                          : selectedJob.status === "CLOSED"
+                          ? "warning"
+                          : selectedJob.status === "PAUSED"
+                          ? "info"
+                          : selectedJob.status === "EXPIRED"
+                          ? "error"
+                          : "default"
+                      }
+                      size="small"
+                    />
+                  </Typography>
+                </Box>
+
+                <Box
+                  sx={{
+                    flex: "1 1 35%",
+                    backgroundColor: "#f9fafb",
+                    borderRadius: 2,
+                    p: 2,
+                    border: "1px solid #e0e0e0",
+                  }}
+                >
+                  <Typography variant="h6" sx={{ fontWeight: 600, mb: 1 }}>
+                    {selectedJob.company?.name || "Công ty chưa xác định"}
+                  </Typography>
+                  <Typography variant="body2" sx={{ mb: 0.5 }}>
+                    Ngành nghề: {selectedJob.company?.industry || "—"}
+                  </Typography>
+                  <Typography variant="body2" sx={{ mb: 0.5 }}>
+                    Thành phố: {selectedJob.company?.city || "—"}
+                  </Typography>
+                  <Typography variant="body2" sx={{ mb: 0.5 }}>
+                    Website:{" "}
+                    {selectedJob.company?.website ? (
+                      <a
+                        href={selectedJob.company.website}
+                        target="_blank"
+                        rel="noreferrer"
+                        style={{ color: "#058551ff", textDecoration: "none" }}
+                      >
+                        {selectedJob.company.website}
+                      </a>
+                    ) : (
+                      "—"
+                    )}
+                  </Typography>
+                  <Typography variant="body2" sx={{ mb: 0.5 }}>
+                    Email: {selectedJob.company?.contactEmail || "—"}
+                  </Typography>
+                </Box>
+              </Box>
+
+              <Divider sx={{ my: 2 }} />
+
+              <Box sx={{ mb: 3 }}>
+                <Typography
+                  variant="h6"
+                  sx={{ color: "#058551ff", fontWeight: "bold", mb: 1 }}
+                >
+                  Mô tả công việc
+                </Typography>
+                <Typography variant="body1" sx={{ whiteSpace: "pre-line" }}>
+                  {selectedJob.description || "Chưa có mô tả công việc."}
+                </Typography>
+              </Box>
+
+              <Box sx={{ mb: 3 }}>
+                <Typography
+                  variant="h6"
+                  sx={{ color: "#058551ff", fontWeight: "bold", mb: 1 }}
+                >
+                  Yêu cầu công việc
+                </Typography>
+                <Typography variant="body1" sx={{ whiteSpace: "pre-line" }}>
+                  {selectedJob.requirements || "Không có thông tin yêu cầu."}
+                </Typography>
+              </Box>
+
+              {selectedJob.skillsRequired && (
+                <Box sx={{ mb: 3 }}>
+                  <Typography
+                    variant="h6"
+                    sx={{ color: "#058551ff", fontWeight: "bold", mb: 1 }}
+                  >
+                    Kỹ năng yêu cầu
+                  </Typography>
+                  <Stack direction="row" spacing={1} flexWrap="wrap">
+                    {selectedJob.skillsRequired.split(",").map((skill, i) => (
+                      <Chip
+                        key={i}
+                        label={skill.trim()}
+                        variant="outlined"
+                        color="success"
+                        sx={{ borderRadius: "16px" }}
+                      />
+                    ))}
+                  </Stack>
+                </Box>
+              )}
+
+              {selectedJob.benefits && (
+                <Box sx={{ mb: 3 }}>
+                  <Typography
+                    variant="h6"
+                    sx={{ color: "#058551ff", fontWeight: "bold", mb: 1 }}
+                  >
+                    Quyền lợi
+                  </Typography>
+                  <Typography variant="body1">
+                    {selectedJob.benefits}
+                  </Typography>
+                </Box>
+              )}
+
+              {selectedJob.company?.description && (
+                <>
+                  <Divider sx={{ my: 2 }} />
+                  <Typography
+                    variant="h6"
+                    sx={{ color: "#058551ff", fontWeight: "bold", mb: 1 }}
+                  >
+                    Giới thiệu công ty
+                  </Typography>
+                  <Typography variant="body1">
+                    {selectedJob.company.description}
+                  </Typography>
+                </>
+              )}
             </>
+          ) : (
+            <Typography>Đang tải dữ liệu...</Typography>
           )}
         </DialogContent>
       </Dialog>
