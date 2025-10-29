@@ -53,6 +53,8 @@ import CompaniesPage from "../pages/admin/CompaniesPage";
 import JobsPage from "../pages/admin/JobsPage";
 import RolesPage from "../pages/admin/RolesPage";
 import AdminProfilePage from "../pages/admin/AdminProfilePage";
+import AdminCompanyDetailPage from "../pages/admin/CompanyDetailPage";
+
 
 // Route Guard
 import PrivateRoute from "../components/common/PrivateRoute";
@@ -145,6 +147,7 @@ function App() {
             <Route path="jobs" element={<JobsPage />} />
             <Route path="roles" element={<RolesPage />} />
             <Route path="profile" element={<AdminProfilePage />} />
+            <Route path="companies/:id" element={<AdminCompanyDetailPage />}/>
           </Route>
         </Route>
       </Routes>
