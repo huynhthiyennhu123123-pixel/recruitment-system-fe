@@ -205,7 +205,7 @@ export default function EmployerRegisterPage() {
                   required
                   sx={{
                 marginBottom: 2,
-                marginInlineEnd:10
+                marginInlineEnd:9
               }}
                 />
               </Grid>

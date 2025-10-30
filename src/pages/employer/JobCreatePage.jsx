@@ -239,7 +239,7 @@ export default function JobPostCreate() {
                   />
                 }
                 fullWidth
-                sx={{ marginInlineEnd: -4 }}
+                sx={{ marginInlineEnd: -5 }}
                 value={form.salaryMin}
                 onChange={handleChange}
               />
@@ -304,7 +304,7 @@ export default function JobPostCreate() {
                 name="skillsRequired"
                 fullWidth
                 multiline
-                sx={{ marginInlineEnd: 22 }}
+                sx={{ marginInlineEnd: 20 }}
                 rows={2}
                 label={
                   <Label
@@ -321,7 +321,7 @@ export default function JobPostCreate() {
                 name="requirements"
                 fullWidth
                 multiline
-                sx={{ marginInlineEnd: 19 }}
+                sx={{ marginInlineEnd: 17 }}
                 rows={2}
                 label={
                   <Label
@@ -341,7 +341,7 @@ export default function JobPostCreate() {
                 name="benefits"
                 fullWidth
                 multiline
-                sx={{ marginInlineEnd: 22 }}
+                sx={{ marginInlineEnd: 20 }}
                 rows={2}
                 label={
                   <Label icon={<MonetizationOnOutlined />} text="Phúc lợi" />
@@ -355,7 +355,7 @@ export default function JobPostCreate() {
                 name="jobDescription"
                 fullWidth
                 multiline
-                sx={{ marginInlineEnd: 19 }}
+                sx={{ marginInlineEnd: 17 }}
                 rows={2}
                 label={
                   <Label
@@ -371,7 +371,7 @@ export default function JobPostCreate() {
               <TextField
                 name="location"
                 fullWidth
-                sx={{ marginInlineEnd: 64 }}
+                sx={{ marginInlineEnd: 65 }}
                 label={
                   <Label
                     icon={<LocationOnOutlined />}

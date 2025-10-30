@@ -147,17 +147,7 @@ export default function LoginPage() {
               Gửi lại email xác nhận
             </button>
           </div>
-          <div className="mt-6 text-center text-gray-500 text-sm">
-            <p className="mb-3">Hoặc đăng nhập bằng</p>
-            <div className="flex justify-center gap-3">
-              <button className="flex items-center gap-2 px-4 py-2 border rounded-lg hover:bg-gray-100 transition">
-                <FaGoogle className="text-red-500" /> Google
-              </button>
-              <button className="flex items-center gap-2 px-4 py-2 border rounded-lg text-blue-600 hover:bg-blue-50 transition">
-                <FaFacebook /> Facebook
-              </button>
-            </div>
-          </div>
+          
 
           <p className="mt-6 text-sm text-center text-gray-600">
             Chưa có tài khoản?{" "}
